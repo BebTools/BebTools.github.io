@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEB Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Bungee', sans-serif;
+            color: white;
+            background: black;
+            overflow: hidden;
+        }
+        .border-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: 10px solid black;
+            pointer-events: none;
+        }
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .logo {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 96px;
+            text-align: center;
+        }
+        .social-icons {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+        }
+        .social-icons a {
+            color: white;
+            font-size: 32px;
+            text-decoration: none;
+            transition: transform 0.2s ease-in-out;
+        }
+        .social-icons a:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <video class="video-bg" autoplay loop muted>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+    
+    <div class="logo">beb.tools</div>
+    
+    <div class="social-icons">
+        <a href="https://x.com/BebTools" target="_blank">X</a>
+        <a href="https://github.com/BebTools" target="_blank">GitHub</a>
+        <a href="https://gumroad.com/BebTools" target="_blank">Gumroad</a>
+    </div>
+    
+    <div class="border-outline"></div>
+</body>
+</html>
