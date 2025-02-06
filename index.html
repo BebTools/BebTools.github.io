@@ -50,33 +50,34 @@
             border: 10px solid black;
             pointer-events: none;
         }
-        .video-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -1;
-        }
-		.logo {
-			position: absolute; /* Position it relative to the page */
-			top: 80px; /* Moves it to the top */
-			left: 50%; /* Centers it horizontally */
-			transform: translateX(-50%); /* Ensures it's truly centered */
-			font-size: 96px;
-		}
-		.social-icons {
-			position: absolute; /* Allows precise positioning */
-			top: 200px; /* Adjust this value to control spacing below the logo */
-			left: 50%; /* Centers it horizontally */
-			transform: translateX(-50%); /* Ensures it aligns correctly */
-			display: flex;
-			flex-direction: row;
-			gap: 30px;
-			flex-wrap: wrap;
-			justify-content: center;
-		}
+         .video-bg {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100vw;
+             height: 100vh;
+             object-fit: cover;
+             z-index: -1;
+             pointer-events: none; /* Make it unclickable */
+         }
+      .logo {
+         position: absolute; /* Position it relative to the page */
+         top: 80px; /* Moves it to the top */
+         left: 50%; /* Centers it horizontally */
+         transform: translateX(-50%); /* Ensures it's truly centered */
+         font-size: 96px;
+      }
+      .social-icons {
+         position: absolute; /* Allows precise positioning */
+         top: 200px; /* Adjust this value to control spacing below the logo */
+         left: 50%; /* Centers it horizontally */
+         transform: translateX(-50%); /* Ensures it aligns correctly */
+         display: flex;
+         flex-direction: row;
+         gap: 30px;
+         flex-wrap: wrap;
+         justify-content: center;
+      }
         .social-icons a {
             color: white;
             font-size: 30px;
@@ -86,23 +87,25 @@
         .social-icons a:hover {
             transform: scale(1.2);
         }
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 48px;
-            }
-            .social-icons {
-                gap: 15px;
-            }
-            .social-icons a {
-                font-size: 20px;
-            }
-        }
+         @media (max-width: 768px) {
+             .logo {
+                 font-size: 48px;
+                 top: 40px; /* Move it higher */
+             }
+             .social-icons {
+                 top: 120px; /* Move closer to the logo */
+                 gap: 10px;
+             }
+             .social-icons a {
+                 font-size: 20px;
+             }
+         }
     </style>
 </head>
 <body>
-    <video class="video-bg" autoplay loop muted>
-        <source src="background.mp4" type="video/mp4">
-    </video>
+   <video class="video-bg" autoplay loop muted playsinline>
+       <source src="background.mp4" type="video/mp4">
+   </video>
     
     <div class="logo">beb.tools</div>
     
