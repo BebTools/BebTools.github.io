@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEB Tools</title>
+    <title>Beb.Tools</title>
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <style>
@@ -17,6 +34,12 @@
             color: white;
             background: black;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
         }
         .border-outline {
             position: fixed;
@@ -36,31 +59,43 @@
             object-fit: cover;
             z-index: -1;
         }
-        .logo {
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 96px;
-            text-align: center;
-        }
-        .social-icons {
-            position: absolute;
-            top: 180px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: row;
-            gap: 30px;
-        }
+		.logo {
+			position: absolute; /* Position it relative to the page */
+			top: 80px; /* Moves it to the top */
+			left: 50%; /* Centers it horizontally */
+			transform: translateX(-50%); /* Ensures it's truly centered */
+			font-size: 96px;
+		}
+		.social-icons {
+			position: absolute; /* Allows precise positioning */
+			top: 200px; /* Adjust this value to control spacing below the logo */
+			left: 50%; /* Centers it horizontally */
+			transform: translateX(-50%); /* Ensures it aligns correctly */
+			display: flex;
+			flex-direction: row;
+			gap: 30px;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
         .social-icons a {
             color: white;
-            font-size: 32px;
+            font-size: 30px;
             text-decoration: none;
             transition: transform 0.2s ease-in-out;
         }
         .social-icons a:hover {
             transform: scale(1.2);
+        }
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 48px;
+            }
+            .social-icons {
+                gap: 15px;
+            }
+            .social-icons a {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
