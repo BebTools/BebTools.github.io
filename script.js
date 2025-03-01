@@ -6,7 +6,6 @@ const author = document.querySelector('.author');
 const stars = document.querySelector('.stars');
 const popupText = document.querySelector('.popup-text');
 const searchInput = document.getElementById('search-input');
-const categoryFilter = document.getElementById('category-filter');
 let allScripts = [];
 let page = 1;
 let loading = false;
@@ -33,7 +32,7 @@ async function loadScripts() {
             const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
             const files = await contents.json();
             console.log(`Root files/folders: ${files.map(f => f.name).join(', ')}`);
-            const scriptFolders = files.filter(f => f.type === 'dir'); // Get ALL folders
+            const scriptFolders = files.filter(f => f.type === 'dir');
             for (const scriptFolder of scriptFolders) {
                 console.log(`Found folder: ${scriptFolder.name}`);
                 const folderContents = await fetch(scriptFolder.url);
@@ -50,8 +49,7 @@ async function loadScripts() {
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
-                        pngUrl: pngFile.download_url,
-                        topics: repo.topics || []
+                        pngUrl: pngFile.download_url
                     };
                     allScripts.push(scriptData);
                 } else {
@@ -71,13 +69,9 @@ async function loadScripts() {
 function renderGrid() {
     grid.innerHTML = '';
     const searchTerm = searchInput.value.toLowerCase();
-    const category = categoryFilter.value;
 
     const filteredScripts = allScripts.filter(script => {
-        const matchesSearch = script.name.toLowerCase().includes(searchTerm) ||
-            (script.txtUrl && fetch(script.txtUrl).then(res => res.text()).then(txt => txt.toLowerCase().includes(searchTerm)));
-        const matchesCategory = !category || script.topics.includes(category);
-        return matchesSearch && matchesCategory;
+        return script.name.toLowerCase().includes(searchTerm);
     });
 
     filteredScripts.forEach(script => {
@@ -138,8 +132,10 @@ async function copyZip(pyText, txtText, name) {
     navigator.clipboard.writeText(url).then(() => alert('Copied to clipboard! Paste into Beb Tools.'));
 }
 
-document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
-document.querySelector('.load-more').addEventListener('click', loadScripts);
-searchInput.addEventListener('input', renderGrid);
-categoryFilter.addEventListener('change', renderGrid);
-loadScripts();
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
+    document.querySelector('.load-more').addEventListener('click', loadScripts);
+    searchInput.addEventListener('input', renderGrid);
+    loadScripts();
+});
