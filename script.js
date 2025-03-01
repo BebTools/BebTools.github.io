@@ -8,40 +8,47 @@ const popupText = document.querySelector('.popup-text');
 let page = 1;
 
 async function loadScripts() {
-    const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`);
-    const data = await response.json();
-    const repos = data.items;
+    console.log(`Loading page ${page}...`);
+    try {
+        const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log(`Found ${data.items.length} repos on page ${page}`);
+        const repos = data.items;
 
-    for (const repo of repos) {
-        const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
-        const files = await contents.json();
-        const scriptFolder = files.find(f => f.type === 'dir');
-        if (scriptFolder) {
-            const folderContents = await fetch(scriptFolder.url);
-            const folderFiles = await folderContents.json();
-            const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
-            const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
-            const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
-            if (pyFile && pngFile) {
-                const box = document.createElement('div');
-                box.className = 'grid-box';
-                box.innerHTML = `
-                    <img src="${pngFile.download_url}" alt="${scriptFolder.name}">
-                    <div class="name">${scriptFolder.name}</div>
-                    <div class="author">${repo.owner.login}</div>
-                    <div class="stars">⭐ ${repo.stargazers_count}</div>
-                `;
-                box.dataset.pyUrl = pyFile.download_url;
-                box.dataset.txtUrl = txtFile ? txtFile.download_url : '';
-                box.dataset.name = scriptFolder.name;
-                box.dataset.author = repo.owner.login;
-                box.dataset.stars = repo.stargazers_count;
-                box.addEventListener('click', showPopup);
-                grid.appendChild(box);
+        for (const repo of repos) {
+            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
+            const files = await contents.json();
+            const scriptFolder = files.find(f => f.type === 'dir');
+            if (scriptFolder) {
+                const folderContents = await fetch(scriptFolder.url);
+                const folderFiles = await folderContents.json();
+                const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
+                const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
+                const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
+                if (pyFile && pngFile) {
+                    const box = document.createElement('div');
+                    box.className = 'grid-box';
+                    box.innerHTML = `
+                        <img src="${pngFile.download_url}" alt="${scriptFolder.name}">
+                        <div class="name">${scriptFolder.name}</div>
+                        <div class="author">${repo.owner.login}</div>
+                        <div class="stars">⭐ ${repo.stargazers_count}</div>
+                    `;
+                    box.dataset.pyUrl = pyFile.download_url;
+                    box.dataset.txtUrl = txtFile ? txtFile.download_url : '';
+                    box.dataset.name = scriptFolder.name;
+                    box.dataset.author = repo.owner.login;
+                    box.dataset.stars = repo.stargazers_count;
+                    box.addEventListener('click', showPopup);
+                    grid.appendChild(box);
+                }
             }
         }
+        page++;
+    } catch (error) {
+        console.error('Error loading scripts:', error);
     }
-    page++;
 }
 
 async function showPopup(event) {
