@@ -18,21 +18,26 @@ async function loadScripts() {
 
         if (repos.length === 0) {
             console.log('No more scripts to load.');
-            document.querySelector('.load-more').style.display = 'none'; // Hide button if done
+            document.querySelector('.load-more').style.display = 'none';
             return;
         }
 
         for (const repo of repos) {
+            console.log(`Checking repo: ${repo.full_name}`);
             const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
             const files = await contents.json();
+            console.log(`Root files/folders: ${files.map(f => f.name).join(', ')}`);
             const scriptFolder = files.find(f => f.type === 'dir');
             if (scriptFolder) {
+                console.log(`Found folder: ${scriptFolder.name}`);
                 const folderContents = await fetch(scriptFolder.url);
                 const folderFiles = await folderContents.json();
+                console.log(`Folder contents: ${folderFiles.map(f => f.name).join(', ')}`);
                 const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
                 const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
                 const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
                 if (pyFile && pngFile) {
+                    console.log(`Rendering box for ${scriptFolder.name}`);
                     const box = document.createElement('div');
                     box.className = 'grid-box';
                     box.innerHTML = `
@@ -48,7 +53,11 @@ async function loadScripts() {
                     box.dataset.stars = repo.stargazers_count;
                     box.addEventListener('click', showPopup);
                     grid.appendChild(box);
+                } else {
+                    console.log(`No .py or .png in ${scriptFolder.name}`);
                 }
+            } else {
+                console.log(`No folders found in ${repo.full_name}`);
             }
         }
         page++;
