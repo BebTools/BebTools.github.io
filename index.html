@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Beb Tools Scripts</title>
-    <link rel="stylesheet" href="styles.css"> <!-- We’ll add this next -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <!-- JSZip for zipping files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
     <header>
@@ -22,20 +28,20 @@
     </main>
     <div class="popup" style="display: none;">
         <div class="popup-left">
-            <pre class="code"></pre> <!-- apple.py goes here -->
+            <pre class="language-python"><code class="language-python"></code></pre>
         </div>
         <div class="popup-right">
             <div class="popup-header">
-                <h2 class="script-name"></h2> <!-- Apple -->
-                <p class="author"></p> <!-- Jane -->
+                <h2 class="script-name"></h2>
+                <p class="author"></p>
                 <span class="stars">⭐ 0</span>
                 <button class="download-btn">Download</button>
                 <button class="copy-btn">Copy to Clipboard</button>
                 <button class="close-btn">X</button>
             </div>
-            <div class="popup-text"></div> <!-- apple.txt -->
+            <div class="popup-text"></div>
         </div>
     </div>
-    <script src="script.js"></script> <!-- We’ll add this later -->
+    <script src="script.js"></script>
 </body>
 </html>

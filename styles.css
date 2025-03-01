@@ -4,6 +4,7 @@ body {
     color: #D3D3D3; /* Light gray text */
     font-family: Arial, sans-serif;
 }
+
 header {
     position: fixed;
     top: 0;
@@ -14,7 +15,12 @@ header {
     justify-content: space-between;
     align-items: center;
 }
-.logo { font-size: 24px; font-weight: bold; }
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
 .search-bar {
     background: #3A4445;
     border: none;
@@ -22,6 +28,7 @@ header {
     color: #D3D3D3;
     width: 300px;
 }
+
 .nav button, .nav a {
     background: #3A4445;
     border: none;
@@ -30,22 +37,45 @@ header {
     margin-left: 10px;
     text-decoration: none;
 }
-main { margin-top: 70px; padding: 20px; }
+
+main {
+    margin-top: 70px;
+    padding: 20px;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
+
 .grid-box {
     background: #3A4445; /* Box color */
     padding: 10px;
     text-align: center;
     border-radius: 5px;
 }
-.grid-box img { width: 200px; height: 200px; object-fit: cover; }
-.grid-box .name { font-weight: bold; margin: 5px 0; }
-.grid-box .author { font-size: 14px; color: #A0A0A0; }
-.grid-box .stars { font-size: 14px; }
+
+.grid-box img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.grid-box .name {
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.grid-box .author {
+    font-size: 14px;
+    color: #A0A0A0;
+}
+
+.grid-box .stars {
+    font-size: 14px;
+}
+
 .load-more {
     display: block;
     margin: 20px auto;
@@ -55,6 +85,7 @@ main { margin-top: 70px; padding: 20px; }
     color: #D3D3D3;
     cursor: pointer;
 }
+
 .popup {
     position: fixed;
     top: 0;
@@ -64,14 +95,68 @@ main { margin-top: 70px; padding: 20px; }
     background: rgba(0, 0, 0, 0.8);
     display: flex;
 }
-.popup-left, .popup-right { width: 50%; padding: 20px; }
-.popup-left .code { background: #2C3436; padding: 10px; height: 90%; overflow: auto; }
+
+.popup-left, .popup-right {
+    width: 50%;
+    padding: 20px;
+}
+
+.popup-left .language-python {
+    background: #2C3436;
+    padding: 10px;
+    height: 90%;
+    overflow: auto;
+    margin: 0;
+}
+
 .popup-header {
+    height: 30%;
     background: #2C3436;
     padding: 10px;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
 }
-.popup-text { background: #2C3436; padding: 10px; height: 60%; overflow: auto; }
-.close-btn { background: none; border: none; color: #D3D3D3; font-size: 20px; cursor: pointer; }
+
+.popup-text {
+    height: 70%;
+    background: #2C3436;
+    padding: 10px;
+    overflow: auto;
+}
+
+.script-name {
+    font-size: 24px;
+    margin: 0;
+}
+
+.author {
+    margin: 5px 0;
+}
+
+.download-btn {
+    background: #4A5556;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    color: #D3D3D3;
+    cursor: pointer;
+}
+
+.copy-btn {
+    background: #4A5556;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border: none;
+    color: #D3D3D3;
+    cursor: pointer;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #D3D3D3;
+    font-size: 20px;
+    cursor: pointer;
+}
