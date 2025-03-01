@@ -2,7 +2,7 @@ body {
     margin: 0;
     background: #17141F; /* CodePen dark */
     color: #FFFFFF; /* White text */
-    font-family: Arial, sans-serif;
+    font-family: 'Bungee', cursive; /* Bungee everywhere */
 }
 
 header {
@@ -14,29 +14,29 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); /* Subtle shadow */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     z-index: 10;
 }
 
 .logo {
-    font-family: 'Bungee', cursive;
     font-size: 24px;
     color: #FFFFFF;
 }
 
 .search-bar {
-    background: #252831; /* Dark gray */
+    background: #252831;
     border: 1px solid #424250;
-    border-radius: 4px; /* Boxy, beveled */
+    border-radius: 4px;
     padding: 8px 12px;
     color: #FFFFFF;
-    flex-grow: 1; /* Fills space */
-    margin: 0 20px; /* Space from logo/nav */
+    flex-grow: 1;
+    margin: 0 20px;
     transition: border-color 0.3s ease;
+    font-family: 'Bungee', cursive;
 }
 
 .search-bar:focus {
-    border-color: #A5A5CC; /* Light gray highlight */
+    border-color: #A5A5CC;
     outline: none;
 }
 
@@ -46,13 +46,14 @@ header {
     padding: 8px 16px;
     color: #FFFFFF;
     margin-left: 10px;
-    border-radius: 4px; /* Boxy */
+    border-radius: 4px;
     text-decoration: none;
     transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
 }
 
 .nav button:hover, .nav a:hover {
-    background: #424250; /* Mid-gray hover */
+    background: #424250;
 }
 
 main {
@@ -62,7 +63,7 @@ main {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Tighter */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
 }
 
@@ -70,25 +71,24 @@ main {
     background: #252831;
     padding: 10px;
     text-align: center;
-    border-radius: 4px; /* Boxy */
+    border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .grid-box:hover {
-    transform: translateY(-5px); /* Lift, not scale */
+    transform: translateY(-5px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
 }
 
 .grid-box img {
     width: 100%;
-    height: 160px; /* Slimmer */
+    height: 160px;
     object-fit: cover;
     border-radius: 4px;
 }
 
 .grid-box .name {
-    font-family: 'Bungee', cursive;
     font-size: 14px;
     margin: 6px 0 2px;
     color: #FFFFFF;
@@ -96,7 +96,7 @@ main {
 
 .grid-box .author {
     font-size: 12px;
-    color: #A5A5CC; /* Light gray */
+    color: #A5A5CC;
 }
 
 .grid-box .stars {
@@ -111,9 +111,10 @@ main {
     border: none;
     padding: 10px 20px;
     color: #FFFFFF;
-    border-radius: 4px; /* Boxy */
+    border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
 }
 
 .load-more:hover {
@@ -122,12 +123,12 @@ main {
 
 .popup {
     position: fixed;
-    top: 10%; /* 80% height */
-    left: 10%; /* 80% width */
+    top: 10%;
+    left: 10%;
     width: 80%;
     height: 80%;
     background: #17141F;
-    border-radius: 8px; /* Slightly beveled */
+    border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     display: flex;
     z-index: 1000;
@@ -145,8 +146,8 @@ main {
     overflow-y: auto;
     margin: 0;
     border-radius: 4px;
-    scrollbar-width: thin; /* Custom scrollbar */
-    scrollbar-color: #424250 #252831; /* Thumb, track */
+    scrollbar-width: thin;
+    scrollbar-color: #424250 #252831;
 }
 
 .popup-left .language-python::-webkit-scrollbar {
@@ -166,45 +167,58 @@ main {
     background: #252831;
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
-    text-align: center; /* Cleaner layout */
+    text-align: left; /* Align title left */
+    position: relative; /* For X positioning */
 }
 
 .popup-header .script-name {
-    font-family: 'Bungee', cursive;
     font-size: 24px;
-    margin: 0 0 5px;
+    margin: 0 0 10px;
     color: #FFFFFF;
+    white-space: nowrap; /* Single line */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Truncate if too long */
+}
+
+.popup-header img {
+    width: 100%;
+    height: 120px; /* Fixed height banner */
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
 .popup-header .author {
     font-size: 14px;
     color: #A5A5CC;
-    margin: 0 0 10px;
-}
-
-.popup-header img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin: 10px 0;
+    display: inline;
+    margin-right: 10px;
 }
 
 .popup-header .stars {
     font-size: 14px;
     color: #FFFFFF;
-    margin-bottom: 10px;
+    display: inline;
+    margin-right: 10px;
 }
 
 .popup-header .download-btn {
     background: #424250;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 8px 16px;
+    font-size: 14px;
     border: none;
     color: #FFFFFF;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.popup-header .download-btn::before {
+    content: '↓'; /* Download icon */
+    margin-right: 5px;
 }
 
 .popup-header .download-btn:hover {
@@ -213,13 +227,18 @@ main {
 
 .popup-header .copy-btn {
     background: #424250;
-    padding: 8px 15px;
-    margin-left: 10px;
+    padding: 8px;
     border: none;
     color: #FFFFFF;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.popup-header .copy-btn::before {
+    content: '📋'; /* Clipboard icon */
 }
 
 .popup-header .copy-btn:hover {
@@ -228,8 +247,8 @@ main {
 
 .popup-header .close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 20px;
     background: none;
     border: none;
     color: #FFFFFF;
@@ -242,26 +261,26 @@ main {
     color: #A5A5CC;
 }
 
-.popup-text {
-    height: calc(100% - 30px); /* Full height minus padding */
+.scrollbox {
     background: #252831;
     padding: 15px;
+    height: calc(100% - 230px); /* Adjust for header height */
     overflow-y: auto;
     border-radius: 4px;
-    white-space: pre-wrap; /* Respect newlines/spacing */
+    white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
 }
 
-.popup-text::-webkit-scrollbar {
+.scrollbox::-webkit-scrollbar {
     width: 8px;
 }
 
-.popup-text::-webkit-scrollbar-thumb {
+.scrollbox::-webkit-scrollbar-thumb {
     background: #424250;
     border-radius: 4px;
 }
 
-.popup-text::-webkit-scrollbar-track {
+.scrollbox::-webkit-scrollbar-track {
     background: #252831;
 }
