@@ -85,6 +85,7 @@ function renderGrid() {
         `;
         box.dataset.pyUrl = script.pyUrl;
         box.dataset.txtUrl = script.txtUrl;
+        box.dataset.pngUrl = script.pngUrl;
         box.dataset.name = script.name;
         box.dataset.author = script.author;
         box.dataset.stars = script.stars;
@@ -105,6 +106,15 @@ async function showPopup(event) {
     Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
     popupText.textContent = txtText;
+
+    // Add PNG to header
+    const header = document.querySelector('.popup-header');
+    let img = header.querySelector('img');
+    if (!img) {
+        img = document.createElement('img');
+        header.insertBefore(img, document.querySelector('.download-btn'));
+    }
+    img.src = box.dataset.pngUrl;
 
     document.querySelector('.download-btn').onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     document.querySelector('.copy-btn').onclick = () => copyZip(pyText, txtText, box.dataset.name);
@@ -132,7 +142,6 @@ async function copyZip(pyText, txtText, name) {
     navigator.clipboard.writeText(url).then(() => alert('Copied to clipboard! Paste into Beb Tools.'));
 }
 
-// Wait for DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
