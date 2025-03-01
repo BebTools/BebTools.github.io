@@ -11,7 +11,7 @@ let allScripts = [];
 let page = 1;
 let loading = false;
 
-async function fetchAllScripts() {
+async function loadScripts() {
     if (loading) return;
     loading = true;
     console.log(`Loading page ${page}...`);
@@ -33,8 +33,8 @@ async function fetchAllScripts() {
             const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
             const files = await contents.json();
             console.log(`Root files/folders: ${files.map(f => f.name).join(', ')}`);
-            const scriptFolder = files.find(f => f.type === 'dir');
-            if (scriptFolder) {
+            const scriptFolders = files.filter(f => f.type === 'dir'); // Get ALL folders
+            for (const scriptFolder of scriptFolders) {
                 console.log(`Found folder: ${scriptFolder.name}`);
                 const folderContents = await fetch(scriptFolder.url);
                 const folderFiles = await folderContents.json();
@@ -43,6 +43,7 @@ async function fetchAllScripts() {
                 const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
                 const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
                 if (pyFile && pngFile) {
+                    console.log(`Rendering box for ${scriptFolder.name}`);
                     const scriptData = {
                         name: scriptFolder.name,
                         author: repo.owner.login,
@@ -53,6 +54,8 @@ async function fetchAllScripts() {
                         topics: repo.topics || []
                     };
                     allScripts.push(scriptData);
+                } else {
+                    console.log(`No .py or .png in ${scriptFolder.name}`);
                 }
             }
         }
@@ -136,7 +139,7 @@ async function copyZip(pyText, txtText, name) {
 }
 
 document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
-document.querySelector('.load-more').addEventListener('click', fetchAllScripts);
+document.querySelector('.load-more').addEventListener('click', loadScripts);
 searchInput.addEventListener('input', renderGrid);
 categoryFilter.addEventListener('change', renderGrid);
-fetchAllScripts();
+loadScripts();
