@@ -160,3 +160,14 @@ main {
     font-size: 20px;
     cursor: pointer;
 }
+.search-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#category-filter {
+    background: #3A4445;
+    border: none;
+    padding: 8px;
+    color: #D3D3D3;
+}

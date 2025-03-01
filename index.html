@@ -16,7 +16,16 @@
 <body>
     <header>
         <div class="logo">Beb Tools Scripts</div>
-        <input type="text" placeholder="Search scripts..." class="search-bar">
+        <div class="search-filter">
+            <input type="text" placeholder="Search scripts..." class="search-bar" id="search-input">
+            <select id="category-filter">
+                <option value="">All Categories</option>
+                <option value="modeling">Modeling</option>
+                <option value="animation">Animation</option>
+                <option value="rigging">Rigging</option>
+                <option value="rendering">Rendering</option>
+            </select>
+        </div>
         <div class="nav">
             <button id="login-btn">Login with GitHub</button>
             <a href="portal.html">Creator Portal</a>

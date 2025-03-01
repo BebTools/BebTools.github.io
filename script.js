@@ -5,9 +5,15 @@ const scriptName = document.querySelector('.script-name');
 const author = document.querySelector('.author');
 const stars = document.querySelector('.stars');
 const popupText = document.querySelector('.popup-text');
+const searchInput = document.getElementById('search-input');
+const categoryFilter = document.getElementById('category-filter');
+let allScripts = [];
 let page = 1;
+let loading = false;
 
-async function loadScripts() {
+async function fetchAllScripts() {
+    if (loading) return;
+    loading = true;
     console.log(`Loading page ${page}...`);
     try {
         const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`);
@@ -37,33 +43,57 @@ async function loadScripts() {
                 const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
                 const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
                 if (pyFile && pngFile) {
-                    console.log(`Rendering box for ${scriptFolder.name}`);
-                    const box = document.createElement('div');
-                    box.className = 'grid-box';
-                    box.innerHTML = `
-                        <img src="${pngFile.download_url}" alt="${scriptFolder.name}">
-                        <div class="name">${scriptFolder.name}</div>
-                        <div class="author">${repo.owner.login}</div>
-                        <div class="stars">⭐ ${repo.stargazers_count}</div>
-                    `;
-                    box.dataset.pyUrl = pyFile.download_url;
-                    box.dataset.txtUrl = txtFile ? txtFile.download_url : '';
-                    box.dataset.name = scriptFolder.name;
-                    box.dataset.author = repo.owner.login;
-                    box.dataset.stars = repo.stargazers_count;
-                    box.addEventListener('click', showPopup);
-                    grid.appendChild(box);
-                } else {
-                    console.log(`No .py or .png in ${scriptFolder.name}`);
+                    const scriptData = {
+                        name: scriptFolder.name,
+                        author: repo.owner.login,
+                        stars: repo.stargazers_count,
+                        pyUrl: pyFile.download_url,
+                        txtUrl: txtFile ? txtFile.download_url : '',
+                        pngUrl: pngFile.download_url,
+                        topics: repo.topics || []
+                    };
+                    allScripts.push(scriptData);
                 }
-            } else {
-                console.log(`No folders found in ${repo.full_name}`);
             }
         }
         page++;
+        renderGrid();
     } catch (error) {
         console.error('Error loading scripts:', error);
+    } finally {
+        loading = false;
     }
+}
+
+function renderGrid() {
+    grid.innerHTML = '';
+    const searchTerm = searchInput.value.toLowerCase();
+    const category = categoryFilter.value;
+
+    const filteredScripts = allScripts.filter(script => {
+        const matchesSearch = script.name.toLowerCase().includes(searchTerm) ||
+            (script.txtUrl && fetch(script.txtUrl).then(res => res.text()).then(txt => txt.toLowerCase().includes(searchTerm)));
+        const matchesCategory = !category || script.topics.includes(category);
+        return matchesSearch && matchesCategory;
+    });
+
+    filteredScripts.forEach(script => {
+        const box = document.createElement('div');
+        box.className = 'grid-box';
+        box.innerHTML = `
+            <img src="${script.pngUrl}" alt="${script.name}">
+            <div class="name">${script.name}</div>
+            <div class="author">${script.author}</div>
+            <div class="stars">⭐ ${script.stars}</div>
+        `;
+        box.dataset.pyUrl = script.pyUrl;
+        box.dataset.txtUrl = script.txtUrl;
+        box.dataset.name = script.name;
+        box.dataset.author = script.author;
+        box.dataset.stars = script.stars;
+        box.addEventListener('click', showPopup);
+        grid.appendChild(box);
+    });
 }
 
 async function showPopup(event) {
@@ -106,5 +136,7 @@ async function copyZip(pyText, txtText, name) {
 }
 
 document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
-document.querySelector('.load-more').addEventListener('click', loadScripts);
-loadScripts();
+document.querySelector('.load-more').addEventListener('click', fetchAllScripts);
+searchInput.addEventListener('input', renderGrid);
+categoryFilter.addEventListener('change', renderGrid);
+fetchAllScripts();
