@@ -1,173 +1,138 @@
-body {
-    margin: 0;
-    background: #1F2526; /* Dark gray */
-    color: #D3D3D3; /* Light gray text */
-    font-family: Arial, sans-serif;
+const grid = document.querySelector('.grid');
+const popup = document.querySelector('.popup');
+const code = document.querySelector('.language-python');
+const scriptName = document.querySelector('.script-name');
+const author = document.querySelector('.author');
+const stars = document.querySelector('.stars');
+const popupText = document.querySelector('.popup-text');
+const searchInput = document.getElementById('search-input');
+let allScripts = [];
+let page = 1;
+let loading = false;
+
+async function loadScripts() {
+    if (loading) return;
+    loading = true;
+    console.log(`Loading page ${page}...`);
+    try {
+        const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        console.log(`Found ${data.items.length} repos on page ${page}`);
+        const repos = data.items;
+
+        if (repos.length === 0) {
+            console.log('No more scripts to load.');
+            document.querySelector('.load-more').style.display = 'none';
+            return;
+        }
+
+        for (const repo of repos) {
+            console.log(`Checking repo: ${repo.full_name}`);
+            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
+            const files = await contents.json();
+            console.log(`Root files/folders: ${files.map(f => f.name).join(', ')}`);
+            const scriptFolders = files.filter(f => f.type === 'dir');
+            for (const scriptFolder of scriptFolders) {
+                console.log(`Found folder: ${scriptFolder.name}`);
+                const folderContents = await fetch(scriptFolder.url);
+                const folderFiles = await folderContents.json();
+                console.log(`Folder contents: ${folderFiles.map(f => f.name).join(', ')}`);
+                const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
+                const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
+                const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
+                if (pyFile && pngFile) {
+                    console.log(`Rendering box for ${scriptFolder.name}`);
+                    const scriptData = {
+                        name: scriptFolder.name,
+                        author: repo.owner.login,
+                        stars: repo.stargazers_count,
+                        pyUrl: pyFile.download_url,
+                        txtUrl: txtFile ? txtFile.download_url : '',
+                        pngUrl: pngFile.download_url
+                    };
+                    allScripts.push(scriptData);
+                } else {
+                    console.log(`No .py or .png in ${scriptFolder.name}`);
+                }
+            }
+        }
+        page++;
+        renderGrid();
+    } catch (error) {
+        console.error('Error loading scripts:', error);
+    } finally {
+        loading = false;
+    }
 }
 
-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background: #2C3436; /* Slightly lighter dark */
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+function renderGrid() {
+    grid.innerHTML = '';
+    const searchTerm = searchInput.value.toLowerCase();
+
+    const filteredScripts = allScripts.filter(script => {
+        return script.name.toLowerCase().includes(searchTerm);
+    });
+
+    filteredScripts.forEach(script => {
+        const box = document.createElement('div');
+        box.className = 'grid-box';
+        box.innerHTML = `
+            <img src="${script.pngUrl}" alt="${script.name}">
+            <div class="name">${script.name}</div>
+            <div class="author">${script.author}</div>
+            <div class="stars">⭐ ${script.stars}</div>
+        `;
+        box.dataset.pyUrl = script.pyUrl;
+        box.dataset.txtUrl = script.txtUrl;
+        box.dataset.name = script.name;
+        box.dataset.author = script.author;
+        box.dataset.stars = script.stars;
+        box.addEventListener('click', showPopup);
+        grid.appendChild(box);
+    });
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: bold;
+async function showPopup(event) {
+    const box = event.currentTarget;
+    popup.style.display = 'flex';
+    scriptName.textContent = box.dataset.name;
+    author.textContent = box.dataset.author;
+    stars.textContent = `⭐ ${box.dataset.stars}`;
+
+    const pyText = await (await fetch(box.dataset.pyUrl)).text();
+    code.innerHTML = pyText;
+    Prism.highlightElement(code);
+    const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
+    popupText.textContent = txtText;
+
+    document.querySelector('.download-btn').onclick = () => downloadZip(pyText, txtText, box.dataset.name);
+    document.querySelector('.copy-btn').onclick = () => copyZip(pyText, txtText, box.dataset.name);
 }
 
-.search-bar {
-    background: #3A4445;
-    border: none;
-    padding: 8px;
-    color: #D3D3D3;
-    width: 300px;
+async function downloadZip(pyText, txtText, name) {
+    const zip = new JSZip();
+    zip.file(`${name}.py`, pyText);
+    zip.file(`${name}.txt`, txtText);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${name}-script.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
-.nav button, .nav a {
-    background: #3A4445;
-    border: none;
-    padding: 8px 16px;
-    color: #D3D3D3;
-    margin-left: 10px;
-    text-decoration: none;
+async function copyZip(pyText, txtText, name) {
+    const zip = new JSZip();
+    zip.file(`${name}.py`, pyText);
+    zip.file(`${name}.txt`, txtText);
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    navigator.clipboard.writeText(url).then(() => alert('Copied to clipboard! Paste into Beb Tools.'));
 }
 
-main {
-    margin-top: 70px;
-    padding: 20px;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-.grid-box {
-    background: #3A4445; /* Box color */
-    padding: 10px;
-    text-align: center;
-    border-radius: 5px;
-}
-
-.grid-box img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
-}
-
-.grid-box .name {
-    font-weight: bold;
-    margin: 5px 0;
-}
-
-.grid-box .author {
-    font-size: 14px;
-    color: #A0A0A0;
-}
-
-.grid-box .stars {
-    font-size: 14px;
-}
-
-.load-more {
-    display: block;
-    margin: 20px auto;
-    background: #3A4445;
-    border: none;
-    padding: 10px 20px;
-    color: #D3D3D3;
-    cursor: pointer;
-}
-
-.popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-}
-
-.popup-left, .popup-right {
-    width: 50%;
-    padding: 20px;
-}
-
-.popup-left .language-python {
-    background: #2C3436;
-    padding: 10px;
-    height: 90%;
-    overflow: auto;
-    margin: 0;
-}
-
-.popup-header {
-    height: 30%;
-    background: #2C3436;
-    padding: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.popup-text {
-    height: 70%;
-    background: #2C3436;
-    padding: 10px;
-    overflow: auto;
-}
-
-.script-name {
-    font-size: 24px;
-    margin: 0;
-}
-
-.author {
-    margin: 5px 0;
-}
-
-.download-btn {
-    background: #4A5556;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    color: #D3D3D3;
-    cursor: pointer;
-}
-
-.copy-btn {
-    background: #4A5556;
-    padding: 5px 10px;
-    margin-left: 10px;
-    border: none;
-    color: #D3D3D3;
-    cursor: pointer;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: #D3D3D3;
-    font-size: 20px;
-    cursor: pointer;
-}
-.search-filter {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-#category-filter {
-    background: #3A4445;
-    border: none;
-    padding: 8px;
-    color: #D3D3D3;
-}
+document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
+document.querySelector('.load-more').addEventListener('click', loadScripts);
+searchInput.addEventListener('input', renderGrid);
+loadScripts();
