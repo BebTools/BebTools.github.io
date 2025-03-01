@@ -16,6 +16,12 @@ async function loadScripts() {
         console.log(`Found ${data.items.length} repos on page ${page}`);
         const repos = data.items;
 
+        if (repos.length === 0) {
+            console.log('No more scripts to load.');
+            document.querySelector('.load-more').style.display = 'none'; // Hide button if done
+            return;
+        }
+
         for (const repo of repos) {
             const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
             const files = await contents.json();
