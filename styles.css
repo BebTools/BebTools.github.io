@@ -282,7 +282,7 @@ main {
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(100vh - 230px);
+    max-height: calc(70vh - 230px);
 }
 
 .scrollbox::-webkit-scrollbar {
