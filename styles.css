@@ -23,6 +23,12 @@ header {
 .logo {
     font-size: 24px;
     color: #FFFFFF;
+    text-decoration: none; /* No underline */
+    transition: color 0.3s ease;
+}
+
+.logo:hover {
+    color: #A5A5CC; /* Light gray hover */
 }
 
 .search-bar {
@@ -367,4 +373,25 @@ main {
     font-size: 14px;
     color: #A5A5CC;
     text-align: center;
+}
+
+#login-btn.profile {
+    display: flex;
+    align-items: center;
+    background: #252831;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: default; /* Not clickable after login */
+}
+
+#login-btn.profile img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+#login-btn.profile span {
+    color: #FFFFFF;
 }
