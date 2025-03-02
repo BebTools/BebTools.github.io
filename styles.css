@@ -125,13 +125,13 @@ main {
 
 .popup {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 10%; /* Back to 80% */
+    left: 10%;
+    width: 80%;
+    height: 80%;
     background: #17141F;
-    border-radius: 0;
-    box-shadow: none;
+    border-radius: 8px; /* Restore radius */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); /* Restore shadow */
     display: flex;
     z-index: 1000;
 }
@@ -184,7 +184,7 @@ main {
 }
 
 .popup-header .author {
-    font-size: 20px; /* Bigger, just under title */
+    font-size: 20px;
     color: #A5A5CC;
     display: inline;
     margin-right: 10px;
@@ -275,7 +275,7 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(70% - 30px); /* 70% of right box minus padding */
+    height: calc(70% - 30px); /* 70% of right box */
     width: calc(100% - 30px); /* Full width */
     overflow-y: auto;
     border-radius: 4px;
@@ -283,7 +283,7 @@ main {
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(100vh - 30px - 30vh); /* Cap at 70% of full height */
+    max-height: calc(80vh - 30px - 24vh); /* Cap at 70% of 80vh */
 }
 
 .scrollbox::-webkit-scrollbar {
