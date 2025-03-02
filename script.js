@@ -109,8 +109,19 @@ async function showPopup(event) {
     infoBar.className = 'info-bar';
     infoBar.appendChild(author);
     infoBar.appendChild(stars);
-    infoBar.appendChild(document.querySelector('.download-btn'));
-    infoBar.appendChild(document.querySelector('.copy-btn'));
+
+    // Create fresh download button
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'download-btn';
+    downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
+    infoBar.appendChild(downloadBtn);
+
+    // Create fresh copy button
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
+    infoBar.appendChild(copyBtn);
+
     header.appendChild(infoBar);
 
     // Banner next
@@ -136,9 +147,6 @@ async function showPopup(event) {
     Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
     popupText.textContent = txtText;
-
-    document.querySelector('.download-btn').onclick = () => downloadZip(pyText, txtText, box.dataset.name);
-    document.querySelector('.copy-btn').onclick = () => copyZip(pyText, txtText, box.dataset.name);
 }
 
 async function downloadZip(pyText, txtText, name) {
