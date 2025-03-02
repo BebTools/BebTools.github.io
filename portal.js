@@ -25,21 +25,25 @@ function checkToken() {
         const code = queryParams.get('code');
         console.log('Query:', query, 'Code:', code);
         if (code) {
-            uploadStatus.textContent = 'Login returned a code instead of a token. Please check OAuth app settings for implicit flow (response_type=token).';
-            console.warn('Falling back to code flow not implemented—requires server-side token exchange.');
+            uploadStatus.textContent = 'Login failed: Received code instead of token. Check OAuth app settings and try again.';
+            console.warn('Code flow detected—implicit flow (response_type=token) not working. Verify Client ID and OAuth app config.');
         }
     }
 }
 
+console.log('Portal.js loaded—checking token...'); // Debug load
 checkToken();
-document.addEventListener('DOMContentLoaded', checkToken);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded—rechecking token...'); // Debug DOM
+    checkToken();
+});
 
 loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // REPLACE WITH YOUR CLIENT ID
     const redirectUri = `${window.location.origin}/portal.html`;
     const scope = 'public_repo';
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token`;
-    console.log('Redirecting to:', authUrl); // Debug
+    console.log('Redirecting to:', authUrl);
     window.location.href = authUrl;
 });
 
