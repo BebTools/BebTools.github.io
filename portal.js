@@ -1,8 +1,7 @@
 console.log('portal.js loaded');
-console.log('TestGlobal available:', typeof TestGlobal !== 'undefined' ? TestGlobal : 'No');
-console.log('Supabase available:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
 
-const supabase = Supabase.createClient(
+// Initialize Supabase client using the CDN-loaded library
+const supabase = window.supabase.createClient(
     'https://uopqmdgsruqsamqowmsx.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvcHFtZGdzcnVxc2FtcW93bXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDg0NjQsImV4cCI6MjA1NjUyNDQ2NH0.2dHyZo0K-ORoD4AQmLVb-tI3I-ky_c2iGMCLIOiD1k4'
 );
@@ -18,6 +17,7 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
+// Check for existing session or handle OAuth redirect
 async function checkSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) {
@@ -29,10 +29,19 @@ async function checkSession() {
         const user = session.user;
         await updateLoginDisplay(user);
         await fetchRepos();
+    } else {
+        // Listen for OAuth redirect (e.g., after GitHub login)
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                token = session.provider_token;
+                updateLoginDisplay(session.user);
+                fetchRepos();
+            }
+        });
     }
 }
-checkSession();
 
+// Trigger login with GitHub
 loginBtn.addEventListener('click', async () => {
     try {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -46,6 +55,7 @@ loginBtn.addEventListener('click', async () => {
     }
 });
 
+// Update UI after login
 async function updateLoginDisplay(user) {
     loginBtn.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="${user.user_metadata.preferred_username}"><span>${user.user_metadata.preferred_username}</span>`;
     loginBtn.classList.add('profile');
@@ -55,6 +65,7 @@ async function updateLoginDisplay(user) {
     console.log('User logged in:', user.user_metadata.preferred_username);
 }
 
+// Fetch user's GitHub repositories
 async function fetchRepos() {
     try {
         const response = await fetch('https://api.github.com/user/repos', {
@@ -82,6 +93,7 @@ async function fetchRepos() {
     }
 }
 
+// Handle form submission for uploading scripts
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
@@ -112,6 +124,7 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Create a new GitHub repository
 async function createRepo(repoName) {
     const response = await fetch('https://api.github.com/user/repos', {
         method: 'POST',
@@ -121,10 +134,11 @@ async function createRepo(repoName) {
     if (!response.ok) throw new Error('Failed to create repo');
 }
 
+// Upload a file to GitHub
 async function uploadFile(username, repoName, path, file) {
     const reader = new FileReader();
     const content = await new Promise((resolve) => {
-        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onload = () => resolve(reader.result.split(',')[1]); // Base64 content
         reader.readAsDataURL(file);
     });
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${path}`, {
@@ -135,11 +149,19 @@ async function uploadFile(username, repoName, path, file) {
     if (!response.ok) throw new Error(`Failed to upload ${path}`);
 }
 
+// Update repository topics
 async function updateRepoTopics(username, repoName) {
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/topics`, {
         method: 'PUT',
-        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.mercy-preview+json' },
+        headers: { 
+            'Authorization': `token ${token}`, 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/vnd.github.mercy-preview+json' 
+        },
         body: JSON.stringify({ names: ['bebtools'] })
     });
     if (!response.ok) throw new Error('Failed to tag repo');
 }
+
+// Initialize session check on page load
+checkSession();
