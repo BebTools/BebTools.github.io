@@ -102,36 +102,34 @@ async function showPopup(event) {
     stars.textContent = `⭐ ${box.dataset.stars}`;
 
     const header = document.querySelector('.popup-header');
-    header.innerHTML = ''; // Clear header
-
-    // Info bar first
-    const infoBar = document.createElement('div');
-    infoBar.className = 'info-bar';
+    // Don’t clear header—update in place
+    let infoBar = header.querySelector('.info-bar');
+    if (!infoBar) {
+        infoBar = document.createElement('div');
+        infoBar.className = 'info-bar';
+        header.insertBefore(infoBar, header.firstChild); // Top of header
+    } else {
+        infoBar.innerHTML = ''; // Clear only info bar content
+    }
     infoBar.appendChild(author);
     infoBar.appendChild(stars);
 
     // Create fresh download button
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
-    downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     infoBar.appendChild(downloadBtn);
 
     // Create fresh copy button
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
-    copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
     infoBar.appendChild(copyBtn);
 
-    header.appendChild(infoBar);
-
-    // Banner next
-    const img = document.createElement('img');
+    let img = header.querySelector('img');
+    if (!img) {
+        img = document.createElement('img');
+        header.insertBefore(img, scriptName); // Before title
+    }
     img.src = box.dataset.pngUrl;
-    header.appendChild(img);
-
-    // Title last
-    header.appendChild(scriptName);
-    header.appendChild(document.querySelector('.close-btn'));
 
     // Auto-resize title font
     const maxWidth = scriptName.offsetWidth;
@@ -147,6 +145,9 @@ async function showPopup(event) {
     Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
     popupText.textContent = txtText;
+
+    downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
+    copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
 }
 
 async function downloadZip(pyText, txtText, name) {
