@@ -9,7 +9,13 @@
     <!-- JSZip for zipping files (if needed later) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <!-- Supabase SDK -->
+    <script>
+        console.log('Before Supabase SDK load');
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script>
+        console.log('Supabase SDK loaded:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
+    </script>
 </head>
 <body>
     <header>
@@ -42,10 +48,6 @@
             <div id="upload-status"></div>
         </div>
     </main>
-    <script>
-        // Debug log to confirm SDK load
-        console.log('Supabase SDK loaded:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
-    </script>
     <script src="portal.js"></script>
 </body>
 </html>

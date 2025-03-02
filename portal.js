@@ -1,3 +1,6 @@
+// Debug log to confirm script execution
+console.log('portal.js loaded');
+
 // Debug log to confirm Supabase availability before usage
 console.log('Supabase available:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
 
