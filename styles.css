@@ -171,7 +171,8 @@ main {
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
     position: relative;
-    height: auto;
+    height: 30%; /* Top 30% of right box */
+    box-sizing: border-box;
 }
 
 .popup-header .info-bar {
@@ -179,11 +180,11 @@ main {
     justify-content: flex-start;
     align-items: center;
     margin-bottom: 10px;
-    flex-wrap: nowrap; /* Keep single line */
+    flex-wrap: nowrap;
 }
 
 .popup-header .author {
-    font-size: 14px;
+    font-size: 20px; /* Bigger, just under title */
     color: #A5A5CC;
     display: inline;
     margin-right: 10px;
@@ -274,15 +275,15 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px);
-    width: calc(100% - 30px);
+    height: calc(70% - 30px); /* 70% of right box minus padding */
+    width: calc(100% - 30px); /* Full width */
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(70vh - 230px);
+    max-height: calc(100vh - 30px - 30vh); /* Cap at 70% of full height */
 }
 
 .scrollbox::-webkit-scrollbar {
