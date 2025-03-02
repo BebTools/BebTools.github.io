@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <!-- JSZip for zipping files (if needed later) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
     <header>
@@ -40,9 +42,8 @@
             <div id="upload-status"></div>
         </div>
     </main>
-    <!-- Supabase SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
     <script>
+        // Debug log to confirm SDK load
         console.log('Supabase SDK loaded:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
     </script>
     <script src="portal.js"></script>
