@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', checkToken);
 
 loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN';
-    const redirectUri = 'https://bebtools.github.io/portal.html'; // Update this!
+    const redirectUri = 'https://www.beb.tools/portal.html'; // Update this!
     const scope = 'public_repo';
     const state = Math.random().toString(36).substring(2);
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&state=${state}`;
