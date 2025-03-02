@@ -101,6 +101,27 @@ async function showPopup(event) {
     author.textContent = box.dataset.author;
     stars.textContent = `⭐ ${box.dataset.stars}`;
 
+    const header = document.querySelector('.popup-header');
+    header.innerHTML = ''; // Clear header
+
+    // Info bar first
+    const infoBar = document.createElement('div');
+    infoBar.className = 'info-bar';
+    infoBar.appendChild(author);
+    infoBar.appendChild(stars);
+    infoBar.appendChild(document.querySelector('.download-btn'));
+    infoBar.appendChild(document.querySelector('.copy-btn'));
+    header.appendChild(infoBar);
+
+    // Banner next
+    const img = document.createElement('img');
+    img.src = box.dataset.pngUrl;
+    header.appendChild(img);
+
+    // Title last
+    header.appendChild(scriptName);
+    header.appendChild(document.querySelector('.close-btn'));
+
     // Auto-resize title font
     const maxWidth = scriptName.offsetWidth;
     let fontSize = 24;
@@ -115,28 +136,6 @@ async function showPopup(event) {
     Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
     popupText.textContent = txtText;
-
-    const header = document.querySelector('.popup-header');
-    // Clear only dynamic content, keep static elements
-    let infoBar = header.querySelector('.info-bar');
-    if (!infoBar) {
-        infoBar = document.createElement('div');
-        infoBar.className = 'info-bar';
-        header.insertBefore(infoBar, header.querySelector('img')); // Before banner
-    } else {
-        infoBar.innerHTML = ''; // Clear previous
-    }
-    infoBar.appendChild(author);
-    infoBar.appendChild(stars);
-    infoBar.appendChild(document.querySelector('.download-btn'));
-    infoBar.appendChild(document.querySelector('.copy-btn'));
-
-    let img = header.querySelector('img');
-    if (!img) {
-        img = document.createElement('img');
-        header.insertBefore(img, scriptName); // Before title
-    }
-    img.src = box.dataset.pngUrl;
 
     document.querySelector('.download-btn').onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     document.querySelector('.copy-btn').onclick = () => copyZip(pyText, txtText, box.dataset.name);

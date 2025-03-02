@@ -125,13 +125,13 @@ main {
 
 .popup {
     position: fixed;
-    top: 0; /* Full screen */
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: #17141F;
-    border-radius: 0; /* No radius for full screen */
-    box-shadow: none; /* No shadow needed */
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
     z-index: 1000;
 }
@@ -179,6 +179,7 @@ main {
     justify-content: flex-start;
     align-items: center;
     margin-bottom: 10px;
+    flex-wrap: nowrap; /* Keep single line */
 }
 
 .popup-header .author {
@@ -273,15 +274,15 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px); /* Match .py */
-    width: calc(100% - 30px); /* Full width */
+    height: calc(100% - 230px);
+    width: calc(100% - 30px);
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(100vh - 230px); /* Cap at 100% viewport */
+    max-height: calc(100vh - 230px);
 }
 
 .scrollbox::-webkit-scrollbar {
