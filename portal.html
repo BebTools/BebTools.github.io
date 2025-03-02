@@ -8,7 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <!-- JSZip for zipping files (if needed later) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Local Supabase SDK with absolute path -->
+    <!-- Inline Test Script -->
+    <script>
+        console.log('Inline script before');
+        window.TestGlobal = 'Hello from inline';
+        console.log('Inline script executed:', window.TestGlobal);
+    </script>
+    <!-- Local Supabase SDK -->
     <script>
         console.log('Before Supabase SDK load');
     </script>

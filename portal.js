@@ -1,10 +1,6 @@
-// Debug log to confirm script execution
 console.log('portal.js loaded');
-
-// Debug log to confirm Supabase availability before usage
+console.log('TestGlobal available:', typeof TestGlobal !== 'undefined' ? TestGlobal : 'No');
 console.log('Supabase available:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
-
-// Initialize Supabase client
 const supabase = Supabase.createClient(
     'https://uopqmdgsruqsamqowmsx.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvcHFtZGdzcnVxc2FtcW93bXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDg0NjQsImV4cCI6MjA1NjUyNDQ2NH0.2dHyZo0K-ORoD4AQmLVb-tI3I-ky_c2iGMCLIOiD1k4'
