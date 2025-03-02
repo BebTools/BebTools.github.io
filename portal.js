@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 loginBtn.addEventListener('click', () => {
-    const clientId = 'YOUR_CLIENT_ID'; // REPLACE WITH YOUR CLIENT ID
+    const clientId = 'Ov23li9iYPQVwLbJEUEN'; // REPLACE WITH YOUR CLIENT ID
     const redirectUri = `${window.location.origin}/portal.html`;
     const scope = 'public_repo';
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
