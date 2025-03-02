@@ -1,3 +1,9 @@
+// Initialize Supabase client with your credentials
+const supabase = Supabase.createClient(
+    'https://uopqmdgsruqsamqowmsx.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvcHFtZGdzcnVxc2FtcW93bXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDg0NjQsImV4cCI6MjA1NjUyNDQ2NH0.2dHyZo0K-ORoD4AQmLVb-tI3I-ky_c2iGMCLIOiD1k4'
+);
+
 const loginBtn = document.getElementById('login-btn');
 const uploadForm = document.getElementById('upload-form');
 const repoSelect = document.getElementById('repo-select');
@@ -9,113 +15,47 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
-// Helper function to generate a random string for code verifier
-function generateRandomString(length) {
-    const array = new Uint8Array(length);
-    crypto.getRandomValues(array);
-    return Array.from(array, byte => ('0' + byte.toString(16)).slice(-2)).join('');
-}
-
-// Helper function to generate the code challenge from the verifier
-async function generateCodeChallenge(verifier) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode(...new Uint8Array(hash)))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-}
-
-function checkToken() {
-    const query = window.location.search.substring(1);
-    const params = new URLSearchParams(query);
-    const code = params.get('code');
-    console.log('Full URL:', window.location.href);
-    console.log('Query:', query, 'Code:', code);
-
-    if (code) {
-        exchangeCodeForToken(code).then(accessToken => {
-            token = accessToken;
-            updateLoginDisplay();
-            fetchRepos();
-            window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
-        }).catch(error => {
-            uploadStatus.textContent = `Login failed: ${error.message}`;
-            console.error('Token exchange error:', error);
-        });
-    } else {
-        console.log('No code found—user needs to log in.');
-        uploadStatus.textContent = '';
+// Check session on page load
+async function checkSession() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+        console.error('Session check error:', error);
+        return;
+    }
+    if (session) {
+        token = session.provider_token; // GitHub access token
+        const user = session.user;
+        await updateLoginDisplay(user);
+        await fetchRepos();
     }
 }
-
-console.log('Portal.js loaded—checking token...');
-checkToken();
-document.addEventListener('DOMContentLoaded', checkToken);
+checkSession();
 
 loginBtn.addEventListener('click', async () => {
-    const clientId = 'Ov23li9iYPQVwLbJEUEN';
-    const redirectUri = 'https://www.beb.tools/portal.html';
-    const scope = 'public_repo';
-    const state = Math.random().toString(36).substring(2);
-    const codeVerifier = generateRandomString(128);
-    localStorage.setItem('codeVerifier', codeVerifier); // Store verifier for exchange
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-    console.log('Redirecting to:', authUrl);
-    window.location.href = authUrl;
+    try {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'github',
+            options: { scopes: 'public_repo' }
+        });
+        if (error) throw error;
+        // Redirect handles login—token fetched on return
+    } catch (error) {
+        uploadStatus.textContent = `Login failed: ${error.message}`;
+        console.error('Login error:', error);
+    }
 });
 
-async function exchangeCodeForToken(code) {
-    const clientId = 'Ov23li9iYPQVwLbJEUEN';
-    const redirectUri = 'https://www.beb.tools/portal.html';
-    const codeVerifier = localStorage.getItem('codeVerifier');
-
-    const response = await fetch('https://github.com/login/oauth/access_token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            client_id: clientId,
-            code: code,
-            code_verifier: codeVerifier,
-            redirect_uri: redirectUri
-        })
-    });
-
-    if (!response.ok) throw new Error('Failed to exchange code for token');
-    const data = await response.json();
-    localStorage.removeItem('codeVerifier'); // Clean up
-    return data.access_token;
-}
-
-async function updateLoginDisplay() {
-    try {
-        console.log('Fetching user data with token:', token);
-        const response = await fetch('https://api.github.com/user', {
-            headers: { 'Authorization': `token ${token}` }
-        });
-        if (!response.ok) throw new Error('Failed to fetch user data');
-        const user = await response.json();
-        loginBtn.innerHTML = `<img src="${user.avatar_url}" alt="${user.login}"><span>${user.login}</span>`;
-        loginBtn.classList.add('profile');
-        loginBtn.disabled = true;
-        uploadForm.style.display = 'block';
-        loginMessage.style.display = 'none';
-        console.log('User logged in:', user.login);
-    } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
-        console.error('Update login error:', error);
-    }
+async function updateLoginDisplay(user) {
+    loginBtn.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="${user.user_metadata.preferred_username}"><span>${user.user_metadata.preferred_username}</span>`;
+    loginBtn.classList.add('profile');
+    loginBtn.disabled = true;
+    uploadForm.style.display = 'block';
+    loginMessage.style.display = 'none';
+    console.log('User logged in:', user.user_metadata.preferred_username);
 }
 
 async function fetchRepos() {
     try {
-        console.log('Fetching repos...');
         const response = await fetch('https://api.github.com/user/repos', {
             headers: { 'Authorization': `token ${token}` }
         });
@@ -144,7 +84,6 @@ async function fetchRepos() {
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
-
     const repoName = repoSelect.value === 'new' ? `bebtools-${Date.now()}` : repoSelect.value;
     const folderName = folderNameInput.value.trim();
     const pyFile = pyFileInput.files[0];
@@ -157,17 +96,13 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const username = (await (await fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${token}` } })).json()).login;
-        if (repoSelect.value === 'new') {
-            await createRepo(repoName);
-        }
-
+        const { data: { user } } = await supabase.auth.getUser();
+        const username = user.user_metadata.preferred_username;
+        if (repoSelect.value === 'new') await createRepo(repoName);
         await uploadFile(username, repoName, `${folderName}/${folderName}.py`, pyFile);
         if (txtFile) await uploadFile(username, repoName, `${folderName}/${folderName}.txt`, txtFile);
         await uploadFile(username, repoName, `${folderName}/${folderName}.png`, pngFile);
-
         await updateRepoTopics(username, repoName);
-
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
     } catch (error) {
@@ -179,10 +114,7 @@ uploadForm.addEventListener('submit', async (e) => {
 async function createRepo(repoName) {
     const response = await fetch('https://api.github.com/user/repos', {
         method: 'POST',
-        headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: repoName, private: false })
     });
     if (!response.ok) throw new Error('Failed to create repo');
@@ -196,14 +128,8 @@ async function uploadFile(username, repoName, path, file) {
     });
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${path}`, {
         method: 'PUT',
-        headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            message: `Add ${path}`,
-            content: content
-        })
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `Add ${path}`, content: content })
     });
     if (!response.ok) throw new Error(`Failed to upload ${path}`);
 }
@@ -211,11 +137,7 @@ async function uploadFile(username, repoName, path, file) {
 async function updateRepoTopics(username, repoName) {
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/topics`, {
         method: 'PUT',
-        headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.mercy-preview+json'
-        },
+        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.mercy-preview+json' },
         body: JSON.stringify({ names: ['bebtools'] })
     });
     if (!response.ok) throw new Error('Failed to tag repo');
