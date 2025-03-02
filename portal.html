@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <!-- JSZip for zipping files (if needed later) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Local Supabase SDK -->
+    <!-- Local Supabase SDK with absolute path -->
     <script>
         console.log('Before Supabase SDK load');
     </script>
-    <script src="supabase.min.js"></script>
+    <script src="/supabase.min.js"></script>
     <script>
         console.log('Supabase SDK loaded:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
     </script>
