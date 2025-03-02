@@ -7,6 +7,7 @@ const stars = document.querySelector('.stars');
 const popupText = document.querySelector('.popup-text');
 const searchInput = document.getElementById('search-input');
 const loginBtn = document.getElementById('login-btn');
+const loginStatus = document.getElementById('login-status');
 let allScripts = [];
 let page = 1;
 let loading = false;
@@ -31,21 +32,20 @@ async function loadScripts() {
         }
 
         for (const repo of repos) {
-            console.log(`Checking repo: ${repo.full_name}`);
-            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
+            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`, {
+                headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+            });
             const files = await contents.json();
-            console.log(`Root files/folders: ${files.map(f => f.name).join(', ')}`);
             const scriptFolders = files.filter(f => f.type === 'dir');
             for (const scriptFolder of scriptFolders) {
-                console.log(`Found folder: ${scriptFolder.name}`);
-                const folderContents = await fetch(scriptFolder.url);
-                const folderFiles = await contents.json();
-                console.log(`Folder contents: ${folderFiles.map(f => f.name).join(', ')}`);
+                const folderContents = await fetch(scriptFolder.url, {
+                    headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+                });
+                const folderFiles = await folderContents.json();
                 const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
                 const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
                 const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
                 if (pyFile && pngFile) {
-                    console.log(`Rendering box for ${scriptFolder.name}`);
                     const scriptData = {
                         name: scriptFolder.name,
                         author: repo.owner.login,
@@ -55,8 +55,6 @@ async function loadScripts() {
                         pngUrl: pngFile.download_url
                     };
                     allScripts.push(scriptData);
-                } else {
-                    console.log(`No .py or .png in ${scriptFolder.name}`);
                 }
             }
         }
@@ -72,11 +70,7 @@ async function loadScripts() {
 function renderGrid() {
     grid.innerHTML = '';
     const searchTerm = searchInput.value.toLowerCase();
-
-    const filteredScripts = allScripts.filter(script => {
-        return script.name.toLowerCase().includes(searchTerm);
-    });
-
+    const filteredScripts = allScripts.filter(script => script.name.toLowerCase().includes(searchTerm));
     filteredScripts.forEach(script => {
         const box = document.createElement('div');
         box.className = 'grid-box';
@@ -176,15 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
 
-    // Login button logic
     loginBtn.addEventListener('click', async () => {
         const error = await auth.loginWithGitHub();
         if (error) alert(`Login failed: ${error}`);
     });
 
-    // Check session and update UI
     auth.checkSession((user) => {
         auth.updateLoginDisplay(user, loginBtn);
+        loginStatus.textContent = `Logged in as ${user.user_metadata.preferred_username}`;
     });
 
     loadScripts();

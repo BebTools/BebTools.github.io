@@ -23,12 +23,12 @@ header {
 .logo {
     font-size: 24px;
     color: #FFFFFF;
-    text-decoration: none; /* No underline */
+    text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .logo:hover {
-    color: #A5A5CC; /* Light gray hover */
+    color: #A5A5CC;
 }
 
 .search-bar {
@@ -51,8 +51,8 @@ header {
 .nav {
     display: flex;
     align-items: center;
-    gap: 10px; /* Add spacing between items */
-    flex-wrap: nowrap; /* Prevent wrapping */
+    gap: 10px;
+    flex-wrap: nowrap;
 }
 
 .nav button, .nav a {
@@ -60,16 +60,22 @@ header {
     border: none;
     padding: 8px 16px;
     color: #FFFFFF;
-    margin-left: 0; /* Remove margin-left since gap handles spacing */
+    margin-left: 0;
     border-radius: 4px;
     text-decoration: none;
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap;
 }
 
 .nav button:hover, .nav a:hover {
     background: #424250;
+}
+
+.login-status {
+    font-size: 12px;
+    color: #A5A5CC;
+    margin-left: 10px;
 }
 
 main {
@@ -264,7 +270,7 @@ main {
     font-size: 24px;
     margin: 0;
     color: #FFFFFF;
-    display: inline-block; /* No width restriction */
+    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
 }
@@ -311,9 +317,10 @@ main {
 .scrollbox::-webkit-scrollbar-track {
     background: #252831;
 }
+
 .portal-container {
-    max-width: 600px;
-    margin: 80px auto 20px; /* Offset header */
+    max-width: 90vw;
+    margin: 80px auto 20px;
     padding: 20px;
     background: #252831;
     border-radius: 8px;
@@ -357,7 +364,7 @@ main {
 }
 
 #upload-form input[type="file"] {
-    padding: 5px; /* Less padding for file inputs */
+    padding: 5px;
 }
 
 #upload-form button {
@@ -391,8 +398,8 @@ main {
     border-radius: 4px;
     font-size: 14px;
     cursor: default;
-    min-width: 0; /* Allow shrinking if needed */
-    overflow: hidden; /* Handle overflow gracefully */
+    min-width: 0;
+    overflow: hidden;
 }
 
 #login-btn.profile img {
@@ -404,4 +411,71 @@ main {
 
 #login-btn.profile span {
     color: #FFFFFF;
+}
+
+.dropzone {
+    border: 2px dashed #424250;
+    padding: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.dropzone.dragover {
+    border-color: #A5A5CC;
+}
+
+.preview {
+    margin-top: 20px;
+    padding: 10px;
+    background: #17141F;
+    border-radius: 4px;
+}
+
+.preview pre {
+    margin: 0;
+    padding: 10px;
+    background: #252831;
+    border-radius: 4px;
+}
+
+#repo-management {
+    margin-top: 20px;
+}
+
+#repo-list {
+    list-style: none;
+    padding: 0;
+}
+
+#repo-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #252831;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.delete-btn {
+    background: #424250;
+    border: none;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
+}
+
+.delete-btn:hover {
+    background: #A5A5CC;
+}
+
+@media (max-width: 600px) {
+    .nav {
+        flex-wrap: wrap;
+    }
+    .portal-container {
+        padding: 10px;
+    }
 }
