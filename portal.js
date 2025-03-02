@@ -9,59 +9,33 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
-async function startDeviceFlow() {
+function checkToken() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    token = params.get('access_token');
+    console.log('Checking token - Hash:', hash, 'Token:', token);
+    if (token) {
+        updateLoginDisplay();
+        fetchRepos();
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        console.log('No token found—waiting for login redirect...');
+    }
+}
+
+checkToken();
+document.addEventListener('DOMContentLoaded', checkToken);
+
+loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // Your Client ID
-    const response = await fetch('https://github.com/login/device/code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ client_id: clientId, scope: 'public_repo' })
-    });
-    const data = await response.json();
-    console.log('Device Flow started:', data);
-
-    loginMessage.innerHTML = `Enter this code on GitHub: <strong>${data.user_code}</strong><br><a href="${data.verification_uri}" target="_blank">${data.verification_uri}</a>`;
+    const redirectUri = `${window.location.origin}/portal.html`;
+    const scope = 'public_repo';
+    // Open Device Flow URL directly—GitHub handles code entry
+    const authUrl = `https://github.com/login/device?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
+    console.log('Opening Device Flow URL:', authUrl);
+    window.open(authUrl, '_blank');
+    loginMessage.textContent = 'Enter the code on GitHub and approve—page will update after login.';
     loginBtn.disabled = true;
-
-    pollForToken(data.device_code, data.interval);
-}
-
-async function pollForToken(deviceCode, interval) {
-    const poll = setInterval(async () => {
-        const response = await fetch('https://github.com/login/oauth/access_token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                client_id: 'Ov23li9iYPQVwLbJEUEN', // Your Client ID
-                device_code: deviceCode,
-                grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
-            })
-        });
-        const data = await response.json();
-        console.log('Polling response:', data);
-
-        if (data.access_token) {
-            clearInterval(poll);
-            token = data.access_token;
-            updateLoginDisplay();
-            fetchRepos();
-        } else if (data.error === 'authorization_pending') {
-            console.log('Waiting for user to enter code...');
-        } else if (data.error) {
-            clearInterval(poll);
-            uploadStatus.textContent = `Error: ${data.error_description}`;
-            loginBtn.disabled = false;
-        }
-    }, interval * 1000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    loginBtn.addEventListener('click', startDeviceFlow);
 });
 
 async function updateLoginDisplay() {
