@@ -1,10 +1,8 @@
-// Initialize Supabase client with your credentials
 console.log('Checking Supabase:', typeof Supabase !== 'undefined' ? 'Yes' : 'No');
 const supabase = Supabase.createClient(
     'https://uopqmdgsruqsamqowmsx.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvcHFtZGdzcnVxc2FtcW93bXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDg0NjQsImV4cCI6MjA1NjUyNDQ2NH0.2dHyZo0K-ORoD4AQmLVb-tI3I-ky_c2iGMCLIOiD1k4'
 );
-// Rest of your code...
 
 const loginBtn = document.getElementById('login-btn');
 const uploadForm = document.getElementById('upload-form');
