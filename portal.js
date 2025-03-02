@@ -9,18 +9,44 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
+// Helper function to generate a random string for code verifier
+function generateRandomString(length) {
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return Array.from(array, byte => ('0' + byte.toString(16)).slice(-2)).join('');
+}
+
+// Helper function to generate the code challenge from the verifier
+async function generateCodeChallenge(verifier) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode(...new Uint8Array(hash)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
 function checkToken() {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    token = params.get('access_token');
-    console.log('Checking token - Hash:', hash, 'Token:', token);
-    if (token) {
-        updateLoginDisplay();
-        fetchRepos();
-        window.history.replaceState({}, document.title, window.location.pathname);
+    const query = window.location.search.substring(1);
+    const params = new URLSearchParams(query);
+    const code = params.get('code');
+    console.log('Full URL:', window.location.href);
+    console.log('Query:', query, 'Code:', code);
+
+    if (code) {
+        exchangeCodeForToken(code).then(accessToken => {
+            token = accessToken;
+            updateLoginDisplay();
+            fetchRepos();
+            window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
+        }).catch(error => {
+            uploadStatus.textContent = `Login failed: ${error.message}`;
+            console.error('Token exchange error:', error);
+        });
     } else {
-        console.log('No token found in hash—user needs to log in.');
-        uploadStatus.textContent = ''; // Clear any stale messages
+        console.log('No code found—user needs to log in.');
+        uploadStatus.textContent = '';
     }
 }
 
@@ -28,15 +54,44 @@ console.log('Portal.js loaded—checking token...');
 checkToken();
 document.addEventListener('DOMContentLoaded', checkToken);
 
-loginBtn.addEventListener('click', () => {
+loginBtn.addEventListener('click', async () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN';
-    const redirectUri = 'https://www.beb.tools/portal.html'; // Update this!
+    const redirectUri = 'https://www.beb.tools/portal.html';
     const scope = 'public_repo';
     const state = Math.random().toString(36).substring(2);
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&state=${state}`;
+    const codeVerifier = generateRandomString(128);
+    localStorage.setItem('codeVerifier', codeVerifier); // Store verifier for exchange
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
     console.log('Redirecting to:', authUrl);
     window.location.href = authUrl;
 });
+
+async function exchangeCodeForToken(code) {
+    const clientId = 'Ov23li9iYPQVwLbJEUEN';
+    const redirectUri = 'https://www.beb.tools/portal.html';
+    const codeVerifier = localStorage.getItem('codeVerifier');
+
+    const response = await fetch('https://github.com/login/oauth/access_token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            client_id: clientId,
+            code: code,
+            code_verifier: codeVerifier,
+            redirect_uri: redirectUri
+        })
+    });
+
+    if (!response.ok) throw new Error('Failed to exchange code for token');
+    const data = await response.json();
+    localStorage.removeItem('codeVerifier'); // Clean up
+    return data.access_token;
+}
 
 async function updateLoginDisplay() {
     try {
