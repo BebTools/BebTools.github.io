@@ -16,8 +16,8 @@ header {
     align-items: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     z-index: 10;
-    min-width: 100vw; /* Force full viewport width */
-    box-sizing: border-box; /* Include padding in width */
+    min-width: 100vw;
+    box-sizing: border-box;
 }
 
 .logo {
@@ -150,7 +150,7 @@ main {
     border-radius: 4px;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
-    font-family: monospace; /* Match code font */
+    font-family: monospace;
 }
 
 .popup-left .language-python::-webkit-scrollbar {
@@ -171,17 +171,17 @@ main {
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
     position: relative;
+    height: auto;
 }
 
 .popup-header .script-name {
     font-size: 24px;
     margin: 0 0 10px;
     color: #FFFFFF;
-    width: 80%; /* Space for X */
+    width: 80%;
+    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
 }
 
 .popup-header img {
@@ -190,6 +190,12 @@ main {
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 10px;
+}
+
+.popup-header .info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .popup-header .author {
@@ -213,16 +219,17 @@ main {
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
-    float: right;
     width: 32px;
     height: 32px;
     background-image: url('download.svg');
-    background-size: cover;
+    background-size: 50%; /* 50% of button */
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .popup-header .download-btn:hover {
     background: #A5A5CC url('download.svg') no-repeat center;
-    background-size: cover;
+    background-size: 50%;
 }
 
 .popup-header .copy-btn {
@@ -233,16 +240,17 @@ main {
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
-    float: right;
     width: 32px;
     height: 32px;
     background-image: url('copy.svg');
-    background-size: cover;
+    background-size: 50%; /* 50% of button */
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .popup-header .copy-btn:hover {
     background: #A5A5CC url('copy.svg') no-repeat center;
-    background-size: cover;
+    background-size: 50%;
 }
 
 .popup-header .close-btn {
@@ -264,13 +272,14 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px); /* Fit within 80% */
+    height: calc(100% - 230px); /* Fit within 80% minus header */
+    width: calc(100% - 30px); /* Full width minus padding */
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
-    font-family: monospace; /* Match code font */
+    font-family: monospace;
     max-height: calc(80vh - 230px); /* Cap at 80% viewport height */
 }
 

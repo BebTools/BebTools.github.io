@@ -101,18 +101,26 @@ async function showPopup(event) {
     author.textContent = box.dataset.author;
     stars.textContent = `⭐ ${box.dataset.stars}`;
 
+    // Auto-resize title font
+    const maxWidth = scriptName.offsetWidth;
+    let fontSize = 24;
+    scriptName.style.fontSize = `${fontSize}px`;
+    while (scriptName.scrollWidth > maxWidth && fontSize > 12) {
+        fontSize--;
+        scriptName.style.fontSize = `${fontSize}px`;
+    }
+
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
     code.innerHTML = pyText;
     Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
     popupText.textContent = txtText;
 
-    // Add PNG to header
     const header = document.querySelector('.popup-header');
     let img = header.querySelector('img');
     if (!img) {
         img = document.createElement('img');
-        header.insertBefore(img, document.querySelector('.download-btn'));
+        header.insertBefore(img, header.querySelector('.info-bar') || header.lastChild);
     }
     img.src = box.dataset.pngUrl;
 
