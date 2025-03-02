@@ -48,16 +48,24 @@ header {
     outline: none;
 }
 
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add spacing between items */
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
 .nav button, .nav a {
     background: #252831;
     border: none;
     padding: 8px 16px;
     color: #FFFFFF;
-    margin-left: 10px;
+    margin-left: 0; /* Remove margin-left since gap handles spacing */
     border-radius: 4px;
     text-decoration: none;
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .nav button:hover, .nav a:hover {
@@ -382,7 +390,9 @@ main {
     padding: 5px 10px;
     border-radius: 4px;
     font-size: 14px;
-    cursor: default; /* Not clickable after login */
+    cursor: default;
+    min-width: 0; /* Allow shrinking if needed */
+    overflow: hidden; /* Handle overflow gracefully */
 }
 
 #login-btn.profile img {

@@ -6,6 +6,7 @@ const author = document.querySelector('.author');
 const stars = document.querySelector('.stars');
 const popupText = document.querySelector('.popup-text');
 const searchInput = document.getElementById('search-input');
+const loginBtn = document.getElementById('login-btn');
 let allScripts = [];
 let page = 1;
 let loading = false;
@@ -15,7 +16,9 @@ async function loadScripts() {
     loading = true;
     console.log(`Loading page ${page}...`);
     try {
-        const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`);
+        const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`, {
+            headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         console.log(`Found ${data.items.length} repos on page ${page}`);
@@ -36,7 +39,7 @@ async function loadScripts() {
             for (const scriptFolder of scriptFolders) {
                 console.log(`Found folder: ${scriptFolder.name}`);
                 const folderContents = await fetch(scriptFolder.url);
-                const folderFiles = await folderContents.json();
+                const folderFiles = await contents.json();
                 console.log(`Folder contents: ${folderFiles.map(f => f.name).join(', ')}`);
                 const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
                 const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
@@ -102,24 +105,21 @@ async function showPopup(event) {
     stars.textContent = `⭐ ${box.dataset.stars}`;
 
     const header = document.querySelector('.popup-header');
-    // Don’t clear header—update in place
     let infoBar = header.querySelector('.info-bar');
     if (!infoBar) {
         infoBar = document.createElement('div');
         infoBar.className = 'info-bar';
-        header.insertBefore(infoBar, header.firstChild); // Top of header
+        header.insertBefore(infoBar, header.firstChild);
     } else {
-        infoBar.innerHTML = ''; // Clear only info bar content
+        infoBar.innerHTML = '';
     }
     infoBar.appendChild(author);
     infoBar.appendChild(stars);
 
-    // Create fresh download button
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
     infoBar.appendChild(downloadBtn);
 
-    // Create fresh copy button
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
     infoBar.appendChild(copyBtn);
@@ -127,11 +127,10 @@ async function showPopup(event) {
     let img = header.querySelector('img');
     if (!img) {
         img = document.createElement('img');
-        header.insertBefore(img, scriptName); // Before title
+        header.insertBefore(img, scriptName);
     }
     img.src = box.dataset.pngUrl;
 
-    // Auto-resize title font
     const maxWidth = scriptName.offsetWidth;
     let fontSize = 24;
     scriptName.style.fontSize = `${fontSize}px`;
@@ -176,5 +175,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
+
+    // Login button logic
+    loginBtn.addEventListener('click', async () => {
+        const error = await auth.loginWithGitHub();
+        if (error) alert(`Login failed: ${error}`);
+    });
+
+    // Check session and update UI
+    auth.checkSession((user) => {
+        auth.updateLoginDisplay(user, loginBtn);
+    });
+
     loadScripts();
 });

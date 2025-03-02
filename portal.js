@@ -1,11 +1,5 @@
 console.log('portal.js loaded');
 
-// Initialize Supabase client using the CDN-loaded library
-const supabase = window.supabase.createClient(
-    'https://uopqmdgsruqsamqowmsx.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvcHFtZGdzcnVxc2FtcW93bXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5NDg0NjQsImV4cCI6MjA1NjUyNDQ2NH0.2dHyZo0K-ORoD4AQmLVb-tI3I-ky_c2iGMCLIOiD1k4'
-);
-
 const loginBtn = document.getElementById('login-btn');
 const uploadForm = document.getElementById('upload-form');
 const repoSelect = document.getElementById('repo-select');
@@ -15,61 +9,23 @@ const txtFileInput = document.getElementById('txt-file');
 const pngFileInput = document.getElementById('png-file');
 const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
-let token = null;
 
-// Check for existing session or handle OAuth redirect
 async function checkSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) {
-        console.error('Session check error:', error);
-        return;
-    }
-    if (session) {
-        token = session.provider_token; // GitHub access token
-        const user = session.user;
-        await updateLoginDisplay(user);
-        await fetchRepos();
-    } else {
-        // Listen for OAuth redirect (e.g., after GitHub login)
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                token = session.provider_token;
-                updateLoginDisplay(session.user);
-                fetchRepos();
-            }
-        });
-    }
+    auth.checkSession((user) => {
+        auth.updateLoginDisplay(user, loginBtn);
+        fetchRepos();
+    });
 }
 
-// Trigger login with GitHub
 loginBtn.addEventListener('click', async () => {
-    try {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'github',
-            options: { scopes: 'public_repo' }
-        });
-        if (error) throw error;
-    } catch (error) {
-        uploadStatus.textContent = `Login failed: ${error.message}`;
-        console.error('Login error:', error);
-    }
+    const error = await auth.loginWithGitHub();
+    if (error) uploadStatus.textContent = `Login failed: ${error}`;
 });
 
-// Update UI after login
-async function updateLoginDisplay(user) {
-    loginBtn.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="${user.user_metadata.preferred_username}"><span>${user.user_metadata.preferred_username}</span>`;
-    loginBtn.classList.add('profile');
-    loginBtn.disabled = true;
-    uploadForm.style.display = 'block';
-    loginMessage.style.display = 'none';
-    console.log('User logged in:', user.user_metadata.preferred_username);
-}
-
-// Fetch user's GitHub repositories
 async function fetchRepos() {
     try {
         const response = await fetch('https://api.github.com/user/repos', {
-            headers: { 'Authorization': `token ${token}` }
+            headers: { 'Authorization': `token ${auth.getToken()}` }
         });
         if (!response.ok) throw new Error('Failed to fetch repos');
         const repos = await response.json();
@@ -93,7 +49,6 @@ async function fetchRepos() {
     }
 }
 
-// Handle form submission for uploading scripts
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
@@ -109,8 +64,11 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const { data: { user } } = await supabase.auth.getUser();
-        const username = user.user_metadata.preferred_username;
+        const response = await fetch('https://api.github.com/user', {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        const user = await response.json();
+        const username = user.login;
         if (repoSelect.value === 'new') await createRepo(repoName);
         await uploadFile(username, repoName, `${folderName}/${folderName}.py`, pyFile);
         if (txtFile) await uploadFile(username, repoName, `${folderName}/${folderName}.txt`, txtFile);
@@ -124,37 +82,34 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Create a new GitHub repository
 async function createRepo(repoName) {
     const response = await fetch('https://api.github.com/user/repos', {
         method: 'POST',
-        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: repoName, private: false })
     });
     if (!response.ok) throw new Error('Failed to create repo');
 }
 
-// Upload a file to GitHub
 async function uploadFile(username, repoName, path, file) {
     const reader = new FileReader();
     const content = await new Promise((resolve) => {
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Base64 content
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.readAsDataURL(file);
     });
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${path}`, {
         method: 'PUT',
-        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+        headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: `Add ${path}`, content: content })
     });
     if (!response.ok) throw new Error(`Failed to upload ${path}`);
 }
 
-// Update repository topics
 async function updateRepoTopics(username, repoName) {
     const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/topics`, {
         method: 'PUT',
         headers: { 
-            'Authorization': `token ${token}`, 
+            'Authorization': `token ${auth.getToken()}`, 
             'Content-Type': 'application/json', 
             'Accept': 'application/vnd.github.mercy-preview+json' 
         },
@@ -163,5 +118,4 @@ async function updateRepoTopics(username, repoName) {
     if (!response.ok) throw new Error('Failed to tag repo');
 }
 
-// Initialize session check on page load
 checkSession();
