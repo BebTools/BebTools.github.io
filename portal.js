@@ -3,22 +3,19 @@ console.log('portal.js loaded');
 const loginBtn = document.getElementById('login-btn');
 const uploadForm = document.getElementById('upload-form');
 const repoSelect = document.getElementById('repo-select');
-const folderNameInput = document.getElementById('folder-name');
 const pyFileInput = document.getElementById('py-file');
 const txtFileInput = document.getElementById('txt-file');
 const pngFileInput = document.getElementById('png-file');
 const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
-const loginStatus = document.getElementById('login-status');
-const preview = document.getElementById('preview');
 const repoManagement = document.getElementById('repo-management');
 const repoList = document.getElementById('repo-list');
 const templateBtn = document.getElementById('template-btn');
+const refreshReposBtn = document.getElementById('refresh-repos');
 
 async function checkSession() {
     auth.checkSession((user) => {
         auth.updateLoginDisplay(user, loginBtn);
-        loginStatus.textContent = `Logged in as ${user.user_metadata.preferred_username}`;
         uploadForm.style.display = 'block';
         loginMessage.style.display = 'none';
         repoManagement.style.display = 'block';
@@ -30,40 +27,6 @@ loginBtn.addEventListener('click', async () => {
     const error = await auth.loginWithGitHub();
     if (error) uploadStatus.textContent = `Login failed: ${error}`;
 });
-
-function setupFilePreview(input, type) {
-    input.addEventListener('change', () => {
-        const file = input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const div = document.createElement('div');
-            if (type === 'py') {
-                const pre = document.createElement('pre');
-                pre.className = 'language-python';
-                const code = document.createElement('code');
-                code.textContent = reader.result;
-                pre.appendChild(code);
-                div.appendChild(pre);
-                Prism.highlightElement(code);
-                if (!reader.result.includes('import bpy')) {
-                    uploadStatus.textContent = 'Warning: This script doesn’t import bpy. Is it a Blender script?';
-                }
-                folderNameInput.value = file.name.replace('.py', '');
-            } else if (type === 'txt') {
-                div.textContent = reader.result;
-            } else if (type === 'png') {
-                const img = document.createElement('img');
-                img.src = reader.result;
-                img.style.maxWidth = '200px';
-                div.appendChild(img);
-            }
-            preview.appendChild(div);
-        };
-        reader.readAsText(file);
-        if (type === 'png') reader.readAsDataURL(file);
-    });
-}
 
 function setupDragAndDrop(input) {
     input.addEventListener('dragover', (e) => {
@@ -119,13 +82,18 @@ uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
     const repoName = repoSelect.value === 'new' ? `bebtools-${Date.now()}` : repoSelect.value;
-    const folderName = folderNameInput.value.trim();
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
     const pngFile = pngFileInput.files[0];
+    const folderName = pyFile.name.replace('.py', '');
 
-    if (!folderName || !pyFile || !pngFile) {
-        uploadStatus.textContent = 'Please fill all required fields.';
+    if (!pyFile || !pngFile) {
+        uploadStatus.textContent = 'Please provide a .py and .png file.';
+        return;
+    }
+
+    if (pngFile.size > 100 * 1024) { // 100KB in bytes
+        uploadStatus.textContent = 'PNG file exceeds 100KB limit.';
         return;
     }
 
@@ -148,7 +116,6 @@ uploadForm.addEventListener('submit', async (e) => {
         await updateRepoTopics(username, repoName);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
-        preview.innerHTML = '';
         fetchRepos();
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
@@ -223,13 +190,12 @@ templateBtn.addEventListener('click', () => {
     });
 });
 
+refreshReposBtn.addEventListener('click', fetchRepos);
+
 let username;
 fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${auth.getToken()}` } })
     .then(res => res.json())
     .then(user => username = user.login);
-setupFilePreview(pyFileInput, 'py');
-setupFilePreview(txtFileInput, 'txt');
-setupFilePreview(pngFileInput, 'png');
 setupDragAndDrop(pyFileInput);
 setupDragAndDrop(txtFileInput);
 setupDragAndDrop(pngFileInput);

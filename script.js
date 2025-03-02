@@ -7,7 +7,6 @@ const stars = document.querySelector('.stars');
 const popupText = document.querySelector('.popup-text');
 const searchInput = document.getElementById('search-input');
 const loginBtn = document.getElementById('login-btn');
-const loginStatus = document.getElementById('login-status');
 let allScripts = [];
 let page = 1;
 let loading = false;
@@ -177,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     auth.checkSession((user) => {
         auth.updateLoginDisplay(user, loginBtn);
-        loginStatus.textContent = `Logged in as ${user.user_metadata.preferred_username}`;
     });
 
     loadScripts();

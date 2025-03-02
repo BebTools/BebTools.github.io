@@ -72,12 +72,6 @@ header {
     background: #424250;
 }
 
-.login-status {
-    font-size: 12px;
-    color: #A5A5CC;
-    margin-left: 10px;
-}
-
 main {
     margin-top: 60px;
     padding: 20px;
@@ -350,6 +344,7 @@ main {
 #upload-form label {
     font-size: 16px;
     color: #FFFFFF;
+    margin-bottom: 5px;
 }
 
 #upload-form input,
@@ -417,28 +412,39 @@ main {
     border: 2px dashed #424250;
     padding: 10px;
     transition: border-color 0.3s ease;
+    background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23A5A5CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="16 16 12 12 8 16"%3E%3C/polyline%3E%3Cline x1="12" y1="12" x2="12" y2="21"%3E%3C/line%3E%3Cpath d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"%3E%3C/path%3E%3Cpolyline points="16 16 12 12 8 16"%3E%3C/polyline%3E%3C/svg%3E') no-repeat center;
+    background-size: 24px;
+    height: 50px;
 }
 
 .dropzone.dragover {
     border-color: #A5A5CC;
 }
 
-.preview {
-    margin-top: 20px;
-    padding: 10px;
-    background: #17141F;
-    border-radius: 4px;
-}
-
-.preview pre {
-    margin: 0;
-    padding: 10px;
-    background: #252831;
-    border-radius: 4px;
+.guidelines {
+    font-size: 12px;
+    color: #A5A5CC;
+    margin: 5px 0;
 }
 
 #repo-management {
     margin-top: 20px;
+}
+
+#repo-management button {
+    background: #424250;
+    border: none;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
+    margin-bottom: 10px;
+}
+
+#repo-management button:hover {
+    background: #A5A5CC;
 }
 
 #repo-list {
