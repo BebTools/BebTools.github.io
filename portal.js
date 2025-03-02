@@ -19,23 +19,29 @@ function checkToken() {
         fetchRepos();
         window.history.replaceState({}, document.title, window.location.pathname);
     } else {
-        console.log('No token found—waiting for login redirect...');
+        console.log('No token found—checking query params...');
+        const query = window.location.search.substring(1);
+        const queryParams = new URLSearchParams(query);
+        const code = queryParams.get('code');
+        console.log('Query:', query, 'Code:', code);
+        if (code) {
+            uploadStatus.textContent = 'Login failed: Code flow detected instead of implicit. Recheck OAuth app settings.';
+        }
     }
 }
 
+console.log('Portal.js loaded—checking token...');
 checkToken();
 document.addEventListener('DOMContentLoaded', checkToken);
 
 loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // Your Client ID
-    const redirectUri = `${window.location.origin}/portal.html`;
+    const redirectUri = 'https://www.beb.tools/portal.html';
     const scope = 'public_repo';
-    // Open Device Flow URL directly—GitHub handles code entry
-    const authUrl = `https://github.com/login/device?client_id=${clientId}&scope=${scope}&redirect_uri=${redirectUri}`;
-    console.log('Opening Device Flow URL:', authUrl);
-    window.open(authUrl, '_blank');
-    loginMessage.textContent = 'Enter the code on GitHub and approve—page will update after login.';
-    loginBtn.disabled = true;
+    const state = Math.random().toString(36).substring(2); // Random state for security
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&state=${state}`;
+    console.log('Redirecting to:', authUrl);
+    window.location.href = authUrl;
 });
 
 async function updateLoginDisplay() {
