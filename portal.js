@@ -9,15 +9,24 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+// Check for token immediately and on redirect
+function checkToken() {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     token = params.get('access_token');
     if (token) {
         updateLoginDisplay();
         fetchRepos();
+        // Clear hash from URL for cleanliness
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
-});
+}
+
+// Run token check on load
+checkToken();
+
+// Also listen for DOM load in case timing differs
+document.addEventListener('DOMContentLoaded', checkToken);
 
 loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // REPLACE WITH YOUR CLIENT ID
