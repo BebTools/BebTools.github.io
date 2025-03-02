@@ -19,14 +19,8 @@ function checkToken() {
         fetchRepos();
         window.history.replaceState({}, document.title, window.location.pathname);
     } else {
-        console.log('No token found—checking query params...');
-        const query = window.location.search.substring(1);
-        const queryParams = new URLSearchParams(query);
-        const code = queryParams.get('code');
-        console.log('Query:', query, 'Code:', code);
-        if (code) {
-            uploadStatus.textContent = 'Login failed: Code flow detected instead of implicit. Recheck OAuth app settings.';
-        }
+        console.log('No token found in hash—user needs to log in.');
+        uploadStatus.textContent = ''; // Clear any stale messages
     }
 }
 
@@ -35,10 +29,10 @@ checkToken();
 document.addEventListener('DOMContentLoaded', checkToken);
 
 loginBtn.addEventListener('click', () => {
-    const clientId = 'Ov23li9iYPQVwLbJEUEN'; // Your Client ID
-    const redirectUri = 'https://www.beb.tools/portal.html';
+    const clientId = 'Ov23li9iYPQVwLbJEUEN';
+    const redirectUri = 'http://bebtools.github.io/portal.html'; // Update this!
     const scope = 'public_repo';
-    const state = Math.random().toString(36).substring(2); // Random state for security
+    const state = Math.random().toString(36).substring(2);
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&state=${state}`;
     console.log('Redirecting to:', authUrl);
     window.location.href = authUrl;
@@ -108,15 +102,16 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 
     try {
+        const username = (await (await fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${token}` } })).json()).login;
         if (repoSelect.value === 'new') {
             await createRepo(repoName);
         }
 
-        await uploadFile(repoName, `${folderName}/${folderName}.py`, pyFile);
-        if (txtFile) await uploadFile(repoName, `${folderName}/${folderName}.txt`, txtFile);
-        await uploadFile(repoName, `${folderName}/${folderName}.png`, pngFile);
+        await uploadFile(username, repoName, `${folderName}/${folderName}.py`, pyFile);
+        if (txtFile) await uploadFile(username, repoName, `${folderName}/${folderName}.txt`, txtFile);
+        await uploadFile(username, repoName, `${folderName}/${folderName}.png`, pngFile);
 
-        await updateRepoTopics(repoName);
+        await updateRepoTopics(username, repoName);
 
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
@@ -138,13 +133,13 @@ async function createRepo(repoName) {
     if (!response.ok) throw new Error('Failed to create repo');
 }
 
-async function uploadFile(repoName, path, file) {
+async function uploadFile(username, repoName, path, file) {
     const reader = new FileReader();
     const content = await new Promise((resolve) => {
         reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.readAsDataURL(file);
     });
-    const response = await fetch(`https://api.github.com/repos/${window.location.pathname.split('/')[1]}/${repoName}/contents/${path}`, {
+    const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${path}`, {
         method: 'PUT',
         headers: {
             'Authorization': `token ${token}`,
@@ -158,8 +153,8 @@ async function uploadFile(repoName, path, file) {
     if (!response.ok) throw new Error(`Failed to upload ${path}`);
 }
 
-async function updateRepoTopics(repoName) {
-    const response = await fetch(`https://api.github.com/repos/${window.location.pathname.split('/')[1]}/${repoName}/topics`, {
+async function updateRepoTopics(username, repoName) {
+    const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/topics`, {
         method: 'PUT',
         headers: {
             'Authorization': `token ${token}`,
