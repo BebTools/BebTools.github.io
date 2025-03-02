@@ -125,13 +125,13 @@ main {
 
 .popup {
     position: fixed;
-    top: 10%; /* Back to 80% */
+    top: 10%;
     left: 10%;
     width: 80%;
     height: 80%;
     background: #17141F;
-    border-radius: 8px; /* Restore radius */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); /* Restore shadow */
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     display: flex;
     z-index: 1000;
 }
@@ -171,7 +171,7 @@ main {
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
     position: relative;
-    height: 30%; /* Top 30% of right box */
+    height: 30%;
     box-sizing: border-box;
 }
 
@@ -250,8 +250,7 @@ main {
     font-size: 24px;
     margin: 0;
     color: #FFFFFF;
-    width: 80%;
-    display: inline-block;
+    display: inline-block; /* No width restriction */
     white-space: nowrap;
     overflow: hidden;
 }
@@ -275,15 +274,15 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(70% - 30px); /* 70% of right box */
-    width: calc(100% - 30px); /* Full width */
+    height: calc(70% - 30px);
+    width: calc(100% - 30px);
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(80vh - 30px - 24vh); /* Cap at 70% of 80vh */
+    max-height: calc(80vh - 30px - 24vh);
 }
 
 .scrollbox::-webkit-scrollbar {
