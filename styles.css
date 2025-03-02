@@ -125,13 +125,13 @@ main {
 
 .popup {
     position: fixed;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
+    top: 0; /* Full screen */
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: #17141F;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    border-radius: 0; /* No radius for full screen */
+    box-shadow: none; /* No shadow needed */
     display: flex;
     z-index: 1000;
 }
@@ -174,28 +174,11 @@ main {
     height: auto;
 }
 
-.popup-header .script-name {
-    font-size: 24px;
-    margin: 0 0 10px;
-    color: #FFFFFF;
-    width: 80%;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.popup-header img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
 .popup-header .info-bar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .popup-header .author {
@@ -225,6 +208,7 @@ main {
     background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
+    margin-right: 10px;
 }
 
 .popup-header .download-btn:hover {
@@ -235,7 +219,6 @@ main {
 .popup-header .copy-btn {
     background: #424250;
     padding: 8px;
-    margin-left: 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -251,6 +234,24 @@ main {
 .popup-header .copy-btn:hover {
     background: #A5A5CC url('copy.svg') no-repeat center;
     background-size: 50%;
+}
+
+.popup-header img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.popup-header .script-name {
+    font-size: 24px;
+    margin: 0;
+    color: #FFFFFF;
+    width: 80%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .popup-header .close-btn {
@@ -272,7 +273,7 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px); /* Same as .py */
+    height: calc(100% - 230px); /* Match .py */
     width: calc(100% - 30px); /* Full width */
     overflow-y: auto;
     border-radius: 4px;
@@ -280,7 +281,7 @@ main {
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(80vh - 230px); /* Cap at 80% */
+    max-height: calc(100vh - 230px); /* Cap at 100% viewport */
 }
 
 .scrollbox::-webkit-scrollbar {
