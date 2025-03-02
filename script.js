@@ -120,9 +120,22 @@ async function showPopup(event) {
     let img = header.querySelector('img');
     if (!img) {
         img = document.createElement('img');
-        header.insertBefore(img, header.querySelector('.info-bar') || header.lastChild);
+        header.appendChild(img); // Append after title
     }
     img.src = box.dataset.pngUrl;
+
+    let infoBar = header.querySelector('.info-bar');
+    if (!infoBar) {
+        infoBar = document.createElement('div');
+        infoBar.className = 'info-bar';
+        header.appendChild(infoBar); // Append after banner
+    } else {
+        infoBar.innerHTML = ''; // Clear previous
+    }
+    infoBar.appendChild(author);
+    infoBar.appendChild(stars);
+    infoBar.appendChild(document.querySelector('.download-btn'));
+    infoBar.appendChild(document.querySelector('.copy-btn'));
 
     document.querySelector('.download-btn').onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     document.querySelector('.copy-btn').onclick = () => copyZip(pyText, txtText, box.dataset.name);

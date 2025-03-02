@@ -222,7 +222,7 @@ main {
     width: 32px;
     height: 32px;
     background-image: url('download.svg');
-    background-size: 50%; /* 50% of button */
+    background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -243,7 +243,7 @@ main {
     width: 32px;
     height: 32px;
     background-image: url('copy.svg');
-    background-size: 50%; /* 50% of button */
+    background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -272,15 +272,15 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px); /* Fit within 80% minus header */
-    width: calc(100% - 30px); /* Full width minus padding */
+    height: calc(100% - 230px); /* Same as .py */
+    width: calc(100% - 30px); /* Full width */
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
     font-family: monospace;
-    max-height: calc(80vh - 230px); /* Cap at 80% viewport height */
+    max-height: calc(80vh - 230px); /* Cap at 80% */
 }
 
 .scrollbox::-webkit-scrollbar {
