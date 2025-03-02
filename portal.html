@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BEB.TOOLS - Creator Portal</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Reuse index styles -->
+    <!-- Bungee Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+    <!-- JSZip for zipping files (if needed later) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">BEB.TOOLS</div>
+        <input type="text" placeholder="Search scripts..." class="search-bar" id="search-input" disabled>
+        <div class="nav">
+            <button id="login-btn">Login with GitHub</button>
+            <a href="index.html">Back to Scripts</a>
+        </div>
+    </header>
+    <main>
+        <div class="portal-container">
+            <h1>Creator Portal</h1>
+            <div id="login-message">Please log in with GitHub to upload scripts.</div>
+            <form id="upload-form" style="display: none;">
+                <label for="repo-select">Select Repository:</label>
+                <select id="repo-select">
+                    <option value="">-- Select a repo or create new --</option>
+                </select>
+                <label for="folder-name">Folder Name:</label>
+                <input type="text" id="folder-name" placeholder="e.g., MyScript" required>
+                <label for="py-file">Python Script (.py):</label>
+                <input type="file" id="py-file" accept=".py" required>
+                <label for="txt-file">Description (.txt):</label>
+                <input type="file" id="txt-file" accept=".txt">
+                <label for="png-file">Thumbnail (.png):</label>
+                <input type="file" id="png-file" accept=".png" required>
+                <button type="submit">Upload</button>
+            </form>
+            <div id="upload-status"></div>
+        </div>
+    </main>
+    <script src="portal.js"></script>
+</body>
+</html>

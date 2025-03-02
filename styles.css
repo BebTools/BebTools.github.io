@@ -297,3 +297,74 @@ main {
 .scrollbox::-webkit-scrollbar-track {
     background: #252831;
 }
+.portal-container {
+    max-width: 600px;
+    margin: 80px auto 20px; /* Offset header */
+    padding: 20px;
+    background: #252831;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.portal-container h1 {
+    font-size: 28px;
+    margin: 0 0 20px;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+#login-message {
+    font-size: 16px;
+    color: #A5A5CC;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#upload-form label {
+    font-size: 16px;
+    color: #FFFFFF;
+}
+
+#upload-form input,
+#upload-form select {
+    background: #17141F;
+    border: 1px solid #424250;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #FFFFFF;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+}
+
+#upload-form input[type="file"] {
+    padding: 5px; /* Less padding for file inputs */
+}
+
+#upload-form button {
+    background: #424250;
+    border: none;
+    padding: 10px 20px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
+    font-size: 16px;
+}
+
+#upload-form button:hover {
+    background: #A5A5CC;
+}
+
+#upload-status {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #A5A5CC;
+    text-align: center;
+}
