@@ -9,7 +9,6 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 let token = null;
 
-// Check for token immediately and on redirect
 function checkToken() {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
@@ -17,22 +16,19 @@ function checkToken() {
     if (token) {
         updateLoginDisplay();
         fetchRepos();
-        // Clear hash from URL for cleanliness
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 }
 
-// Run token check on load
 checkToken();
-
-// Also listen for DOM load in case timing differs
 document.addEventListener('DOMContentLoaded', checkToken);
 
 loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // REPLACE WITH YOUR CLIENT ID
     const redirectUri = `${window.location.origin}/portal.html`;
     const scope = 'public_repo';
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+    // Use implicit flow with response_type=token
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token`;
 });
 
 async function updateLoginDisplay() {
