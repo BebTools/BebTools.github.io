@@ -13,10 +13,21 @@ function checkToken() {
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     token = params.get('access_token');
+    console.log('Checking token - Hash:', hash, 'Token:', token); // Debug
     if (token) {
         updateLoginDisplay();
         fetchRepos();
         window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        console.log('No token found in hash—checking query params...');
+        const query = window.location.search.substring(1);
+        const queryParams = new URLSearchParams(query);
+        const code = queryParams.get('code');
+        console.log('Query:', query, 'Code:', code); // Debug
+        if (code) {
+            uploadStatus.textContent = 'Received code but implicit flow failed—contact support.';
+            // Optional: Add code-to-token exchange here if needed (requires server or CORS workaround)
+        }
     }
 }
 
@@ -27,12 +38,13 @@ loginBtn.addEventListener('click', () => {
     const clientId = 'Ov23li9iYPQVwLbJEUEN'; // REPLACE WITH YOUR CLIENT ID
     const redirectUri = `${window.location.origin}/portal.html`;
     const scope = 'public_repo';
-    // Use implicit flow with response_type=token
+    console.log('Initiating login redirect...'); // Debug
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token`;
 });
 
 async function updateLoginDisplay() {
     try {
+        console.log('Fetching user data with token:', token); // Debug
         const response = await fetch('https://api.github.com/user', {
             headers: { 'Authorization': `token ${token}` }
         });
@@ -43,13 +55,16 @@ async function updateLoginDisplay() {
         loginBtn.disabled = true;
         uploadForm.style.display = 'block';
         loginMessage.style.display = 'none';
+        console.log('User logged in:', user.login); // Debug
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        console.error('Update login error:', error); // Debug
     }
 }
 
 async function fetchRepos() {
     try {
+        console.log('Fetching repos...'); // Debug
         const response = await fetch('https://api.github.com/user/repos', {
             headers: { 'Authorization': `token ${token}` }
         });
@@ -68,8 +83,10 @@ async function fetchRepos() {
         newRepoOption.value = 'new';
         newRepoOption.textContent = '+ New Repo';
         repoSelect.appendChild(newRepoOption);
+        console.log('Repos loaded:', repos.length); // Debug
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        console.error('Fetch repos error:', error); // Debug
     }
 }
 
@@ -103,6 +120,7 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadForm.reset();
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        console.error('Upload error:', error); // Debug
     }
 });
 
