@@ -1,8 +1,8 @@
 body {
     margin: 0;
-    background: #17141F; /* CodePen dark */
-    color: #FFFFFF; /* White text */
-    font-family: 'Bungee', cursive; /* Bungee everywhere */
+    background: #17141F;
+    color: #FFFFFF;
+    font-family: 'Bungee', cursive;
 }
 
 header {
@@ -16,6 +16,8 @@ header {
     align-items: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     z-index: 10;
+    min-width: 100vw; /* Force full viewport width */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .logo {
@@ -148,6 +150,7 @@ main {
     border-radius: 4px;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
+    font-family: monospace; /* Match code font */
 }
 
 .popup-left .language-python::-webkit-scrollbar {
@@ -167,22 +170,23 @@ main {
     background: #252831;
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
-    text-align: left; /* Align title left */
-    position: relative; /* For X positioning */
+    position: relative;
 }
 
 .popup-header .script-name {
     font-size: 24px;
     margin: 0 0 10px;
     color: #FFFFFF;
-    white-space: nowrap; /* Single line */
+    width: 80%; /* Space for X */
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Truncate if too long */
+    text-overflow: ellipsis;
+    display: inline-block;
 }
 
 .popup-header img {
     width: 100%;
-    height: 120px; /* Fixed height banner */
+    height: 120px;
     object-fit: cover;
     border-radius: 4px;
     margin-bottom: 10px;
@@ -204,45 +208,41 @@ main {
 
 .popup-header .download-btn {
     background: #424250;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 8px;
     border: none;
-    color: #FFFFFF;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    margin-right: 10px;
-}
-
-.popup-header .download-btn::before {
-    content: '↓'; /* Download icon */
-    margin-right: 5px;
+    float: right;
+    width: 32px;
+    height: 32px;
+    background-image: url('download.svg');
+    background-size: cover;
 }
 
 .popup-header .download-btn:hover {
-    background: #A5A5CC;
+    background: #A5A5CC url('download.svg') no-repeat center;
+    background-size: cover;
 }
 
 .popup-header .copy-btn {
     background: #424250;
     padding: 8px;
+    margin-left: 10px;
     border: none;
-    color: #FFFFFF;
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.popup-header .copy-btn::before {
-    content: '📋'; /* Clipboard icon */
+    float: right;
+    width: 32px;
+    height: 32px;
+    background-image: url('copy.svg');
+    background-size: cover;
 }
 
 .popup-header .copy-btn:hover {
-    background: #A5A5CC;
+    background: #A5A5CC url('copy.svg') no-repeat center;
+    background-size: cover;
 }
 
 .popup-header .close-btn {
@@ -264,12 +264,14 @@ main {
 .scrollbox {
     background: #252831;
     padding: 15px;
-    height: calc(100% - 230px); /* Adjust for header height */
+    height: calc(100% - 230px); /* Fit within 80% */
     overflow-y: auto;
     border-radius: 4px;
     white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
+    font-family: monospace; /* Match code font */
+    max-height: calc(80vh - 230px); /* Cap at 80% viewport height */
 }
 
 .scrollbox::-webkit-scrollbar {
