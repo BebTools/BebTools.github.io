@@ -15,14 +15,31 @@ const templateBtn = document.getElementById('template-btn');
 const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
 const createRepoBtn = document.getElementById('create-repo-btn');
+let username;
 
 async function checkSession() {
-    auth.checkSession((user) => {
+    auth.checkSession(async (user) => {
         auth.updateLoginDisplay(user, loginBtn);
         uploadSection.style.display = 'block';
         repoSection.style.display = 'block';
         loginMessage.style.display = 'none';
-        fetchRepos();
+        console.log('Token:', auth.getToken());
+        if (!auth.getToken()) {
+            uploadStatus.textContent = 'Error: No GitHub token available. Please log in again.';
+            return;
+        }
+        try {
+            const response = await fetch('https://api.github.com/user', {
+                headers: { 'Authorization': `token ${auth.getToken()}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch user');
+            const userData = await response.json();
+            username = userData.login;
+            fetchRepos();
+        } catch (error) {
+            uploadStatus.textContent = `Error: ${error.message}`;
+            console.error('User fetch error:', error);
+        }
     });
 }
 
@@ -46,6 +63,10 @@ function setupDragAndDrop(input) {
 }
 
 async function fetchRepos() {
+    if (!auth.getToken()) {
+        uploadStatus.textContent = 'Error: No GitHub token available.';
+        return;
+    }
     try {
         const response = await fetch('https://api.github.com/user/repos', {
             headers: { 'Authorization': `token ${auth.getToken()}` }
@@ -84,7 +105,7 @@ uploadForm.addEventListener('submit', async (e) => {
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
     const pngFile = pngFileInput.files[0];
-    const folderName = pyFile.name.replace('.py', '');
+    const baseName = pyFile ? pyFile.name.replace('.py', '') : null;
 
     if (!repoName) {
         uploadStatus.textContent = 'Please select a repository.';
@@ -94,25 +115,28 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadStatus.textContent = 'Please provide a .py and .png file.';
         return;
     }
+    if (txtFile && txtFile.name !== `${baseName}.txt`) {
+        uploadStatus.textContent = 'Error: ReadMe (.txt) must match the .py filename.';
+        return;
+    }
+    if (pngFile.name !== `${baseName}.png`) {
+        uploadStatus.textContent = 'Error: Thumbnail (.png) must match the .py filename.';
+        return;
+    }
     if (pngFile.size > 100 * 1024) {
         uploadStatus.textContent = 'PNG file exceeds 100KB limit.';
         return;
     }
 
     try {
-        const response = await fetch('https://api.github.com/user', {
-            headers: { 'Authorization': `token ${auth.getToken()}` }
-        });
-        const user = await response.json();
-        const username = user.login;
         uploadStatus.textContent = 'Uploading Python script...';
-        await uploadFile(username, repoName, `${folderName}/${folderName}.py`, pyFile);
+        await uploadFile(username, repoName, `${baseName}/${baseName}.py`, pyFile);
         if (txtFile) {
-            uploadStatus.textContent = 'Uploading description...';
-            await uploadFile(username, repoName, `${folderName}/${folderName}.txt`, txtFile);
+            uploadStatus.textContent = 'Uploading ReadMe...';
+            await uploadFile(username, repoName, `${baseName}/${baseName}.txt`, txtFile);
         }
         uploadStatus.textContent = 'Uploading thumbnail...';
-        await uploadFile(username, repoName, `${folderName}/${folderName}.png`, pngFile);
+        await uploadFile(username, repoName, `${baseName}/${baseName}.png`, pngFile);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
     } catch (error) {
@@ -190,7 +214,7 @@ templateBtn.addEventListener('click', () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'bebtools-template.zip';
+        a.download = 'bebtools-example.zip';
         a.click();
         URL.revokeObjectURL(url);
     });
@@ -207,10 +231,6 @@ createRepoBtn.addEventListener('click', () => {
     createRepo(repoName);
 });
 
-let username;
-fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${auth.getToken()}` } })
-    .then(res => res.json())
-    .then(user => username = user.login);
 setupDragAndDrop(pyFileInput);
 setupDragAndDrop(txtFileInput);
 setupDragAndDrop(pngFileInput);

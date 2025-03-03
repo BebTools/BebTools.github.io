@@ -313,10 +313,13 @@ main {
 }
 
 .portal-container {
-    max-width: 90vw;
+    max-width: 800px;
     margin: 80px auto 20px;
     padding: 20px;
     background: #17141F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .portal-container h1 {
@@ -340,12 +343,15 @@ main {
     margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid #424250;
+    width: 100%;
+    max-width: 600px;
 }
 
 .section-box h2 {
     font-size: 20px;
     margin: 0 0 15px;
     color: #FFFFFF;
+    text-align: center;
 }
 
 .instructions {
@@ -353,6 +359,7 @@ main {
     color: #A5A5CC;
     margin-bottom: 20px;
     line-height: 1.4;
+    text-align: center;
 }
 
 #upload-form {
@@ -370,6 +377,13 @@ main {
 .form-row label {
     font-size: 16px;
     color: #FFFFFF;
+    text-align: center;
+}
+
+.naming-rule {
+    font-size: 14px;
+    color: #A5A5CC;
+    text-align: center;
 }
 
 .form-row input,
@@ -384,7 +398,10 @@ main {
 }
 
 .form-row input[type="file"] {
-    padding: 5px;
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
 }
 
 #upload-form button {
@@ -398,6 +415,7 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 16px;
     margin-right: 10px;
+    align-self: center;
 }
 
 #upload-form button:hover {
@@ -438,10 +456,12 @@ main {
     border: 2px dashed #424250;
     padding: 20px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
-    background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23A5A5CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="16 16 12 12 8 16"%3E%3C/polyline%3E%3Cline x1="12" y1="12" x2="12" y2="21"%3E%3C/line%3E%3Cpath d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"%3E%3C/path%3E%3Cpolyline points="16 16 12 12 8 16"%3E%3C/polyline%3E%3C/svg%3E') no-repeat center;
-    background-size: 24px;
+    background: url('dragdrop.svg') no-repeat center;
+    background-size: 32px;
     height: 60px;
     background-color: #1E1C28;
+    cursor: pointer;
+    position: relative;
 }
 
 .dropzone.dragover {
@@ -449,10 +469,21 @@ main {
     background-color: #2A2836;
 }
 
+.dropzone::before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 .guidelines {
     font-size: 12px;
     color: #A5A5CC;
     margin: 5px 0;
+    text-align: center;
 }
 
 .create-repo {
@@ -465,6 +496,7 @@ main {
 .create-repo label {
     font-size: 16px;
     color: #FFFFFF;
+    text-align: center;
 }
 
 .create-repo input {
@@ -475,6 +507,7 @@ main {
     color: #FFFFFF;
     font-family: 'Bungee', cursive;
     font-size: 14px;
+    text-align: center;
 }
 
 .create-repo button {
@@ -487,7 +520,7 @@ main {
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
     font-size: 14px;
-    align-self: flex-start;
+    align-self: center;
 }
 
 .create-repo button:hover {
@@ -505,6 +538,7 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     margin-bottom: 15px;
+    align-self: center;
 }
 
 #repo-section button:hover {
