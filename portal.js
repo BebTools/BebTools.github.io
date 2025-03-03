@@ -8,17 +8,20 @@ const txtFileInput = document.getElementById('txt-file');
 const pngFileInput = document.getElementById('png-file');
 const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
-const repoManagement = document.getElementById('repo-management');
+const uploadSection = document.getElementById('upload-section');
+const repoSection = document.getElementById('repo-section');
 const repoList = document.getElementById('repo-list');
 const templateBtn = document.getElementById('template-btn');
 const refreshReposBtn = document.getElementById('refresh-repos');
+const newRepoNameInput = document.getElementById('new-repo-name');
+const createRepoBtn = document.getElementById('create-repo-btn');
 
 async function checkSession() {
     auth.checkSession((user) => {
         auth.updateLoginDisplay(user, loginBtn);
-        uploadForm.style.display = 'block';
+        uploadSection.style.display = 'block';
+        repoSection.style.display = 'block';
         loginMessage.style.display = 'none';
-        repoManagement.style.display = 'block';
         fetchRepos();
     });
 }
@@ -49,7 +52,7 @@ async function fetchRepos() {
         });
         if (!response.ok) throw new Error('Failed to fetch repos');
         const repos = await response.json();
-        repoSelect.innerHTML = '<option value="">-- Select a repo or create new --</option>';
+        repoSelect.innerHTML = '<option value="">-- Select a repository --</option>';
         repoList.innerHTML = '';
         repos.forEach(repo => {
             if (repo.topics && repo.topics.includes('bebtools')) {
@@ -68,10 +71,6 @@ async function fetchRepos() {
                 repoList.appendChild(li);
             }
         });
-        const newRepoOption = document.createElement('option');
-        newRepoOption.value = 'new';
-        newRepoOption.textContent = '+ New Repo';
-        repoSelect.appendChild(newRepoOption);
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
         console.error('Fetch repos error:', error);
@@ -81,18 +80,21 @@ async function fetchRepos() {
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
-    const repoName = repoSelect.value === 'new' ? `bebtools-${Date.now()}` : repoSelect.value;
+    const repoName = repoSelect.value;
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
     const pngFile = pngFileInput.files[0];
     const folderName = pyFile.name.replace('.py', '');
 
+    if (!repoName) {
+        uploadStatus.textContent = 'Please select a repository.';
+        return;
+    }
     if (!pyFile || !pngFile) {
         uploadStatus.textContent = 'Please provide a .py and .png file.';
         return;
     }
-
-    if (pngFile.size > 100 * 1024) { // 100KB in bytes
+    if (pngFile.size > 100 * 1024) {
         uploadStatus.textContent = 'PNG file exceeds 100KB limit.';
         return;
     }
@@ -103,7 +105,6 @@ uploadForm.addEventListener('submit', async (e) => {
         });
         const user = await response.json();
         const username = user.login;
-        if (repoSelect.value === 'new') await createRepo(repoName);
         uploadStatus.textContent = 'Uploading Python script...';
         await uploadFile(username, repoName, `${folderName}/${folderName}.py`, pyFile);
         if (txtFile) {
@@ -112,11 +113,8 @@ uploadForm.addEventListener('submit', async (e) => {
         }
         uploadStatus.textContent = 'Uploading thumbnail...';
         await uploadFile(username, repoName, `${folderName}/${folderName}.png`, pngFile);
-        uploadStatus.textContent = 'Tagging repo...';
-        await updateRepoTopics(username, repoName);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
-        fetchRepos();
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
         console.error('Upload error:', error);
@@ -124,12 +122,20 @@ uploadForm.addEventListener('submit', async (e) => {
 });
 
 async function createRepo(repoName) {
-    const response = await fetch('https://api.github.com/user/repos', {
-        method: 'POST',
-        headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: repoName, private: false })
-    });
-    if (!response.ok) throw new Error('Failed to create repo');
+    try {
+        const response = await fetch('https://api.github.com/user/repos', {
+            method: 'POST',
+            headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: repoName, private: false })
+        });
+        if (!response.ok) throw new Error('Failed to create repo');
+        await updateRepoTopics(username, repoName);
+        uploadStatus.textContent = `Repository ${repoName} created! Refresh to select it.`;
+        newRepoNameInput.value = '';
+    } catch (error) {
+        uploadStatus.textContent = `Error: ${error.message}`;
+        console.error('Create repo error:', error);
+    }
 }
 
 async function uploadFile(username, repoName, path, file) {
@@ -179,7 +185,7 @@ templateBtn.addEventListener('click', () => {
     const zip = new JSZip();
     zip.file('example.py', '# Blender Script Example\nimport bpy\nprint("Hello, Blender!")');
     zip.file('example.txt', 'This is a sample script for Beb Tools.');
-    zip.file('example.png', ''); // Placeholder
+    zip.file('example.png', '');
     zip.generateAsync({ type: 'blob' }).then(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -191,6 +197,15 @@ templateBtn.addEventListener('click', () => {
 });
 
 refreshReposBtn.addEventListener('click', fetchRepos);
+
+createRepoBtn.addEventListener('click', () => {
+    const repoName = newRepoNameInput.value.trim();
+    if (!repoName) {
+        uploadStatus.textContent = 'Please enter a repository name.';
+        return;
+    }
+    createRepo(repoName);
+});
 
 let username;
 fetch('https://api.github.com/user', { headers: { 'Authorization': `token ${auth.getToken()}` } })
