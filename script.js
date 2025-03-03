@@ -174,12 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', renderGrid);
 
     let dropdownVisible = false;
+
     loginBtn.addEventListener('click', async (e) => {
         if (loginBtn.classList.contains('profile')) {
-            // Toggle dropdown if already logged in
+            // User is logged in: toggle dropdown
             dropdownVisible = !dropdownVisible;
             profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
         } else {
+            // User is not logged in: trigger GitHub login
             const error = await auth.loginWithGitHub();
             if (error) alert(`Login failed: ${error}`);
         }
@@ -203,7 +205,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     auth.checkSession((user) => {
-        auth.updateLoginDisplay(user, loginBtn);
+        if (user) {
+            auth.updateLoginDisplay(user, loginBtn);
+        }
         profileDropdown.style.display = 'none'; // Ensure dropdown is hidden initially
     });
 

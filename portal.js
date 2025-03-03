@@ -26,66 +26,72 @@ const scriptStatus = document.getElementById('script-status');
 let username;
 
 async function checkSession() {
-    auth.checkSession(async (user) => {
-        const loginBtn = document.getElementById('login-btn');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        const logoutBtn = document.getElementById('logout-btn');
-        let dropdownVisible = false;
+    const loginBtn = document.getElementById('login-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const logoutBtn = document.getElementById('logout-btn');
+    let dropdownVisible = false;
 
-        if (!auth.getToken()) {
+    auth.checkSession(async (user) => {
+        if (user && auth.getToken()) {
+            auth.updateLoginDisplay(user, loginBtn);
+            uploadSection.style.display = 'block';
+            repoSection.style.display = 'block';
+            scriptSection.style.display = 'block';
+            loginMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${auth.getToken()}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch user');
+                const userData = await response.json();
+                username = userData.login;
+                fetchRepos();
+                fetchScriptRepos();
+            } catch (error) {
+                uploadStatus.textContent = `Error: ${error.message}`;
+                uploadStatus.classList.add('error');
+                console.error('User fetch error:', error);
+            }
+        } else {
             loginBtn.textContent = 'Login to GitHub';
             loginBtn.classList.remove('profile');
             loginBtn.disabled = false;
-            uploadStatus.textContent = 'Error: No GitHub token available. Please log in.';
+            uploadStatus.textContent = 'Please log in with GitHub to upload and manage scripts.';
             uploadStatus.classList.add('error');
-            return;
         }
-        auth.updateLoginDisplay(user, loginBtn);
-        uploadSection.style.display = 'block';
-        repoSection.style.display = 'block';
-        scriptSection.style.display = 'block';
-        loginMessage.style.display = 'none';
+    });
 
-        loginBtn.addEventListener('click', () => {
+    loginBtn.addEventListener('click', async () => {
+        if (loginBtn.classList.contains('profile')) {
             dropdownVisible = !dropdownVisible;
             profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
-        });
+        } else {
+            const error = await auth.loginWithGitHub();
+            if (error) {
+                uploadStatus.textContent = `Login failed: ${error}`;
+                uploadStatus.classList.add('error');
+            }
+        }
+    });
 
-        logoutBtn.addEventListener('click', async () => {
-            await auth.signOut();
-            loginBtn.innerHTML = 'Login with GitHub';
-            loginBtn.classList.remove('profile');
-            loginBtn.disabled = false;
+    logoutBtn.addEventListener('click', async () => {
+        await auth.signOut();
+        loginBtn.innerHTML = 'Login with GitHub';
+        loginBtn.classList.remove('profile');
+        loginBtn.disabled = false;
+        profileDropdown.style.display = 'none';
+        dropdownVisible = false;
+        uploadSection.style.display = 'none';
+        repoSection.style.display = 'none';
+        scriptSection.style.display = 'none';
+        loginMessage.style.display = 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!loginBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
             profileDropdown.style.display = 'none';
             dropdownVisible = false;
-            uploadSection.style.display = 'none';
-            repoSection.style.display = 'none';
-            scriptSection.style.display = 'none';
-            loginMessage.style.display = 'block';
-        });
-
-        // Close dropdown if clicking outside
-        document.addEventListener('click', (e) => {
-            if (!loginBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.style.display = 'none';
-                dropdownVisible = false;
-            }
-        });
-
-        console.log('Token:', auth.getToken());
-        try {
-            const response = await fetch('https://api.github.com/user', {
-                headers: { 'Authorization': `token ${auth.getToken()}` }
-            });
-            if (!response.ok) throw new Error('Failed to fetch user');
-            const userData = await response.json();
-            username = userData.login;
-            fetchRepos();
-            fetchScriptRepos();
-        } catch (error) {
-            uploadStatus.textContent = `Error: ${error.message}`;
-            uploadStatus.classList.add('error');
-            console.error('User fetch error:', error);
         }
     });
 }
