@@ -670,3 +670,32 @@ main {
         max-width: 600px;
     }
 }
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px; /* Distance from the last form row */
+}
+
+/* Ensure the link button inherits the same style */
+.button-group a {
+    text-decoration: none; /* Remove underline from the link */
+}
+
+.example-btn {
+    background: #424250;
+    border: none;
+    padding: 10px 20px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
+    font-size: 16px;
+}
+
+/* Hover effect to match the Upload Script button */
+.example-btn:hover {
+    background: #A5A5CC;
+}
