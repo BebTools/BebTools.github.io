@@ -200,12 +200,6 @@ async function fetchScripts(repoName) {
                 const buttonContainer = document.createElement('div');
                 buttonContainer.className = 'button-container';
 
-                const viewBtn = document.createElement('button');
-                viewBtn.textContent = 'View';
-                viewBtn.className = 'view-btn';
-                viewBtn.onclick = () => viewScript(repoName, item.name);
-                buttonContainer.appendChild(viewBtn);
-
                 const renameBtn = document.createElement('button');
                 renameBtn.textContent = 'Rename';
                 renameBtn.className = 'rename-btn';
@@ -226,63 +220,6 @@ async function fetchScripts(repoName) {
         scriptStatus.textContent = `Error: ${error.message}`;
         scriptStatus.classList.add('error');
         console.error('Fetch scripts error:', error);
-    }
-}
-
-async function viewScript(repoName, folderName) {
-    const popup = document.createElement('div');
-    popup.className = 'popup';
-    popup.innerHTML = `
-        <div class="popup-left">
-            <pre class="language-python"><code class="language-python"></code></pre>
-        </div>
-        <div class="popup-right">
-            <div class="popup-header">
-                <h2 class="script-name">${folderName}</h2>
-                <p class="author">${username}</p>
-                <button class="close-btn">X</button>
-            </div>
-            <div class="popup-text scrollbox"></div>
-        </div>
-    `;
-    document.body.appendChild(popup);
-
-    const code = popup.querySelector('.language-python code');
-    const popupText = popup.querySelector('.popup-text');
-    const closeBtn = popup.querySelector('.close-btn');
-
-    try {
-        const folderResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${folderName}`, {
-            headers: { 'Authorization': `token ${auth.getToken()}` }
-        });
-        if (!folderResponse.ok) throw new Error('Failed to fetch folder contents');
-        const folderContents = await folderResponse.json();
-
-        const pyFile = folderContents.find(f => f.name.endsWith('.py'));
-        const txtFile = folderContents.find(f => f.name.endsWith('.txt'));
-
-        if (pyFile) {
-            const pyResponse = await fetch(pyFile.download_url);
-            const pyText = await pyResponse.text();
-            code.textContent = pyText;
-            Prism.highlightElement(code);
-        } else {
-            code.textContent = 'No Python file found.';
-        }
-
-        if (txtFile) {
-            const txtResponse = await fetch(txtFile.download_url);
-            const txtText = await txtResponse.text();
-            popupText.textContent = txtText;
-        } else {
-            popupText.textContent = 'No description available.';
-        }
-
-        closeBtn.addEventListener('click', () => popup.remove());
-    } catch (error) {
-        scriptStatus.textContent = `Error: ${error.message}`;
-        scriptStatus.classList.add('error');
-        console.error('View script error:', error);
     }
 }
 
@@ -503,7 +440,6 @@ templateBtn.addEventListener('click', () => {
 refreshReposBtn.addEventListener('click', () => {
     fetchRepos();
     fetchScriptRepos();
-    if (scriptRepoSelect.value) fetchScripts(scriptRepoSelect.value);
 });
 
 createRepoBtn.addEventListener('click', () => {
