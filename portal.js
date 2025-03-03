@@ -393,9 +393,13 @@ async function renameScriptFolder(repoName, oldName) {
         for (const item of contents) {
             const oldPath = item.path;
             const newPath = `${newName}/${newName}${oldPath.substring(oldPath.lastIndexOf('.'))}`;
-            const fileResponse = await fetch(item.download_url);
-            const content = await fileResponse.text();
-            const base64Content = btoa(content);
+            const fileResponse = await fetch(item.download_url, { method: 'GET', headers: { 'Accept': 'application/octet-stream' } });
+            const blob = await fileResponse.blob();
+            const reader = new FileReader();
+            const base64Content = await new Promise((resolve) => {
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(blob);
+            });
 
             await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${newPath}`, {
                 method: 'PUT',
