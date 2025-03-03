@@ -48,21 +48,14 @@ async function loginWithGitHub() {
 function updateLoginDisplay(user, loginBtn) {
     loginBtn.innerHTML = `<img src="${user.user_metadata.avatar_url}" alt="${user.user_metadata.preferred_username}"><span>${user.user_metadata.preferred_username}</span>`;
     loginBtn.classList.add('profile');
-    loginBtn.disabled = true;
+    loginBtn.disabled = false; // Ensure clickable for dropdown
 }
-
-window.auth = {
-    checkSession,
-    loginWithGitHub,
-    updateLoginDisplay,
-    getToken: () => token
-};
 
 async function signOut() {
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
-        token = null; // Clear token on logout
+        token = null;
         console.log('Signed out successfully');
     } catch (error) {
         console.error('Logout error:', error);
@@ -75,5 +68,5 @@ window.auth = {
     loginWithGitHub,
     updateLoginDisplay,
     getToken: () => token,
-    signOut // Expose signOut function
+    signOut
 };
