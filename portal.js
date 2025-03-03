@@ -14,6 +14,7 @@ const loginMessage = document.getElementById('login-message');
 const uploadSection = document.getElementById('upload-section');
 const repoSection = document.getElementById('repo-section');
 const repoList = document.getElementById('repo-list');
+const repoStatus = document.getElementById('repo-status');
 const templateBtn = document.getElementById('template-btn');
 const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
@@ -75,7 +76,13 @@ function setupDragAndDrop(input, dropZone) {
     dropZone.addEventListener('click', () => input.click());
     input.addEventListener('change', () => {
         validateFilenames();
-        dropZone.textContent = input.files[0] ? input.files[0].name : '';
+        if (input.files[0]) {
+            dropZone.textContent = input.files[0].name;
+            dropZone.style.backgroundImage = 'none'; // Remove SVG when file is added
+        } else {
+            dropZone.textContent = '';
+            dropZone.style.backgroundImage = "url('dragdrop.svg')"; // Restore SVG when no file
+        }
     });
 }
 
@@ -193,6 +200,9 @@ uploadForm.addEventListener('submit', async (e) => {
         pyDropZone.textContent = '';
         txtDropZone.textContent = '';
         pngDropZone.textContent = '';
+        pyDropZone.style.backgroundImage = "url('dragdrop.svg')";
+        txtDropZone.style.backgroundImage = "url('dragdrop.svg')";
+        pngDropZone.style.backgroundImage = "url('dragdrop.svg')";
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
         uploadStatus.classList.add('error');
@@ -209,11 +219,11 @@ async function createRepo(repoName) {
         });
         if (!response.ok) throw new Error('Failed to create repo');
         await updateRepoTopics(username, repoName);
-        uploadStatus.textContent = `Repository ${repoName} created! Refresh to select it.`;
+        repoStatus.textContent = `Repository ${repoName} created! Refresh to select it.`;
         newRepoNameInput.value = '';
     } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = `Error: ${error.message}`;
+        repoStatus.classList.add('error');
         console.error('Create repo error:', error);
     }
 }
@@ -253,11 +263,11 @@ async function deleteRepo(repoName) {
             headers: { 'Authorization': `token ${auth.getToken()}` }
         });
         if (!response.ok) throw new Error('Failed to delete repo');
-        uploadStatus.textContent = `${repoName} deleted.`;
+        repoStatus.textContent = `${repoName} deleted.`;
         fetchRepos();
     } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = `Error: ${error.message}`;
+        repoStatus.classList.add('error');
         console.error('Delete repo error:', error);
     }
 }
@@ -272,11 +282,11 @@ async function renameRepo(oldName) {
             body: JSON.stringify({ name: newName })
         });
         if (!response.ok) throw new Error('Failed to rename repo');
-        uploadStatus.textContent = `Repository renamed to ${newName}.`;
+        repoStatus.textContent = `Repository renamed to ${newName}.`;
         fetchRepos();
     } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = `Error: ${error.message}`;
+        repoStatus.classList.add('error');
         console.error('Rename repo error:', error);
     }
 }
@@ -301,8 +311,8 @@ refreshReposBtn.addEventListener('click', fetchRepos);
 createRepoBtn.addEventListener('click', () => {
     const repoName = newRepoNameInput.value.trim();
     if (!repoName) {
-        uploadStatus.textContent = 'Please enter a repository name.';
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = 'Please enter a repository name.';
+        repoStatus.classList.add('error');
         return;
     }
     createRepo(repoName);

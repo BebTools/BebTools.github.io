@@ -27,48 +27,51 @@
             <h1>Creator Portal</h1>
             <div id="login-message">Please log in with GitHub to upload and manage scripts.</div>
 
-            <!-- Upload Script Section -->
-            <div id="upload-section" class="section-box" style="display: none;">
-                <h2>Upload Script</h2>
-                <p class="instructions">Select a repo and drag your Blender script, ReadMe, and thumbnail into the boxes below to share your Blender script with the community.</p>
-                <form id="upload-form">
-                    <div class="form-row">
-                        <label for="repo-select">Select Repository:</label>
-                        <select id="repo-select"></select>
-                    </div>
-                    <div class="form-row">
-                        <label class="naming-rule" style="display: none;">Your .py, .txt, and .png should all have the same name.</label>
-                        <label for="py-file">Python Script (.py):</label>
-                        <div id="py-drop-zone" class="dropzone"></div>
-                        <input type="file" id="py-file" accept=".py" required>
-                    </div>
-                    <div class="form-row">
-                        <label for="txt-file">ReadMe (.txt):</label>
-                        <div id="txt-drop-zone" class="dropzone"></div>
-                        <input type="file" id="txt-file" accept=".txt">
-                    </div>
-                    <div class="form-row">
-                        <label for="png-file">Thumbnail (.png):</label>
-                        <div id="png-drop-zone" class="dropzone"></div>
-                        <input type="file" id="png-file" accept=".png" required>
-                        <p class="guidelines">Recommended: 400x200px, max 100KB</p>
-                    </div>
-                    <button type="submit">Upload Script</button>
-                    <button type="button" id="template-btn">Download Example</button>
-                </form>
-                <div id="upload-status"></div>
-            </div>
-
-            <!-- Manage Repositories Section -->
-            <div id="repo-section" class="section-box" style="display: none;">
-                <h2>Manage Repositories</h2>
-                <div class="create-repo">
-                    <label for="new-repo-name">Create New Repository:</label>
-                    <input type="text" id="new-repo-name" placeholder="e.g., MyBebToolsRepo">
-                    <button id="create-repo-btn">Create</button>
+            <div class="sections-wrapper">
+                <!-- Upload Script Section -->
+                <div id="upload-section" class="section-box" style="display: none;">
+                    <h2>Upload Script</h2>
+                    <p class="instructions">Select a repo and drag your Blender script, ReadMe, and thumbnail into the boxes below to share with the community.</p>
+                    <form id="upload-form">
+                        <div class="form-row">
+                            <label for="repo-select">Select Repository:</label>
+                            <select id="repo-select"></select>
+                        </div>
+                        <div class="form-row">
+                            <label class="naming-rule" style="display: none;">Your .py, .txt, and .png should all have the same name.</label>
+                            <label for="py-file">Python Script (.py):</label>
+                            <div id="py-drop-zone" class="dropzone"></div>
+                            <input type="file" id="py-file" accept=".py" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="txt-file">ReadMe (.txt):</label>
+                            <div id="txt-drop-zone" class="dropzone"></div>
+                            <input type="file" id="txt-file" accept=".txt">
+                        </div>
+                        <div class="form-row">
+                            <label for="png-file">Thumbnail (.png):</label>
+                            <div id="png-drop-zone" class="dropzone"></div>
+                            <input type="file" id="png-file" accept=".png" required>
+                            <p class="guidelines">Recommended: 400x200px, max 100KB</p>
+                        </div>
+                        <button type="submit">Upload Script</button>
+                        <button type="button" id="template-btn">Download Example</button>
+                    </form>
+                    <div id="upload-status"></div>
                 </div>
-                <button id="refresh-repos">Refresh Repos</button>
-                <ul id="repo-list"></ul>
+
+                <!-- Manage Repositories Section -->
+                <div id="repo-section" class="section-box" style="display: none;">
+                    <h2>Manage Repositories</h2>
+                    <div class="create-repo">
+                        <label for="new-repo-name">Create New Repository:</label>
+                        <input type="text" id="new-repo-name" placeholder="e.g., MyBebToolsRepo">
+                        <button id="create-repo-btn">Create</button>
+                    </div>
+                    <button id="refresh-repos">Refresh Repos</button>
+                    <ul id="repo-list"></ul>
+                    <div id="repo-status"></div>
+                </div>
             </div>
         </div>
     </main>

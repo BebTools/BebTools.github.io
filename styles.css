@@ -313,7 +313,7 @@ main {
 }
 
 .portal-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 80px auto 20px;
     padding: 20px;
     background: #17141F;
@@ -336,15 +336,23 @@ main {
     margin-bottom: 20px;
 }
 
+.sections-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
 .section-box {
     background: #252831;
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid #424250;
-    width: 100%;
-    max-width: 600px;
+    width: 45%;
+    max-width: 500px;
+    min-height: 400px; /* Ensure both sections have a consistent minimum height */
 }
 
 .section-box h2 {
@@ -585,14 +593,24 @@ main {
     background: #A5A5CC;
 }
 
-@media (max-width: 600px) {
-    .nav {
-        flex-wrap: wrap;
-    }
-    .portal-container {
-        padding: 10px;
+#repo-status {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #A5A5CC;
+    text-align: center;
+}
+
+#repo-status.error {
+    color: #FF9999; /* Light red */
+}
+
+@media (max-width: 800px) {
+    .sections-wrapper {
+        flex-direction: column;
+        align-items: center;
     }
     .section-box {
-        padding: 15px;
+        width: 100%;
+        max-width: 600px;
     }
 }
