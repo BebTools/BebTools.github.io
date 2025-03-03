@@ -165,17 +165,46 @@ async function copyZip(pyText, txtText, name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const loginBtn = document.getElementById('login-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const logoutBtn = document.getElementById('logout-btn');
+
     document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
 
-    loginBtn.addEventListener('click', async () => {
-        const error = await auth.loginWithGitHub();
-        if (error) alert(`Login failed: ${error}`);
+    let dropdownVisible = false;
+    loginBtn.addEventListener('click', async (e) => {
+        if (loginBtn.classList.contains('profile')) {
+            // Toggle dropdown if already logged in
+            dropdownVisible = !dropdownVisible;
+            profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
+        } else {
+            const error = await auth.loginWithGitHub();
+            if (error) alert(`Login failed: ${error}`);
+        }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+        await auth.signOut();
+        loginBtn.innerHTML = 'Login with GitHub';
+        loginBtn.classList.remove('profile');
+        loginBtn.disabled = false;
+        profileDropdown.style.display = 'none';
+        dropdownVisible = false;
+    });
+
+    // Close dropdown if clicking outside
+    document.addEventListener('click', (e) => {
+        if (!loginBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+            profileDropdown.style.display = 'none';
+            dropdownVisible = false;
+        }
     });
 
     auth.checkSession((user) => {
         auth.updateLoginDisplay(user, loginBtn);
+        profileDropdown.style.display = 'none'; // Ensure dropdown is hidden initially
     });
 
     loadScripts();

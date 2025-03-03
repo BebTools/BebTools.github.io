@@ -57,3 +57,23 @@ window.auth = {
     updateLoginDisplay,
     getToken: () => token
 };
+
+async function signOut() {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        token = null; // Clear token on logout
+        console.log('Signed out successfully');
+    } catch (error) {
+        console.error('Logout error:', error);
+        return error.message;
+    }
+}
+
+window.auth = {
+    checkSession,
+    loginWithGitHub,
+    updateLoginDisplay,
+    getToken: () => token,
+    signOut // Expose signOut function
+};

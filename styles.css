@@ -699,3 +699,38 @@ main {
 .example-btn:hover {
     background: #A5A5CC;
 }
+
+.profile-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #252831;
+    border: 1px solid #424250;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    min-width: 120px;
+    z-index: 20;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    text-align: left;
+    text-decoration: none;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: #424250;
+}

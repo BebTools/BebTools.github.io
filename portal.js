@@ -27,6 +27,11 @@ let username;
 
 async function checkSession() {
     auth.checkSession(async (user) => {
+        const loginBtn = document.getElementById('login-btn');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const logoutBtn = document.getElementById('logout-btn');
+        let dropdownVisible = false;
+
         if (!auth.getToken()) {
             loginBtn.textContent = 'Login to GitHub';
             loginBtn.classList.remove('profile');
@@ -40,6 +45,33 @@ async function checkSession() {
         repoSection.style.display = 'block';
         scriptSection.style.display = 'block';
         loginMessage.style.display = 'none';
+
+        loginBtn.addEventListener('click', () => {
+            dropdownVisible = !dropdownVisible;
+            profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await auth.signOut();
+            loginBtn.innerHTML = 'Login with GitHub';
+            loginBtn.classList.remove('profile');
+            loginBtn.disabled = false;
+            profileDropdown.style.display = 'none';
+            dropdownVisible = false;
+            uploadSection.style.display = 'none';
+            repoSection.style.display = 'none';
+            scriptSection.style.display = 'none';
+            loginMessage.style.display = 'block';
+        });
+
+        // Close dropdown if clicking outside
+        document.addEventListener('click', (e) => {
+            if (!loginBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.style.display = 'none';
+                dropdownVisible = false;
+            }
+        });
+
         console.log('Token:', auth.getToken());
         try {
             const response = await fetch('https://api.github.com/user', {
@@ -57,14 +89,6 @@ async function checkSession() {
         }
     });
 }
-
-loginBtn.addEventListener('click', async () => {
-    const error = await auth.loginWithGitHub();
-    if (error) {
-        uploadStatus.textContent = `Login failed: ${error}`;
-        uploadStatus.classList.add('error');
-    }
-});
 
 function setupDragAndDrop(input, dropZone) {
     dropZone.addEventListener('dragover', (e) => {
