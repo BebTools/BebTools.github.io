@@ -20,6 +20,10 @@ const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
 const createRepoBtn = document.getElementById('create-repo-btn');
 const namingRule = document.querySelector('.naming-rule');
+const scriptSection = document.getElementById('script-section');
+const scriptRepoSelect = document.getElementById('script-repo-select');
+const scriptList = document.getElementById('script-list');
+const scriptStatus = document.getElementById('script-status');
 let username;
 
 async function checkSession() {
@@ -35,6 +39,7 @@ async function checkSession() {
         auth.updateLoginDisplay(user, loginBtn);
         uploadSection.style.display = 'block';
         repoSection.style.display = 'block';
+        scriptSection.style.display = 'block';
         loginMessage.style.display = 'none';
         console.log('Token:', auth.getToken());
         try {
@@ -45,6 +50,7 @@ async function checkSession() {
             const userData = await response.json();
             username = userData.login;
             fetchRepos();
+            fetchScriptRepos();
         } catch (error) {
             uploadStatus.textContent = `Error: ${error.message}`;
             uploadStatus.classList.add('error');
@@ -78,10 +84,10 @@ function setupDragAndDrop(input, dropZone) {
         validateFilenames();
         if (input.files[0]) {
             dropZone.textContent = input.files[0].name;
-            dropZone.style.backgroundImage = 'none'; // Remove SVG when file is added
+            dropZone.style.backgroundImage = 'none';
         } else {
             dropZone.textContent = '';
-            dropZone.style.backgroundImage = "url('dragdrop.svg')"; // Restore SVG when no file
+            dropZone.style.backgroundImage = "url('dragdrop.svg')";
         }
     });
 }
@@ -133,7 +139,7 @@ async function fetchRepos() {
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Delete';
                 deleteBtn.className = 'delete-btn';
-                deleteBtn.onclick = () => deleteRepo(repo.name);
+                deleteBtn.onclick = () => window.open('https://docs.github.com/en/repositories/creating-and-managing-repositories/deleting-a-repository', '_blank');
                 buttonContainer.appendChild(deleteBtn);
 
                 li.appendChild(buttonContainer);
@@ -144,6 +150,76 @@ async function fetchRepos() {
         uploadStatus.textContent = `Error: ${error.message}`;
         uploadStatus.classList.add('error');
         console.error('Fetch repos error:', error);
+    }
+}
+
+async function fetchScriptRepos() {
+    if (!auth.getToken()) {
+        scriptStatus.textContent = 'Error: No GitHub token available.';
+        scriptStatus.classList.add('error');
+        return;
+    }
+    try {
+        const response = await fetch('https://api.github.com/user/repos', {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch repos');
+        const repos = await response.json();
+        scriptRepoSelect.innerHTML = '<option value="">-- Select a repository --</option>';
+        repos.forEach(repo => {
+            if (repo.topics && repo.topics.includes('bebtools')) {
+                const option = document.createElement('option');
+                option.value = repo.name;
+                option.textContent = repo.name;
+                scriptRepoSelect.appendChild(option);
+            }
+        });
+    } catch (error) {
+        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.classList.add('error');
+        console.error('Fetch script repos error:', error);
+    }
+}
+
+async function fetchScripts(repoName) {
+    if (!repoName) {
+        scriptList.innerHTML = '';
+        return;
+    }
+    try {
+        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents`, {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch repo contents');
+        const contents = await response.json();
+        scriptList.innerHTML = '';
+        contents.forEach(item => {
+            if (item.type === 'dir') {
+                const li = document.createElement('li');
+                li.textContent = item.name;
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+
+                const renameBtn = document.createElement('button');
+                renameBtn.textContent = 'Rename';
+                renameBtn.className = 'rename-btn';
+                renameBtn.onclick = () => renameScriptFolder(repoName, item.name);
+                buttonContainer.appendChild(renameBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteScriptFolder(repoName, item.name);
+                buttonContainer.appendChild(deleteBtn);
+
+                li.appendChild(buttonContainer);
+                scriptList.appendChild(li);
+            }
+        });
+    } catch (error) {
+        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.classList.add('error');
+        console.error('Fetch scripts error:', error);
     }
 }
 
@@ -256,20 +332,7 @@ async function updateRepoTopics(username, repoName) {
 }
 
 async function deleteRepo(repoName) {
-    if (!confirm(`Delete ${repoName}? This cannot be undone.`)) return;
-    try {
-        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `token ${auth.getToken()}` }
-        });
-        if (!response.ok) throw new Error('Failed to delete repo');
-        repoStatus.textContent = `${repoName} deleted.`;
-        fetchRepos();
-    } catch (error) {
-        repoStatus.textContent = `Error: ${error.message}`;
-        repoStatus.classList.add('error');
-        console.error('Delete repo error:', error);
-    }
+    window.open('https://docs.github.com/en/repositories/creating-and-managing-repositories/deleting-a-repository', '_blank');
 }
 
 async function renameRepo(oldName) {
@@ -284,10 +347,74 @@ async function renameRepo(oldName) {
         if (!response.ok) throw new Error('Failed to rename repo');
         repoStatus.textContent = `Repository renamed to ${newName}.`;
         fetchRepos();
+        fetchScriptRepos();
     } catch (error) {
         repoStatus.textContent = `Error: ${error.message}`;
         repoStatus.classList.add('error');
         console.error('Rename repo error:', error);
+    }
+}
+
+async function deleteScriptFolder(repoName, folderName) {
+    if (!confirm(`Delete folder ${folderName} and its contents? This cannot be undone.`)) return;
+    try {
+        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${folderName}`, {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch folder contents');
+        const contents = await response.json();
+
+        for (const item of contents) {
+            await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${item.path}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Delete ${item.path}`, sha: item.sha })
+            });
+        }
+        scriptStatus.textContent = `Folder ${folderName} deleted.`;
+        fetchScripts(repoName);
+    } catch (error) {
+        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.classList.add('error');
+        console.error('Delete script folder error:', error);
+    }
+}
+
+async function renameScriptFolder(repoName, oldName) {
+    const newName = prompt(`Enter new name for ${oldName}:`, oldName);
+    if (!newName || newName === oldName) return;
+    try {
+        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${oldName}`, {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch folder contents');
+        const contents = await response.json();
+
+        for (const item of contents) {
+            const oldPath = item.path;
+            const newPath = `${newName}/${newName}${oldPath.substring(oldPath.lastIndexOf('.'))}`;
+            const fileResponse = await fetch(item.download_url);
+            const content = await fileResponse.text();
+            const base64Content = btoa(content);
+
+            await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${newPath}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Rename ${oldPath} to ${newPath}`, content: base64Content })
+            });
+
+            await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${oldPath}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Delete ${oldPath}`, sha: item.sha })
+            });
+        }
+        scriptStatus.textContent = `Folder renamed to ${newName} and files updated.`;
+        fetchScripts(repoName);
+    } catch (error) {
+        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.classList.add('error');
+        console.error('Rename script folder error:', error);
     }
 }
 
@@ -306,7 +433,10 @@ templateBtn.addEventListener('click', () => {
     });
 });
 
-refreshReposBtn.addEventListener('click', fetchRepos);
+refreshReposBtn.addEventListener('click', () => {
+    fetchRepos();
+    fetchScriptRepos();
+});
 
 createRepoBtn.addEventListener('click', () => {
     const repoName = newRepoNameInput.value.trim();
@@ -316,6 +446,10 @@ createRepoBtn.addEventListener('click', () => {
         return;
     }
     createRepo(repoName);
+});
+
+scriptRepoSelect.addEventListener('change', () => {
+    fetchScripts(scriptRepoSelect.value);
 });
 
 setupDragAndDrop(pyFileInput, pyDropZone);

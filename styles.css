@@ -313,7 +313,7 @@ main {
 }
 
 .portal-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 80px auto 20px;
     padding: 20px;
     background: #17141F;
@@ -350,9 +350,9 @@ main {
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid #424250;
-    width: 45%;
+    width: 30%;
     max-width: 500px;
-    min-height: 400px; /* Ensure both sections have a consistent minimum height */
+    min-height: 400px;
 }
 
 .section-box h2 {
@@ -390,7 +390,7 @@ main {
 
 .naming-rule {
     font-size: 14px;
-    color: #FF9999; /* Light red */
+    color: #FF9999;
     text-align: center;
 }
 
@@ -438,7 +438,7 @@ main {
 }
 
 #upload-status.error {
-    color: #FF9999; /* Light red */
+    color: #FF9999;
 }
 
 #login-btn.profile {
@@ -601,10 +601,38 @@ main {
 }
 
 #repo-status.error {
-    color: #FF9999; /* Light red */
+    color: #FF9999;
 }
 
-@media (max-width: 800px) {
+#script-list {
+    list-style: none;
+    padding: 0;
+}
+
+#script-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #1E1C28;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #424250;
+    min-height: 40px;
+}
+
+#script-status {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #A5A5CC;
+    text-align: center;
+}
+
+#script-status.error {
+    color: #FF9999;
+}
+
+@media (max-width: 1200px) {
     .sections-wrapper {
         flex-direction: column;
         align-items: center;
