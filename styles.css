@@ -78,10 +78,16 @@ main {
 }
 
 .grid {
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 280px); /* Fixed 280px columns, auto-fit adjusts count */
+    gap: 15px; /* Matches your current spacing */
+    justify-content: center; /* Centers the grid if fewer boxes than columns */
+    max-width: 100%; /* Ensures it fits the viewport */
+    padding: 20px; /* Keeps your main padding */
 }
 
 .grid-box {
+    width: 280px; /* Fixed width */
     background: #252831;
     padding: 10px;
     text-align: center;
@@ -96,8 +102,8 @@ main {
 }
 
 .grid-box img {
-    width: 400px;
-    height: 300px;
+    width: 280px; /* Matches box width */
+    height: 210px; /* Fixed height, 4:3 ratio with 280px */
     object-fit: cover;
     border-radius: 4px;
 }
