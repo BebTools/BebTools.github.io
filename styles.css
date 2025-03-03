@@ -713,14 +713,15 @@ main {
     border: 1px solid #424250;
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    min-width: 120px;
+    width: 140px; /* Fixed width to fit "My Scripts" */
     z-index: 20;
+    overflow: hidden; /* Prevent content from spilling out */
 }
 
 .dropdown-item {
     display: block;
     width: 100%;
-    padding: 8px 16px;
+    padding: 8px 12px; /* Reduced horizontal padding from 16px to 12px */
     background: none;
     border: none;
     color: #FFFFFF;
@@ -729,6 +730,8 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     transition: background 0.3s ease;
+    box-sizing: border-box; /* Include padding in width calculation */
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .dropdown-item:hover {
