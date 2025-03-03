@@ -285,30 +285,26 @@ main {
     color: #A5A5CC;
 }
 
-.scrollbox {
-    background: #252831;
-    padding: 15px;
-    height: calc(70% - 30px);
-    width: calc(100% - 30px);
+.scroll-container {
+    max-height: 200px;
     overflow-y: auto;
+    padding: 5px;
+    background: #252831;
     border-radius: 4px;
-    white-space: pre-wrap;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
-    font-family: monospace;
-    max-height: calc(80vh - 30px - 24vh);
 }
 
-.scrollbox::-webkit-scrollbar {
+.scroll-container::-webkit-scrollbar {
     width: 8px;
 }
 
-.scrollbox::-webkit-scrollbar-thumb {
+.scroll-container::-webkit-scrollbar-thumb {
     background: #424250;
     border-radius: 4px;
 }
 
-.scrollbox::-webkit-scrollbar-track {
+.scroll-container::-webkit-scrollbar-track {
     background: #252831;
 }
 
@@ -324,9 +320,26 @@ main {
 
 .portal-container h1 {
     font-size: 28px;
-    margin: 0 0 20px;
+    margin: 0 0 10px;
     color: #FFFFFF;
     text-align: center;
+}
+
+#refresh-repos {
+    background: #424250;
+    border: none;
+    padding: 10px 20px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+#refresh-repos:hover {
+    background: #A5A5CC;
 }
 
 #login-message {
@@ -359,6 +372,13 @@ main {
     font-size: 20px;
     margin: 0 0 15px;
     color: #FFFFFF;
+    text-align: center;
+}
+
+.section-box h3 {
+    font-size: 16px;
+    margin: 15px 0 10px;
+    color: #A5A5CC;
     text-align: center;
 }
 
@@ -534,30 +554,10 @@ main {
     background: #A5A5CC;
 }
 
-#repo-section button {
-    background: #424250;
-    border: none;
-    padding: 10px 20px;
-    color: #FFFFFF;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    font-family: 'Bungee', cursive;
-    font-size: 14px;
-    margin-bottom: 15px;
-    align-self: center;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#repo-section button:hover {
-    background: #A5A5CC;
-}
-
 #repo-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 #repo-list li {
@@ -607,6 +607,7 @@ main {
 #script-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 #script-list li {

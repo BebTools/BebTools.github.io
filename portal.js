@@ -440,6 +440,7 @@ templateBtn.addEventListener('click', () => {
 refreshReposBtn.addEventListener('click', () => {
     fetchRepos();
     fetchScriptRepos();
+    if (scriptRepoSelect.value) fetchScripts(scriptRepoSelect.value);
 });
 
 createRepoBtn.addEventListener('click', () => {
