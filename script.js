@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-console.log('script.js loaded');
-
-const loginBtn = document.getElementById('login-btn');
-=======
->>>>>>> parent of b8c0a02 (3.2.25)
 const grid = document.querySelector('.grid');
 const popup = document.querySelector('.popup');
 const code = document.querySelector('.language-python');
