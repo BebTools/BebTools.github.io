@@ -161,6 +161,10 @@ async function copyZip(pyText, txtText, name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logout-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    let dropdownVisible = false;
+
     document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
