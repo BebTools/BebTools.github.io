@@ -177,11 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginBtn.addEventListener('click', async (e) => {
         if (loginBtn.classList.contains('profile')) {
-            // User is logged in: toggle dropdown
             dropdownVisible = !dropdownVisible;
             profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
         } else {
-            // User is not logged in: trigger GitHub login
             const error = await auth.loginWithGitHub();
             if (error) alert(`Login failed: ${error}`);
         }
@@ -196,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdownVisible = false;
     });
 
-    // Close dropdown if clicking outside
     document.addEventListener('click', (e) => {
         if (!loginBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
             profileDropdown.style.display = 'none';
@@ -207,8 +204,12 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.checkSession((user) => {
         if (user) {
             auth.updateLoginDisplay(user, loginBtn);
+            profileDropdown.style.display = 'none'; // Hidden until clicked
+        } else {
+            loginBtn.innerHTML = 'Login with GitHub';
+            loginBtn.classList.remove('profile');
+            loginBtn.disabled = false;
         }
-        profileDropdown.style.display = 'none'; // Ensure dropdown is hidden initially
     });
 
     loadScripts();

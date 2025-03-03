@@ -38,6 +38,7 @@ async function checkSession() {
             repoSection.style.display = 'block';
             scriptSection.style.display = 'block';
             loginMessage.style.display = 'none';
+            profileDropdown.style.display = 'none'; // Hidden until clicked
 
             try {
                 const response = await fetch('https://api.github.com/user', {
@@ -57,8 +58,10 @@ async function checkSession() {
             loginBtn.textContent = 'Login to GitHub';
             loginBtn.classList.remove('profile');
             loginBtn.disabled = false;
-            uploadStatus.textContent = 'Please log in with GitHub to upload and manage scripts.';
-            uploadStatus.classList.add('error');
+            uploadSection.style.display = 'none';
+            repoSection.style.display = 'none';
+            scriptSection.style.display = 'none';
+            loginMessage.style.display = 'block';
         }
     });
 
