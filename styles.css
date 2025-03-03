@@ -461,27 +461,21 @@ main {
     padding: 20px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
     background: url('dragdrop.svg') no-repeat center;
-    background-size: 32px; /* 50% of 60px height */
+    background-size: 32px;
     height: 60px;
     background-color: #1E1C28;
     cursor: pointer;
-    position: relative;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A5A5CC;
+    font-size: 14px;
 }
 
 .dropzone.dragover {
     border-color: #A5A5CC;
     background-color: #2A2836;
-}
-
-.dropzone::before {
-    content: '';
-    display: block;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .guidelines {
@@ -567,9 +561,15 @@ main {
     margin-bottom: 10px;
     border-radius: 4px;
     border: 1px solid #424250;
+    min-height: 40px;
 }
 
-.delete-btn {
+.button-container {
+    display: flex;
+    gap: 5px;
+}
+
+.rename-btn, .delete-btn {
     background: #424250;
     border: none;
     padding: 5px 10px;
@@ -578,9 +578,10 @@ main {
     cursor: pointer;
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
+    font-size: 12px;
 }
 
-.delete-btn:hover {
+.rename-btn:hover, .delete-btn:hover {
     background: #A5A5CC;
 }
 

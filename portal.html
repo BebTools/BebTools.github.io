@@ -39,15 +39,18 @@
                     <div class="form-row">
                         <label class="naming-rule" style="display: none;">Your .py, .txt, and .png should all have the same name.</label>
                         <label for="py-file">Python Script (.py):</label>
-                        <input type="file" id="py-file" accept=".py" class="dropzone" required>
+                        <div id="py-drop-zone" class="dropzone"></div>
+                        <input type="file" id="py-file" accept=".py" required>
                     </div>
                     <div class="form-row">
                         <label for="txt-file">ReadMe (.txt):</label>
-                        <input type="file" id="txt-file" accept=".txt" class="dropzone">
+                        <div id="txt-drop-zone" class="dropzone"></div>
+                        <input type="file" id="txt-file" accept=".txt">
                     </div>
                     <div class="form-row">
                         <label for="png-file">Thumbnail (.png):</label>
-                        <input type="file" id="png-file" accept=".png" class="dropzone" required>
+                        <div id="png-drop-zone" class="dropzone"></div>
+                        <input type="file" id="png-file" accept=".png" required>
                         <p class="guidelines">Recommended: 400x200px, max 100KB</p>
                     </div>
                     <button type="submit">Upload Script</button>

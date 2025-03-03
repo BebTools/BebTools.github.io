@@ -6,6 +6,9 @@ const repoSelect = document.getElementById('repo-select');
 const pyFileInput = document.getElementById('py-file');
 const txtFileInput = document.getElementById('txt-file');
 const pngFileInput = document.getElementById('png-file');
+const pyDropZone = document.getElementById('py-drop-zone');
+const txtDropZone = document.getElementById('txt-drop-zone');
+const pngDropZone = document.getElementById('png-drop-zone');
 const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 const uploadSection = document.getElementById('upload-section');
@@ -21,10 +24,10 @@ let username;
 async function checkSession() {
     auth.checkSession(async (user) => {
         if (!auth.getToken()) {
-            loginBtn.textContent = 'Login to GitHub Again';
+            loginBtn.textContent = 'Login to GitHub';
             loginBtn.classList.remove('profile');
             loginBtn.disabled = false;
-            uploadStatus.textContent = 'Error: No GitHub token available. Please log in again.';
+            uploadStatus.textContent = 'Error: No GitHub token available. Please log in.';
             uploadStatus.classList.add('error');
             return;
         }
@@ -57,19 +60,23 @@ loginBtn.addEventListener('click', async () => {
     }
 });
 
-function setupDragAndDrop(input) {
-    input.addEventListener('dragover', (e) => {
+function setupDragAndDrop(input, dropZone) {
+    dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        input.classList.add('dragover');
+        dropZone.classList.add('dragover');
     });
-    input.addEventListener('dragleave', () => input.classList.remove('dragover'));
-    input.addEventListener('drop', (e) => {
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        input.classList.remove('dragover');
+        dropZone.classList.remove('dragover');
         input.files = e.dataTransfer.files;
         input.dispatchEvent(new Event('change'));
     });
-    input.addEventListener('change', () => validateFilenames());
+    dropZone.addEventListener('click', () => input.click());
+    input.addEventListener('change', () => {
+        validateFilenames();
+        dropZone.textContent = input.files[0] ? input.files[0].name : '';
+    });
 }
 
 function validateFilenames() {
@@ -107,11 +114,22 @@ async function fetchRepos() {
 
                 const li = document.createElement('li');
                 li.textContent = repo.name;
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+
+                const renameBtn = document.createElement('button');
+                renameBtn.textContent = 'Rename';
+                renameBtn.className = 'rename-btn';
+                renameBtn.onclick = () => renameRepo(repo.name);
+                buttonContainer.appendChild(renameBtn);
+
                 const deleteBtn = document.createElement('button');
                 deleteBtn.textContent = 'Delete';
                 deleteBtn.className = 'delete-btn';
                 deleteBtn.onclick = () => deleteRepo(repo.name);
-                li.appendChild(deleteBtn);
+                buttonContainer.appendChild(deleteBtn);
+
+                li.appendChild(buttonContainer);
                 repoList.appendChild(li);
             }
         });
@@ -172,6 +190,9 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
         namingRule.style.display = 'none';
+        pyDropZone.textContent = '';
+        txtDropZone.textContent = '';
+        pngDropZone.textContent = '';
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
         uploadStatus.classList.add('error');
@@ -241,6 +262,25 @@ async function deleteRepo(repoName) {
     }
 }
 
+async function renameRepo(oldName) {
+    const newName = prompt(`Enter new name for ${oldName}:`, oldName);
+    if (!newName || newName === oldName) return;
+    try {
+        const response = await fetch(`https://api.github.com/repos/${username}/${oldName}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `token ${auth.getToken()}', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName })
+        });
+        if (!response.ok) throw new Error('Failed to rename repo');
+        uploadStatus.textContent = `Repository renamed to ${newName}.`;
+        fetchRepos();
+    } catch (error) {
+        uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.classList.add('error');
+        console.error('Rename repo error:', error);
+    }
+}
+
 templateBtn.addEventListener('click', () => {
     const zip = new JSZip();
     zip.file('example.py', '# Blender Script Example\nimport bpy\nprint("Hello, Blender!")');
@@ -268,8 +308,8 @@ createRepoBtn.addEventListener('click', () => {
     createRepo(repoName);
 });
 
-setupDragAndDrop(pyFileInput);
-setupDragAndDrop(txtFileInput);
-setupDragAndDrop(pngFileInput);
+setupDragAndDrop(pyFileInput, pyDropZone);
+setupDragAndDrop(txtFileInput, txtDropZone);
+setupDragAndDrop(pngFileInput, pngDropZone);
 
 checkSession();
