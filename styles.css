@@ -78,9 +78,7 @@ main {
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(800px, 1fr)); /* Adjusted for 800px width */
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 }
 
 .grid-box {
@@ -98,8 +96,8 @@ main {
 }
 
 .grid-box img {
-    width: 800px;  /* Fixed width */
-    height: 600px; /* Fixed height */
+    width: 400px;
+    height: 300px;
     object-fit: cover;
     border-radius: 4px;
 }
