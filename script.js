@@ -35,18 +35,14 @@ async function loadScripts() {
                 headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
             });
             const files = await contents.json();
-            const scriptFolders = files.filter(f => f.type === 'dir');
-            for (const scriptFolder of scriptFolders) {
-                const folderContents = await fetch(scriptFolder.url, {
-                    headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
-                });
-                const folderFiles = await folderContents.json();
-                const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
-                const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
-                const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
+            const pyFiles = files.filter(f => f.name.endsWith('.py'));
+            for (const pyFile of pyFiles) {
+                const baseName = pyFile.name.replace('.py', '');
+                const txtFile = files.find(f => f.name === `${baseName}.txt`);
+                const pngFile = files.find(f => f.name === `${baseName}.png`);
                 if (pyFile && pngFile) {
                     const scriptData = {
-                        name: scriptFolder.name,
+                        name: baseName,
                         author: repo.owner.login,
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
@@ -165,15 +161,9 @@ async function copyZip(pyText, txtText, name) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loginBtn = document.getElementById('login-btn');
-    const profileDropdown = document.getElementById('profile-dropdown');
-    const logoutBtn = document.getElementById('logout-btn');
-
     document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
-
-    let dropdownVisible = false;
 
     loginBtn.addEventListener('click', async (e) => {
         if (loginBtn.classList.contains('profile')) {
@@ -204,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     auth.checkSession((user) => {
         if (user) {
             auth.updateLoginDisplay(user, loginBtn);
-            profileDropdown.style.display = 'none'; // Hidden until clicked
+            profileDropdown.style.display = 'none';
         } else {
             loginBtn.innerHTML = 'Login with GitHub';
             loginBtn.classList.remove('profile');

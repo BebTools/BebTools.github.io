@@ -38,8 +38,6 @@ async function checkSession() {
             repoSection.style.display = 'block';
             scriptSection.style.display = 'block';
             loginMessage.style.display = 'none';
-            profileDropdown.style.display = 'none'; // Hidden until clicked
-
             try {
                 const response = await fetch('https://api.github.com/user', {
                     headers: { 'Authorization': `token ${auth.getToken()}` }
@@ -225,28 +223,28 @@ async function fetchScripts(repoName) {
         if (!response.ok) throw new Error('Failed to fetch repo contents');
         const contents = await response.json();
         scriptList.innerHTML = '';
-        contents.forEach(item => {
-            if (item.type === 'dir') {
-                const li = document.createElement('li');
-                li.textContent = item.name;
-                const buttonContainer = document.createElement('div');
-                buttonContainer.className = 'button-container';
+        const pyFiles = contents.filter(item => item.name.endsWith('.py'));
+        pyFiles.forEach(item => {
+            const baseName = item.name.replace('.py', '');
+            const li = document.createElement('li');
+            li.textContent = baseName;
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
 
-                const renameBtn = document.createElement('button');
-                renameBtn.textContent = 'Rename';
-                renameBtn.className = 'rename-btn';
-                renameBtn.onclick = () => renameScriptFolder(repoName, item.name);
-                buttonContainer.appendChild(renameBtn);
+            const renameBtn = document.createElement('button');
+            renameBtn.textContent = 'Rename';
+            renameBtn.className = 'rename-btn';
+            renameBtn.onclick = () => renameScriptFolder(repoName, baseName);
+            buttonContainer.appendChild(renameBtn);
 
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.onclick = () => deleteScriptFolder(repoName, item.name);
-                buttonContainer.appendChild(deleteBtn);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.onclick = () => deleteScriptFolder(repoName, baseName);
+            buttonContainer.appendChild(deleteBtn);
 
-                li.appendChild(buttonContainer);
-                scriptList.appendChild(li);
-            }
+            li.appendChild(buttonContainer);
+            scriptList.appendChild(li);
         });
     } catch (error) {
         scriptStatus.textContent = `Error: ${error.message}`;
@@ -295,13 +293,13 @@ uploadForm.addEventListener('submit', async (e) => {
 
     try {
         uploadStatus.textContent = 'Uploading Python script...';
-        await uploadFile(username, repoName, `${baseName}/${baseName}.py`, pyFile);
+        await uploadFile(username, repoName, `${baseName}.py`, pyFile);
         if (txtFile) {
             uploadStatus.textContent = 'Uploading ReadMe...';
-            await uploadFile(username, repoName, `${baseName}/${baseName}.txt`, txtFile);
+            await uploadFile(username, repoName, `${baseName}.txt`, txtFile);
         }
         uploadStatus.textContent = 'Uploading thumbnail...';
-        await uploadFile(username, repoName, `${baseName}/${baseName}.png`, pngFile);
+        await uploadFile(username, repoName, `${baseName}.png`, pngFile);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
         namingRule.style.display = 'none';
@@ -363,10 +361,6 @@ async function updateRepoTopics(username, repoName) {
     if (!response.ok) throw new Error('Failed to tag repo');
 }
 
-async function deleteRepo(repoName) {
-    window.open('https://docs.github.com/en/repositories/creating-and-managing-repositories/deleting-a-repository', '_blank');
-}
-
 async function renameRepo(oldName) {
     const newName = prompt(`Enter new name for ${oldName}:`, oldName);
     if (!newName || newName === oldName) return;
@@ -387,44 +381,56 @@ async function renameRepo(oldName) {
     }
 }
 
-async function deleteScriptFolder(repoName, folderName) {
-    if (!confirm(`Delete folder ${folderName} and its contents? This cannot be undone.`)) return;
+async function deleteScriptFolder(repoName, baseName) {
+    if (!confirm(`Delete script ${baseName} and its files? This cannot be undone.`)) return;
     try {
-        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${folderName}`, {
+        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents`, {
             headers: { 'Authorization': `token ${auth.getToken()}` }
         });
-        if (!response.ok) throw new Error('Failed to fetch folder contents');
+        if (!response.ok) throw new Error('Failed to fetch repo contents');
         const contents = await response.json();
 
-        for (const item of contents) {
-            await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${item.path}`, {
+        const filesToDelete = contents.filter(item => 
+            item.name === `${baseName}.py` || 
+            item.name === `${baseName}.txt` || 
+            item.name === `${baseName}.png`
+        );
+
+        for (const item of filesToDelete) {
+            await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${item.name}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: `Delete ${item.path}`, sha: item.sha })
+                body: JSON.stringify({ message: `Delete ${item.name}`, sha: item.sha })
             });
         }
-        scriptStatus.textContent = `Folder ${folderName} deleted.`;
+        scriptStatus.textContent = `Script ${baseName} deleted.`;
         fetchScripts(repoName);
     } catch (error) {
         scriptStatus.textContent = `Error: ${error.message}`;
         scriptStatus.classList.add('error');
-        console.error('Delete script folder error:', error);
+        console.error('Delete script error:', error);
     }
 }
 
-async function renameScriptFolder(repoName, oldName) {
-    const newName = prompt(`Enter new name for ${oldName}:`, oldName);
-    if (!newName || newName === oldName) return;
+async function renameScriptFolder(repoName, oldBaseName) {
+    const newBaseName = prompt(`Enter new name for ${oldBaseName}:`, oldBaseName);
+    if (!newBaseName || newBaseName === oldBaseName) return;
     try {
-        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents/${oldName}`, {
+        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/contents`, {
             headers: { 'Authorization': `token ${auth.getToken()}` }
         });
-        if (!response.ok) throw new Error('Failed to fetch folder contents');
+        if (!response.ok) throw new Error('Failed to fetch repo contents');
         const contents = await response.json();
 
-        for (const item of contents) {
-            const oldPath = item.path;
-            const newPath = `${newName}/${newName}${oldPath.substring(oldPath.lastIndexOf('.'))}`;
+        const filesToRename = contents.filter(item => 
+            item.name === `${oldBaseName}.py` || 
+            item.name === `${oldBaseName}.txt` || 
+            item.name === `${oldBaseName}.png`
+        );
+
+        for (const item of filesToRename) {
+            const oldPath = item.name;
+            const newPath = `${newBaseName}${oldPath.substring(oldPath.lastIndexOf('.'))}`;
             const fileResponse = await fetch(item.download_url, { method: 'GET', headers: { 'Accept': 'application/octet-stream' } });
             const blob = await fileResponse.blob();
             const reader = new FileReader();
@@ -445,12 +451,12 @@ async function renameScriptFolder(repoName, oldName) {
                 body: JSON.stringify({ message: `Delete ${oldPath}`, sha: item.sha })
             });
         }
-        scriptStatus.textContent = `Folder renamed to ${newName} and files updated.`;
+        scriptStatus.textContent = `Script renamed to ${newBaseName}.`;
         fetchScripts(repoName);
     } catch (error) {
         scriptStatus.textContent = `Error: ${error.message}`;
         scriptStatus.classList.add('error');
-        console.error('Rename script folder error:', error);
+        console.error('Rename script error:', error);
     }
 }
 
