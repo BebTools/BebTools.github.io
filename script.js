@@ -1,9 +1,5 @@
 console.log('script.js loaded');
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-const supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const loginBtn = document.getElementById('login-btn');
 const grid = document.querySelector('.grid');
 const loadMoreBtn = document.querySelector('.load-more');
