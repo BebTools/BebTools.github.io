@@ -268,7 +268,7 @@ async function renameRepo(oldName) {
     try {
         const response = await fetch(`https://api.github.com/repos/${username}/${oldName}`, {
             method: 'PATCH',
-            headers: { 'Authorization': `token ${auth.getToken()}', 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `token ${auth.getToken()}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: newName })
         });
         if (!response.ok) throw new Error('Failed to rename repo');
