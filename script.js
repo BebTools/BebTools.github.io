@@ -1,182 +1,120 @@
-const grid = document.querySelector('.grid');
-const popup = document.querySelector('.popup');
-const code = document.querySelector('.language-python');
-const scriptName = document.querySelector('.script-name');
-const author = document.querySelector('.author');
-const stars = document.querySelector('.stars');
-const popupText = document.querySelector('.popup-text');
-const searchInput = document.getElementById('search-input');
+console.log('script.js loaded');
+
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const supabase = window.Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const loginBtn = document.getElementById('login-btn');
-let allScripts = [];
+const grid = document.querySelector('.grid');
+const loadMoreBtn = document.querySelector('.load-more');
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+const popup = document.querySelector('.popup');
+const code = popup.querySelector('.language-python code');
+const popupText = popup.querySelector('.popup-text');
+const scriptName = popup.querySelector('.script-name');
+const author = popup.querySelector('.author');
+const stars = popup.querySelector('.stars');
+const closeBtn = popup.querySelector('.close-btn');
 let page = 1;
-let loading = false;
 
-async function loadScripts() {
-    if (loading) return;
-    loading = true;
-    console.log(`Loading page ${page}...`);
+async function checkSession() {
+    auth.checkSession((user) => auth.updateLoginDisplay(user, loginBtn));
+}
+
+loginBtn.addEventListener('click', async () => {
+    const error = await auth.loginWithGitHub();
+    if (error) console.error('Login error:', error);
+});
+
+async function fetchRepos(query = '') {
     try {
-        const response = await fetch(`https://api.github.com/search/repositories?q=topic:bebtools&per_page=12&page=${page}`, {
-            headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        grid.innerHTML = ''; // Clear current grid
+        page = 1; // Reset page for new search
+        const headers = auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {};
+        let url = `https://api.github.com/search/repositories?q=topic:bebtools&sort=stars&order=desc&page=${page}&per_page=12`;
+        if (query) {
+            url = `https://api.github.com/search/repositories?q=topic:bebtools+${encodeURIComponent(query)}&sort=stars&order=desc&page=${page}&per_page=12`;
+        }
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error('Failed to fetch repos');
         const data = await response.json();
-        console.log(`Found ${data.items.length} repos on page ${page}`);
-        const repos = data.items;
-
-        if (repos.length === 0) {
-            console.log('No more scripts to load.');
-            document.querySelector('.load-more').style.display = 'none';
-            return;
-        }
-
-        for (const repo of repos) {
-            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`, {
-                headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
-            });
-            const files = await contents.json();
-            const scriptFolders = files.filter(f => f.type === 'dir');
-            for (const scriptFolder of scriptFolders) {
-                const folderContents = await fetch(scriptFolder.url, {
-                    headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
-                });
-                const folderFiles = await folderContents.json();
-                const pyFile = folderFiles.find(f => f.name.endsWith('.py'));
-                const txtFile = folderFiles.find(f => f.name.endsWith('.txt'));
-                const pngFile = folderFiles.find(f => f.name.endsWith('.png'));
-                if (pyFile && pngFile) {
-                    const scriptData = {
-                        name: scriptFolder.name,
-                        author: repo.owner.login,
-                        stars: repo.stargazers_count,
-                        pyUrl: pyFile.download_url,
-                        txtUrl: txtFile ? txtFile.download_url : '',
-                        pngUrl: pngFile.download_url
-                    };
-                    allScripts.push(scriptData);
-                }
-            }
-        }
-        page++;
-        renderGrid();
+        const filteredRepos = await filterReposByFolder(data.items, query);
+        renderRepos(filteredRepos);
+        loadMoreBtn.style.display = filteredRepos.length < 12 ? 'none' : 'block';
     } catch (error) {
-        console.error('Error loading scripts:', error);
-    } finally {
-        loading = false;
+        console.error('Fetch error:', error);
     }
 }
 
-function renderGrid() {
-    grid.innerHTML = '';
-    const searchTerm = searchInput.value.toLowerCase();
-    const filteredScripts = allScripts.filter(script => script.name.toLowerCase().includes(searchTerm));
-    filteredScripts.forEach(script => {
+async function filterReposByFolder(repos, folderQuery) {
+    if (!folderQuery) return repos; // No filter if query is empty
+    const filtered = [];
+    for (const repo of repos) {
+        const contentsResponse = await fetch(`https://api.github.com/repos/${repo.owner.login}/${repo.name}/contents`, {
+            headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+        });
+        if (contentsResponse.ok) {
+            const contents = await contentsResponse.json();
+            if (contents.some(item => item.type === 'dir' && item.name.toLowerCase().includes(folderQuery.toLowerCase()))) {
+                filtered.push(repo);
+            }
+        }
+    }
+    return filtered;
+}
+
+function renderRepos(repos) {
+    repos.forEach(repo => {
+        const folder = repo.name;
+        const owner = repo.owner.login;
+        const starsCount = repo.stargazers_count;
         const box = document.createElement('div');
         box.className = 'grid-box';
         box.innerHTML = `
-            <img src="${script.pngUrl}" alt="${script.name}">
-            <div class="name">${script.name}</div>
-            <div class="author">${script.author}</div>
-            <div class="stars">⭐ ${script.stars}</div>
+            <img src="https://raw.githubusercontent.com/${owner}/${folder}/main/${folder}/${folder}.png" alt="${folder}">
+            <div class="name">${folder}</div>
+            <div class="author">${owner}</div>
+            <div class="stars">⭐ ${starsCount}</div>
         `;
-        box.dataset.pyUrl = script.pyUrl;
-        box.dataset.txtUrl = script.txtUrl;
-        box.dataset.pngUrl = script.pngUrl;
-        box.dataset.name = script.name;
-        box.dataset.author = script.author;
-        box.dataset.stars = script.stars;
-        box.addEventListener('click', showPopup);
+        box.addEventListener('click', () => showPopup(owner, folder, starsCount));
         grid.appendChild(box);
     });
 }
 
-async function showPopup(event) {
-    const box = event.currentTarget;
+async function showPopup(owner, folder, starsCount) {
     popup.style.display = 'flex';
-    scriptName.textContent = box.dataset.name;
-    author.textContent = box.dataset.author;
-    stars.textContent = `⭐ ${box.dataset.stars}`;
+    scriptName.textContent = folder;
+    author.textContent = owner;
+    stars.textContent = `⭐ ${starsCount}`;
 
-    const header = document.querySelector('.popup-header');
-    let infoBar = header.querySelector('.info-bar');
-    if (!infoBar) {
-        infoBar = document.createElement('div');
-        infoBar.className = 'info-bar';
-        header.insertBefore(infoBar, header.firstChild);
-    } else {
-        infoBar.innerHTML = '';
+    try {
+        const pyResponse = await fetch(`https://raw.githubusercontent.com/${owner}/${folder}/main/${folder}/${folder}.py`);
+        code.textContent = await pyResponse.text();
+        Prism.highlightElement(code);
+
+        const txtResponse = await fetch(`https://raw.githubusercontent.com/${owner}/${folder}/main/${folder}/${folder}.txt`);
+        popupText.textContent = await txtResponse.text();
+    } catch (error) {
+        console.error('Popup fetch error:', error);
     }
-    infoBar.appendChild(author);
-    infoBar.appendChild(stars);
-
-    const downloadBtn = document.createElement('button');
-    downloadBtn.className = 'download-btn';
-    infoBar.appendChild(downloadBtn);
-
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-btn';
-    infoBar.appendChild(copyBtn);
-
-    let img = header.querySelector('img');
-    if (!img) {
-        img = document.createElement('img');
-        header.insertBefore(img, scriptName);
-    }
-    img.src = box.dataset.pngUrl;
-
-    const maxWidth = scriptName.offsetWidth;
-    let fontSize = 24;
-    scriptName.style.fontSize = `${fontSize}px`;
-    while (scriptName.scrollWidth > maxWidth && fontSize > 12) {
-        fontSize--;
-        scriptName.style.fontSize = `${fontSize}px`;
-    }
-
-    const pyText = await (await fetch(box.dataset.pyUrl)).text();
-    code.innerHTML = pyText;
-    Prism.highlightElement(code);
-    const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
-    popupText.textContent = txtText;
-
-    downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
-    copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
 }
 
-async function downloadZip(pyText, txtText, name) {
-    const zip = new JSZip();
-    zip.file(`${name}.py`, pyText);
-    zip.file(`${name}.txt`, txtText);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${name}-script.zip`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-async function copyZip(pyText, txtText, name) {
-    const zip = new JSZip();
-    zip.file(`${name}.py`, pyText);
-    zip.file(`${name}.txt`, txtText);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    navigator.clipboard.writeText(url).then(() => alert('Copied to clipboard! Paste into Beb Tools.'));
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
-    document.querySelector('.load-more').addEventListener('click', loadScripts);
-    searchInput.addEventListener('input', renderGrid);
-
-    loginBtn.addEventListener('click', async () => {
-        const error = await auth.loginWithGitHub();
-        if (error) alert(`Login failed: ${error}`);
-    });
-
-    auth.checkSession((user) => {
-        auth.updateLoginDisplay(user, loginBtn);
-    });
-
-    loadScripts();
+closeBtn.addEventListener('click', () => {
+    popup.style.display = 'none';
+    code.textContent = '';
+    popupText.textContent = '';
 });
+
+loadMoreBtn.addEventListener('click', () => {
+    page++;
+    fetchRepos(searchInput.value.trim());
+});
+
+searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    fetchRepos(query);
+});
+
+fetchRepos();
+checkSession();
