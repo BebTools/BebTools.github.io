@@ -15,6 +15,7 @@ const uploadSection = document.getElementById('upload-section');
 const repoSection = document.getElementById('repo-section');
 const repoList = document.getElementById('repo-list');
 const repoStatus = document.getElementById('repo-status');
+const templateBtn = document.getElementById('template-btn');
 const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
 const createRepoBtn = document.getElementById('create-repo-btn');
@@ -420,6 +421,21 @@ async function renameScriptFolder(repoName, oldName) {
         console.error('Rename script folder error:', error);
     }
 }
+
+templateBtn.addEventListener('click', () => {
+    const zip = new JSZip();
+    zip.file('example.py', '# Blender Script Example\nimport bpy\nprint("Hello, Blender!")');
+    zip.file('example.txt', 'This is a sample script for Beb Tools.');
+    zip.file('example.png', '');
+    zip.generateAsync({ type: 'blob' }).then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'bebtools-example.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+});
 
 refreshReposBtn.addEventListener('click', () => {
     fetchRepos();
