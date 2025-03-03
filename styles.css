@@ -382,7 +382,7 @@ main {
 
 .naming-rule {
     font-size: 14px;
-    color: #A5A5CC;
+    color: #FF9999; /* Light red */
     text-align: center;
 }
 
@@ -429,6 +429,10 @@ main {
     text-align: center;
 }
 
+#upload-status.error {
+    color: #FF9999; /* Light red */
+}
+
 #login-btn.profile {
     display: flex;
     align-items: center;
@@ -457,11 +461,12 @@ main {
     padding: 20px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
     background: url('dragdrop.svg') no-repeat center;
-    background-size: 32px;
+    background-size: 32px; /* 50% of 60px height */
     height: 60px;
     background-color: #1E1C28;
     cursor: pointer;
     position: relative;
+    border-radius: 4px;
 }
 
 .dropzone.dragover {
@@ -539,6 +544,9 @@ main {
     font-size: 14px;
     margin-bottom: 15px;
     align-self: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #repo-section button:hover {

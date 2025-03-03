@@ -15,19 +15,24 @@ const templateBtn = document.getElementById('template-btn');
 const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
 const createRepoBtn = document.getElementById('create-repo-btn');
+const namingRule = document.querySelector('.naming-rule');
 let username;
 
 async function checkSession() {
     auth.checkSession(async (user) => {
+        if (!auth.getToken()) {
+            loginBtn.textContent = 'Login to GitHub Again';
+            loginBtn.classList.remove('profile');
+            loginBtn.disabled = false;
+            uploadStatus.textContent = 'Error: No GitHub token available. Please log in again.';
+            uploadStatus.classList.add('error');
+            return;
+        }
         auth.updateLoginDisplay(user, loginBtn);
         uploadSection.style.display = 'block';
         repoSection.style.display = 'block';
         loginMessage.style.display = 'none';
         console.log('Token:', auth.getToken());
-        if (!auth.getToken()) {
-            uploadStatus.textContent = 'Error: No GitHub token available. Please log in again.';
-            return;
-        }
         try {
             const response = await fetch('https://api.github.com/user', {
                 headers: { 'Authorization': `token ${auth.getToken()}` }
@@ -38,6 +43,7 @@ async function checkSession() {
             fetchRepos();
         } catch (error) {
             uploadStatus.textContent = `Error: ${error.message}`;
+            uploadStatus.classList.add('error');
             console.error('User fetch error:', error);
         }
     });
@@ -45,7 +51,10 @@ async function checkSession() {
 
 loginBtn.addEventListener('click', async () => {
     const error = await auth.loginWithGitHub();
-    if (error) uploadStatus.textContent = `Login failed: ${error}`;
+    if (error) {
+        uploadStatus.textContent = `Login failed: ${error}`;
+        uploadStatus.classList.add('error');
+    }
 });
 
 function setupDragAndDrop(input) {
@@ -60,11 +69,25 @@ function setupDragAndDrop(input) {
         input.files = e.dataTransfer.files;
         input.dispatchEvent(new Event('change'));
     });
+    input.addEventListener('change', () => validateFilenames());
+}
+
+function validateFilenames() {
+    const pyFile = pyFileInput.files[0];
+    const txtFile = txtFileInput.files[0];
+    const pngFile = pngFileInput.files[0];
+    if (!pyFile) return;
+    const baseName = pyFile.name.replace('.py', '');
+    let mismatch = false;
+    if (txtFile && txtFile.name !== `${baseName}.txt`) mismatch = true;
+    if (pngFile && pngFile.name !== `${baseName}.png`) mismatch = true;
+    namingRule.style.display = mismatch ? 'block' : 'none';
 }
 
 async function fetchRepos() {
     if (!auth.getToken()) {
         uploadStatus.textContent = 'Error: No GitHub token available.';
+        uploadStatus.classList.add('error');
         return;
     }
     try {
@@ -94,6 +117,7 @@ async function fetchRepos() {
         });
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.classList.add('error');
         console.error('Fetch repos error:', error);
     }
 }
@@ -101,6 +125,7 @@ async function fetchRepos() {
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     uploadStatus.textContent = 'Uploading...';
+    uploadStatus.classList.remove('error');
     const repoName = repoSelect.value;
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
@@ -109,22 +134,29 @@ uploadForm.addEventListener('submit', async (e) => {
 
     if (!repoName) {
         uploadStatus.textContent = 'Please select a repository.';
+        uploadStatus.classList.add('error');
         return;
     }
     if (!pyFile || !pngFile) {
         uploadStatus.textContent = 'Please provide a .py and .png file.';
+        uploadStatus.classList.add('error');
         return;
     }
     if (txtFile && txtFile.name !== `${baseName}.txt`) {
         uploadStatus.textContent = 'Error: ReadMe (.txt) must match the .py filename.';
+        uploadStatus.classList.add('error');
+        namingRule.style.display = 'block';
         return;
     }
     if (pngFile.name !== `${baseName}.png`) {
         uploadStatus.textContent = 'Error: Thumbnail (.png) must match the .py filename.';
+        uploadStatus.classList.add('error');
+        namingRule.style.display = 'block';
         return;
     }
     if (pngFile.size > 100 * 1024) {
         uploadStatus.textContent = 'PNG file exceeds 100KB limit.';
+        uploadStatus.classList.add('error');
         return;
     }
 
@@ -139,8 +171,10 @@ uploadForm.addEventListener('submit', async (e) => {
         await uploadFile(username, repoName, `${baseName}/${baseName}.png`, pngFile);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
+        namingRule.style.display = 'none';
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.classList.add('error');
         console.error('Upload error:', error);
     }
 });
@@ -158,6 +192,7 @@ async function createRepo(repoName) {
         newRepoNameInput.value = '';
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.classList.add('error');
         console.error('Create repo error:', error);
     }
 }
@@ -201,6 +236,7 @@ async function deleteRepo(repoName) {
         fetchRepos();
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.classList.add('error');
         console.error('Delete repo error:', error);
     }
 }
@@ -226,6 +262,7 @@ createRepoBtn.addEventListener('click', () => {
     const repoName = newRepoNameInput.value.trim();
     if (!repoName) {
         uploadStatus.textContent = 'Please enter a repository name.';
+        uploadStatus.classList.add('error');
         return;
     }
     createRepo(repoName);
