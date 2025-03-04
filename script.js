@@ -71,9 +71,10 @@ function renderGrid() {
         box.className = 'grid-box';
         box.innerHTML = `
             <img src="${script.pngUrl}" alt="${script.name}">
-            <div class="name">${script.name}</div>
-            <div class="author">${script.author}</div>
-            <div class="stars">⭐ ${script.stars}</div>
+            <div class="text-row">
+                <div class="name">${script.name}</div>
+                <div class="stars">⭐ ${script.stars}</div>
+            </div>
         `;
         box.dataset.pyUrl = script.pyUrl;
         box.dataset.txtUrl = script.txtUrl;
@@ -85,7 +86,6 @@ function renderGrid() {
         grid.appendChild(box);
     });
 }
-
 async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
