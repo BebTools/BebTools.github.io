@@ -39,15 +39,15 @@ async function loadScripts() {
             for (const pyFile of pyFiles) {
                 const baseName = pyFile.name.replace('.py', '');
                 const txtFile = files.find(f => f.name === `${baseName}.txt`);
-                const pngFile = files.find(f => f.name === `${baseName}.png`);
-                if (pyFile && pngFile) {
+                const jpgFile = files.find(f => f.name === `${baseName}.jpg`);
+                if (pyFile && jpgFile) {
                     const scriptData = {
                         name: baseName,
                         author: repo.owner.login,
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
-                        pngUrl: pngFile.download_url
+                        jpgUrl: jpgFile.download_url
                     };
                     allScripts.push(scriptData);
                 }
@@ -70,7 +70,7 @@ function renderGrid() {
         const box = document.createElement('div');
         box.className = 'grid-box';
         box.innerHTML = `
-            <img src="${script.pngUrl}" alt="${script.name}">
+            <img src="${script.jpgUrl}" alt="${script.name}">
             <div class="text-row">
                 <div class="name">${script.name}</div>
                 <div class="stars">⭐ ${script.stars}</div>
@@ -78,7 +78,7 @@ function renderGrid() {
         `;
         box.dataset.pyUrl = script.pyUrl;
         box.dataset.txtUrl = script.txtUrl;
-        box.dataset.pngUrl = script.pngUrl;
+        box.dataset.jpgUrl = script.jpgUrl;
         box.dataset.name = script.name;
         box.dataset.author = script.author;
         box.dataset.stars = script.stars;
@@ -86,6 +86,7 @@ function renderGrid() {
         grid.appendChild(box);
     });
 }
+
 async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
@@ -118,7 +119,7 @@ async function showPopup(event) {
         img = document.createElement('img');
         header.insertBefore(img, scriptName);
     }
-    img.src = box.dataset.pngUrl;
+    img.src = box.dataset.jpgUrl;
 
     const maxWidth = scriptName.offsetWidth;
     let fontSize = 24;

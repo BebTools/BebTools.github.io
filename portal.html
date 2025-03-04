@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <title>BEB.TOOLS - Creator Portal</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Bungee Font -->
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
-    <!-- JSZip for zipping files (no longer needed, but keeping for consistency) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <!-- Shared auth script -->
     <script src="auth.js"></script>
 </head>
 <body>
@@ -18,13 +14,7 @@
         <a href="index.html" class="logo">BEB.TOOLS</a>
         <input type="text" placeholder="Search scripts..." class="search-bar" id="search-input" disabled>
         <div class="nav">
-            <div class="profile-container">
-                <button id="login-btn">Login with GitHub</button>
-                <div class="dropdown" id="profile-dropdown" style="display: none;">
-                    <a href="portal.html" class="dropdown-item">My Scripts</a>
-                    <button class="dropdown-item" id="logout-btn">Log Out</button>
-                </div>
-            </div>
+            <button id="login-btn">Login with GitHub</button>
             <a href="index.html">Back to Scripts</a>
         </div>
     </header>
@@ -35,7 +25,6 @@
             <div id="login-message">Please log in with GitHub to upload and manage scripts.</div>
 
             <div class="sections-wrapper">
-                <!-- Upload Script Section -->
                 <div id="upload-section" class="section-box" style="display: none;">
                     <h2>Upload Script</h2>
                     <p class="instructions">Select a repo and drag your Blender script, ReadMe, and thumbnail into the boxes below to share with the community.</p>
@@ -45,7 +34,7 @@
                             <select id="repo-select"></select>
                         </div>
                         <div class="form-row">
-                            <label class="naming-rule" style="display: none;">Your .py, .txt, and .png should all have the same name.</label>
+                            <label class="naming-rule" style="display: none;">Your .py, .txt, and .jpg should all have the same name.</label>
                             <label for="py-file">Python Script (.py):</label>
                             <div id="py-drop-zone" class="dropzone"></div>
                             <input type="file" id="py-file" accept=".py" required>
@@ -56,10 +45,10 @@
                             <input type="file" id="txt-file" accept=".txt">
                         </div>
                         <div class="form-row">
-                            <label for="png-file">Thumbnail (.png):</label>
-                            <div id="png-drop-zone" class="dropzone"></div>
-                            <input type="file" id="png-file" accept=".png" required>
-                            <p class="guidelines">Recommended: 560x420px, max 100KB</p>
+                            <label for="jpg-file">Thumbnail (.jpg):</label>
+                            <div id="jpg-drop-zone" class="dropzone"></div>
+                            <input type="file" id="jpg-file" accept=".jpg" required>
+                            <p class="guidelines">Recommended: 800x450px, max 100KB</p>
                         </div>
                         <div class="button-group">
                             <button type="submit">Upload Script</button>
@@ -69,7 +58,6 @@
                     <div id="upload-status"></div>
                 </div>
 
-                <!-- Manage Repositories Section -->
                 <div id="repo-section" class="section-box" style="display: none;">
                     <h2>Manage Repositories</h2>
                     <div class="create-repo">
@@ -84,7 +72,6 @@
                     <div id="repo-status"></div>
                 </div>
 
-                <!-- Manage Scripts Section -->
                 <div id="script-section" class="section-box" style="display: none;">
                     <h2>Manage Scripts</h2>
                     <div class="form-row">

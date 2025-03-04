@@ -5,10 +5,10 @@ const uploadForm = document.getElementById('upload-form');
 const repoSelect = document.getElementById('repo-select');
 const pyFileInput = document.getElementById('py-file');
 const txtFileInput = document.getElementById('txt-file');
-const pngFileInput = document.getElementById('png-file');
+const jpgFileInput = document.getElementById('jpg-file');
 const pyDropZone = document.getElementById('py-drop-zone');
 const txtDropZone = document.getElementById('txt-drop-zone');
-const pngDropZone = document.getElementById('png-drop-zone');
+const jpgDropZone = document.getElementById('jpg-drop-zone');
 const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 const uploadSection = document.getElementById('upload-section');
@@ -125,12 +125,12 @@ function setupDragAndDrop(input, dropZone) {
 function validateFilenames() {
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
-    const pngFile = pngFileInput.files[0];
+    const jpgFile = jpgFileInput.files[0];
     if (!pyFile) return;
     const baseName = pyFile.name.replace('.py', '');
     let mismatch = false;
     if (txtFile && txtFile.name !== `${baseName}.txt`) mismatch = true;
-    if (pngFile && pngFile.name !== `${baseName}.png`) mismatch = true;
+    if (jpgFile && jpgFile.name !== `${baseName}.jpg`) mismatch = true;
     namingRule.style.display = mismatch ? 'block' : 'none';
 }
 
@@ -260,7 +260,7 @@ uploadForm.addEventListener('submit', async (e) => {
     const repoName = repoSelect.value;
     const pyFile = pyFileInput.files[0];
     const txtFile = txtFileInput.files[0];
-    const pngFile = pngFileInput.files[0];
+    const jpgFile = jpgFileInput.files[0];
     const baseName = pyFile ? pyFile.name.replace('.py', '') : null;
 
     if (!repoName) {
@@ -268,8 +268,8 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadStatus.classList.add('error');
         return;
     }
-    if (!pyFile || !pngFile) {
-        uploadStatus.textContent = 'Please provide a .py and .png file.';
+    if (!pyFile || !jpgFile) {
+        uploadStatus.textContent = 'Please provide a .py and .jpg file.';
         uploadStatus.classList.add('error');
         return;
     }
@@ -279,14 +279,14 @@ uploadForm.addEventListener('submit', async (e) => {
         namingRule.style.display = 'block';
         return;
     }
-    if (pngFile.name !== `${baseName}.png`) {
-        uploadStatus.textContent = 'Error: Thumbnail (.png) must match the .py filename.';
+    if (jpgFile.name !== `${baseName}.jpg`) {
+        uploadStatus.textContent = 'Error: Thumbnail (.jpg) must match the .py filename.';
         uploadStatus.classList.add('error');
         namingRule.style.display = 'block';
         return;
     }
-    if (pngFile.size > 100 * 1024) {
-        uploadStatus.textContent = 'PNG file exceeds 100KB limit.';
+    if (jpgFile.size > 100 * 1024) {
+        uploadStatus.textContent = 'JPG file exceeds 100KB limit.';
         uploadStatus.classList.add('error');
         return;
     }
@@ -299,16 +299,16 @@ uploadForm.addEventListener('submit', async (e) => {
             await uploadFile(username, repoName, `${baseName}.txt`, txtFile);
         }
         uploadStatus.textContent = 'Uploading thumbnail...';
-        await uploadFile(username, repoName, `${baseName}.png`, pngFile);
+        await uploadFile(username, repoName, `${baseName}.jpg`, jpgFile);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
         namingRule.style.display = 'none';
         pyDropZone.textContent = '';
         txtDropZone.textContent = '';
-        pngDropZone.textContent = '';
+        jpgDropZone.textContent = '';
         pyDropZone.style.backgroundImage = "url('dragdrop.svg')";
         txtDropZone.style.backgroundImage = "url('dragdrop.svg')";
-        pngDropZone.style.backgroundImage = "url('dragdrop.svg')";
+        jpgDropZone.style.backgroundImage = "url('dragdrop.svg')";
     } catch (error) {
         uploadStatus.textContent = `Error: ${error.message}`;
         uploadStatus.classList.add('error');
@@ -393,7 +393,7 @@ async function deleteScriptFolder(repoName, baseName) {
         const filesToDelete = contents.filter(item => 
             item.name === `${baseName}.py` || 
             item.name === `${baseName}.txt` || 
-            item.name === `${baseName}.png`
+            item.name === `${baseName}.jpg`
         );
 
         for (const item of filesToDelete) {
@@ -425,7 +425,7 @@ async function renameScriptFolder(repoName, oldBaseName) {
         const filesToRename = contents.filter(item => 
             item.name === `${oldBaseName}.py` || 
             item.name === `${oldBaseName}.txt` || 
-            item.name === `${oldBaseName}.png`
+            item.name === `${oldBaseName}.jpg`
         );
 
         for (const item of filesToRename) {
@@ -481,6 +481,6 @@ scriptRepoSelect.addEventListener('change', () => {
 
 setupDragAndDrop(pyFileInput, pyDropZone);
 setupDragAndDrop(txtFileInput, txtDropZone);
-setupDragAndDrop(pngFileInput, pngDropZone);
+setupDragAndDrop(jpgFileInput, jpgDropZone);
 
 checkSession();
