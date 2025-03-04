@@ -79,14 +79,14 @@ main {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 280px);
+    grid-template-columns: repeat(auto-fit, 350px);
     gap: 40px;
     justify-content: center;
     padding: 20px;
 }
 
 .grid-box {
-    width: 280px;
+    width: 350px;
     background: #252831;
     padding: 0 0 15px 0;
     border-radius: 4px;
@@ -102,8 +102,8 @@ main {
 }
 
 .grid-box img {
-    width: 280px;
-    height: 157.5px;
+    width: 350px;
+    height: 197px;
     object-fit: cover;
     border-radius: 4px 4px 0 0;
     margin: 0;
@@ -112,11 +112,13 @@ main {
 .grid-box .text-row {
     display: flex;
     justify-content: space-between;
-    margin-top: 6px;
+    height: 50px;
+    align-items: center;
+    padding: 15px 15px 0 15px;
 }
 
 .grid-box .name {
-    font-size: 14px;
+    font-size: 17.5px;
     color: #FFFFFF;
     text-align: left;
     white-space: nowrap;
@@ -130,7 +132,7 @@ main {
 }
 
 .grid-box .stars {
-    font-size: 12px;
+    font-size: 15px;
     color: #FFFFFF;
     width: 10%;
     text-align: right;
