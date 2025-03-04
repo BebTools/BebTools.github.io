@@ -88,7 +88,7 @@ main {
 .grid-box {
     width: 350px;
     background: #252831;
-    padding: 0 0 5px 0;
+    padding: 0 0 1px 0;
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -103,7 +103,7 @@ main {
 
 .grid-box img {
     width: 350px;
-    height: 197px;
+    height: 197px; /* 16:9 */
     object-fit: cover;
     border-radius: 4px 4px 0 0;
     margin: 0;
@@ -114,7 +114,7 @@ main {
     justify-content: space-between;
     height: 50px;
     align-items: center;
-    padding: 5px 15px 0 15px;
+    padding: 1px 15px 0 15px;
 }
 
 .grid-box .name {
