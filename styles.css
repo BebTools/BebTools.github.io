@@ -80,21 +80,20 @@ main {
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, 280px);
-    gap: 15px;
+    gap: 20px;
     justify-content: center;
-    max-width: 100%;
     padding: 20px;
 }
 
 .grid-box {
     width: 280px;
     background: #252831;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 10px 10px 0 10px;
+    border-radius: 4px 4px 0 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-    flex-direction: column; /* Stack image and text vertically */
+    flex-direction: column;
 }
 
 .grid-box:hover {
@@ -104,37 +103,36 @@ main {
 
 .grid-box img {
     width: 280px;
-    height: 210px;
+    height: 157.5px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 4px 4px 0 0;
+}
+
+.grid-box .text-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
 }
 
 .grid-box .name {
     font-size: 14px;
     color: #FFFFFF;
     text-align: left;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflow */
-    text-overflow: ellipsis; /* Add ... for overflow */
-    flex-grow: 0; /* Don’t stretch */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
 }
 
 .grid-box .author {
-    display: none; /* Hide author here */
+    display: none;
 }
 
 .grid-box .stars {
     font-size: 12px;
     color: #FFFFFF;
+    width: 10%;
     text-align: right;
-    flex-grow: 0;
-}
-
-.grid-box .text-row {
-    display: flex;
-    justify-content: space-between; /* Name left, stars right */
-    align-items: center;
-    margin-top: 6px; /* Space below image */
 }
 
 .load-more {
