@@ -790,7 +790,9 @@ main {
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     min-width: 120px;
+    max-width: 200px; /* Cap dropdown width */
     z-index: 20;
+    overflow: hidden; /* Prevent spillover */
 }
 
 .dropdown-item {
@@ -805,6 +807,10 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     transition: background 0.3s ease;
+    white-space: nowrap; /* Keep single line */
+    overflow: hidden; /* Hide excess */
+    text-overflow: ellipsis; /* Add ellipsis if too long */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .dropdown-item:hover {
