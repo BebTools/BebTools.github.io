@@ -223,7 +223,7 @@ main {
 .popup-header .left-button-group {
     width: 90%;
     display: flex;
-    justify-content: flex-start; /* Left-align */
+    justify-content: flex-start;
     gap: 10px;
     align-items: center;
 }
@@ -238,6 +238,7 @@ main {
 .popup-header .author-btn,
 .popup-header .download-btn,
 .popup-header .copy-btn,
+.popup-header .star-btn,
 .popup-header .close-btn {
     background: #424250;
     border: none;
@@ -279,6 +280,14 @@ main {
     background-image: url('copy.svg');
 }
 
+.popup-header .star-btn {
+    background-image: url('star.svg'); /* Default unstarred */
+}
+
+.popup-header .star-btn.starred {
+    background-image: url('star-filled.svg');
+}
+
 .popup-header .close-btn {
     background-image: url('x.svg');
 }
@@ -286,7 +295,7 @@ main {
 .popup-header .author-btn:hover,
 .popup-header .download-btn:hover,
 .popup-header .copy-btn:hover,
-.popup-header .close-btn:hover {
+.popup-header .star-btn:hover {
     background-color: #A5A5CC;
 }
 
@@ -298,7 +307,16 @@ main {
     background-image: url('copy.svg');
 }
 
+.popup-header .star-btn:hover {
+    background-image: url('star.svg');
+}
+
+.popup-header .star-btn.starred:hover {
+    background-image: url('star-filled.svg');
+}
+
 .popup-header .close-btn:hover {
+    background-color: #FF9999; /* Light red/pink hover */
     background-image: url('x.svg');
 }
 
@@ -349,7 +367,7 @@ main {
 .popup-scrollbox {
     background: #252831;
     padding: 15px;
-    height: 47.5%; /* Adjusted from 50% */
+    height: 47.5%;
     width: 100%;
     overflow-y: auto;
     border-radius: 4px;
