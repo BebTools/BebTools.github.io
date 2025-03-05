@@ -45,7 +45,7 @@ async function loadScripts() {
                         name: baseName,
                         author: repo.owner.login,
                         authorUrl: repo.owner.html_url,
-                        authorAvatar: repo.owner.avatar_url, // Add avatar URL
+                        authorAvatar: repo.owner.avatar_url,
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
