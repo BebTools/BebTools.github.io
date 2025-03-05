@@ -119,10 +119,6 @@ async function showPopup(event) {
     buttonGroup.appendChild(closeBtn); // Moved into button-group
     header.appendChild(buttonGroup);
 
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'close-btn';
-    header.appendChild(closeBtn);
-
     // Grid Box Replica (40%)
     let gridReplica = document.querySelector('.popup-grid-replica');
     if (!gridReplica) {
