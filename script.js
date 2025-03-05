@@ -45,6 +45,7 @@ async function loadScripts() {
                         name: baseName,
                         author: repo.owner.login,
                         authorUrl: repo.owner.html_url,
+                        authorAvatar: repo.owner.avatar_url, // Add avatar URL
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
@@ -83,6 +84,7 @@ function renderGrid() {
         box.dataset.name = script.name;
         box.dataset.author = script.author;
         box.dataset.authorUrl = script.authorUrl;
+        box.dataset.authorAvatar = script.authorAvatar;
         box.dataset.stars = script.stars;
         box.addEventListener('click', showPopup);
         grid.appendChild(box);
@@ -93,14 +95,17 @@ async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
 
-    // Header (10%)
+    // Header (5%)
     const header = document.querySelector('.popup-header');
     header.innerHTML = '';
     const buttonGroup = document.createElement('div');
     buttonGroup.className = 'button-group';
     const authorBtn = document.createElement('button');
     authorBtn.className = 'author-btn';
-    authorBtn.textContent = box.dataset.author;
+    const authorImg = document.createElement('img');
+    authorImg.src = box.dataset.authorAvatar;
+    authorBtn.appendChild(authorImg);
+    authorBtn.appendChild(document.createTextNode(box.dataset.author));
     authorBtn.onclick = () => window.open(box.dataset.authorUrl, '_blank');
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
@@ -115,7 +120,7 @@ async function showPopup(event) {
     closeBtn.className = 'close-btn';
     header.appendChild(closeBtn);
 
-    // Grid Box Replica (30%)
+    // Grid Box Replica (40%)
     let gridReplica = document.querySelector('.popup-grid-replica');
     if (!gridReplica) {
         gridReplica = document.createElement('div');
