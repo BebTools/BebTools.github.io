@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BEB.TOOLS - Creator Portal</title>
+    <title>Beb.Tools</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -27,14 +27,14 @@
             <div class="sections-wrapper">
                 <div id="upload-section" class="section-box" style="display: none;">
                     <h2>Upload Script</h2>
-                    <p class="instructions">Select a repo and drag your Blender script, ReadMe, and thumbnail into the boxes below to share with the community.</p>
+                    <p class="instructions">Select a repo and drag your Blender script, ReadMe, and Thumbnail into the boxes below.</p>
                     <form id="upload-form">
                         <div class="form-row">
                             <label for="repo-select">Select Repository:</label>
                             <select id="repo-select"></select>
                         </div>
                         <div class="form-row">
-                            <label class="naming-rule" style="display: none;">Your .py, .txt, and .jpg should all have the same name.</label>
+                            <label class="naming-rule" style="display: none;">Your .py, .txt, and .jpg must have the same name.</label>
                             <label for="py-file">Python Script (.py):</label>
                             <div id="py-drop-zone" class="dropzone"></div>
                             <input type="file" id="py-file" accept=".py" required>

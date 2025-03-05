@@ -136,6 +136,19 @@ main {
     color: #FFFFFF;
     width: 20%;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.grid-box .star-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-image: url('star-filled.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .load-more {
@@ -362,6 +375,19 @@ main {
     color: #FFFFFF;
     width: 20%;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.popup-grid-replica .star-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-image: url('star-filled.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .popup-scrollbox {

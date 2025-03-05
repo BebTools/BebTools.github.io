@@ -273,20 +273,18 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadStatus.classList.add('error');
         return;
     }
-    if (txtFile && txtFile.name !== `${baseName}.txt`) {
-        uploadStatus.textContent = 'Error: ReadMe (.txt) must match the .py filename.';
+    if ((txtFile && txtFile.name !== `${baseName}.txt`) || jpgFile.name !== `${baseName}.jpg`) {
+        uploadStatus.textContent = 'Your .py, .txt, and .jpg must have the same name';
         uploadStatus.classList.add('error');
-        namingRule.style.display = 'block';
         return;
     }
-    if (jpgFile.name !== `${baseName}.jpg`) {
-        uploadStatus.textContent = 'Error: Thumbnail (.jpg) must match the .py filename.';
+    if (!jpgFile.name.toLowerCase().endsWith('.jpg')) {
+        uploadStatus.textContent = 'Only .jpg files are allowed for thumbnails';
         uploadStatus.classList.add('error');
-        namingRule.style.display = 'block';
         return;
     }
     if (jpgFile.size > 100 * 1024) {
-        uploadStatus.textContent = 'JPG file exceeds 100KB limit.';
+        uploadStatus.textContent = 'Thumbnail must be less than 100KB';
         uploadStatus.classList.add('error');
         return;
     }
@@ -302,7 +300,6 @@ uploadForm.addEventListener('submit', async (e) => {
         await uploadFile(username, repoName, `${baseName}.jpg`, jpgFile);
         uploadStatus.textContent = 'Upload successful! Script added to your repo.';
         uploadForm.reset();
-        namingRule.style.display = 'none';
         pyDropZone.textContent = '';
         txtDropZone.textContent = '';
         jpgDropZone.textContent = '';

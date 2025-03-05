@@ -76,7 +76,7 @@ function renderGrid() {
             <img src="${script.jpgUrl}" alt="${script.name}">
             <div class="text-row">
                 <div class="name">${script.name}</div>
-                <div class="stars">⭐ ${script.stars}</div>
+                <div class="stars"><span class="star-icon"></span> ${script.stars}</div>
             </div>
         `;
         box.dataset.pyUrl = script.pyUrl;
@@ -188,7 +188,7 @@ async function showPopup(event) {
         <img src="${box.dataset.jpgUrl}" alt="${box.dataset.name}">
         <div class="text-row">
             <div class="name">${box.dataset.name}</div>
-            <div class="stars">⭐ ${box.dataset.stars}</div>
+            <div class="stars"><span class="star-icon"></span> ${box.dataset.stars}</div>
         </div>
     `;
     const starCountEl = gridReplica.querySelector('.stars');
