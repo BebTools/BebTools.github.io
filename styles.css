@@ -231,7 +231,7 @@ main {
 .popup-header .right-button-group {
     width: 10%;
     display: flex;
-    justify-content: center; /* Center-align x */
+    justify-content: flex-end; /* Right-align x */
     align-items: center;
 }
 
