@@ -210,13 +210,13 @@ main {
 }
 
 .popup-header {
-    height: 7.5%; /* Adjusted from 5% */
-    min-height: 52px; /* Ensures buttons fit: 32px + 20px padding */
+    height: 7.5%;
+    min-height: 52px;
     background: #252831;
     padding: 10px 20px;
     box-sizing: border-box;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end; /* Changed to right-align */
     align-items: center;
     border-radius: 4px;
 }

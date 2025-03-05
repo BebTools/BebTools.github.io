@@ -111,9 +111,12 @@ async function showPopup(event) {
     downloadBtn.className = 'download-btn';
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-btn';
     buttonGroup.appendChild(authorBtn);
     buttonGroup.appendChild(downloadBtn);
     buttonGroup.appendChild(copyBtn);
+    buttonGroup.appendChild(closeBtn); // Moved into button-group
     header.appendChild(buttonGroup);
 
     const closeBtn = document.createElement('button');
