@@ -90,49 +90,48 @@ function renderGrid() {
 async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
-    scriptName.textContent = box.dataset.name;
-    author.textContent = box.dataset.author;
-    stars.textContent = `⭐ ${box.dataset.stars}`;
-
+    
+    // Header (10%)
     const header = document.querySelector('.popup-header');
-    let infoBar = header.querySelector('.info-bar');
-    if (!infoBar) {
-        infoBar = document.createElement('div');
-        infoBar.className = 'info-bar';
-        header.insertBefore(infoBar, header.firstChild);
-    } else {
-        infoBar.innerHTML = '';
-    }
-    infoBar.appendChild(author);
-    infoBar.appendChild(stars);
+    header.innerHTML = '';
+    const titleSection = document.createElement('div');
+    titleSection.className = 'title-section';
+    const scriptNameEl = document.createElement('h2');
+    scriptNameEl.className = 'script-name';
+    scriptNameEl.textContent = box.dataset.name;
+    const authorEl = document.createElement('p');
+    authorEl.className = 'author';
+    authorEl.textContent = box.dataset.author;
+    titleSection.appendChild(scriptNameEl);
+    titleSection.appendChild(authorEl);
+    header.appendChild(titleSection);
 
+    const infoBar = document.createElement('div');
+    infoBar.className = 'info-bar';
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
-    infoBar.appendChild(downloadBtn);
-
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
-    infoBar.appendChild(copyBtn);
-
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-btn';
+    infoBar.appendChild(downloadBtn);
+    infoBar.appendChild(copyBtn);
     infoBar.appendChild(closeBtn);
+    header.appendChild(infoBar);
 
-    let img = header.querySelector('img');
-    if (!img) {
-        img = document.createElement('img');
-        header.insertBefore(img, scriptName);
+    // Image (30%)
+    let imageSection = document.querySelector('.popup-image');
+    if (!imageSection) {
+        imageSection = document.createElement('div');
+        imageSection.className = 'popup-image';
+        popup.querySelector('.popup-right').insertBefore(imageSection, document.querySelector('.popup-scrollbox'));
     }
+    imageSection.innerHTML = '';
+    const img = document.createElement('img');
     img.src = box.dataset.jpgUrl;
+    imageSection.appendChild(img);
 
-    const maxWidth = scriptName.offsetWidth;
-    let fontSize = 24;
-    scriptName.style.fontSize = `${fontSize}px`;
-    while (scriptName.scrollWidth > maxWidth && fontSize > 12) {
-        fontSize--;
-        scriptName.style.fontSize = `${fontSize}px`;
-    }
-
+    // Scrollbox (60%)
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
     code.innerHTML = pyText;
     Prism.highlightElement(code);
@@ -141,7 +140,7 @@ async function showPopup(event) {
 
     downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
-    closeBtn.onclick = () => popup.style.display = 'none'; // Replace old close-btn listener
+    closeBtn.onclick = () => popup.style.display = 'none';
 }
 
 async function downloadZip(pyText, txtText, name) {
