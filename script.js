@@ -95,7 +95,7 @@ async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
 
-    // Header (5%)
+    // Header (7.5%)
     const header = document.querySelector('.popup-header');
     header.innerHTML = '';
     const buttonGroup = document.createElement('div');
@@ -135,7 +135,7 @@ async function showPopup(event) {
         </div>
     `;
 
-    // Scrollbox (50%)
+    // Scrollbox (47.5%)
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
     code.innerHTML = pyText;
     Prism.highlightElement(code);

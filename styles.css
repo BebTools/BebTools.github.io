@@ -210,7 +210,8 @@ main {
 }
 
 .popup-header {
-    height: 5%;
+    height: 7.5%; /* Adjusted from 5% */
+    min-height: 52px; /* Ensures buttons fit: 32px + 20px padding */
     background: #252831;
     padding: 10px 20px;
     box-sizing: border-box;
@@ -306,7 +307,7 @@ main {
 
 .popup-grid-replica img {
     width: 100%;
-    height: 85%; /* Increased from 75% */
+    height: 85%;
     object-fit: cover;
     border-radius: 4px 4px 0 0;
     margin: 0;
@@ -315,9 +316,9 @@ main {
 .popup-grid-replica .text-row {
     display: flex;
     justify-content: space-between;
-    height: 15%; /* Reduced from 25% */
+    height: 15%;
     align-items: center;
-    padding: 0 15px; /* Halved top/bottom from 1px 15px 0 15px */
+    padding: 0 15px;
 }
 
 .popup-grid-replica .name {
@@ -340,7 +341,7 @@ main {
 .popup-scrollbox {
     background: #252831;
     padding: 15px;
-    height: 50%;
+    height: 47.5%; /* Adjusted from 50% */
     width: 100%;
     overflow-y: auto;
     border-radius: 4px;
