@@ -114,6 +114,10 @@ async function showPopup(event) {
     copyBtn.className = 'copy-btn';
     infoBar.appendChild(copyBtn);
 
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'close-btn';
+    infoBar.appendChild(closeBtn);
+
     let img = header.querySelector('img');
     if (!img) {
         img = document.createElement('img');
@@ -137,6 +141,7 @@ async function showPopup(event) {
 
     downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
+    closeBtn.onclick = () => popup.style.display = 'none'; // Replace old close-btn listener
 }
 
 async function downloadZip(pyText, txtText, name) {
@@ -166,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileDropdown = document.getElementById('profile-dropdown');
     let dropdownVisible = false;
 
-    document.querySelector('.close-btn').addEventListener('click', () => popup.style.display = 'none');
     document.querySelector('.load-more').addEventListener('click', loadScripts);
     searchInput.addEventListener('input', renderGrid);
 

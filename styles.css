@@ -212,19 +212,22 @@ main {
     background: #252831;
     padding: 15px 20px;
     border-bottom: 1px solid #424250;
-    height: 40%; /* 40% of popup-right height */
+    height: 40%;
     box-sizing: border-box;
-    overflow: hidden; /* Prevent overflow */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative; /* For button positioning */
 }
 
 .popup-header .info-bar {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end; /* Right-align buttons */
     align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: nowrap;
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Within inner box */
+    gap: 10px; /* Space between buttons */
 }
 
 .popup-header .author {
@@ -241,7 +244,31 @@ main {
     margin-right: 10px;
 }
 
-.popup-header .download-btn {
+.popup-header {
+    background: #252831;
+    padding: 15px 20px;
+    border-bottom: 1px solid #424250;
+    height: 40%;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative; /* For button positioning */
+}
+
+.popup-header .info-bar {
+    display: flex;
+    justify-content: flex-end; /* Right-align buttons */
+    align-items: center;
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Within inner box */
+    gap: 10px; /* Space between buttons */
+}
+
+.popup-header .download-btn,
+.popup-header .copy-btn,
+.popup-header .close-btn {
     background: #424250;
     padding: 8px;
     border: none;
@@ -250,11 +277,21 @@ main {
     transition: background 0.3s ease;
     width: 32px;
     height: 32px;
-    background-image: url('download.svg');
     background-size: 50%;
     background-repeat: no-repeat;
     background-position: center;
-    margin-right: 10px;
+}
+
+.popup-header .download-btn {
+    background-image: url('download.svg');
+}
+
+.popup-header .copy-btn {
+    background-image: url('copy.svg');
+}
+
+.popup-header .close-btn {
+    background-image: url('x.svg'); /* New SVG */
 }
 
 .popup-header .download-btn:hover {
@@ -262,23 +299,13 @@ main {
     background-size: 50%;
 }
 
-.popup-header .copy-btn {
-    background: #424250;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    width: 32px;
-    height: 32px;
-    background-image: url('copy.svg');
-    background-size: 50%;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
 .popup-header .copy-btn:hover {
     background: #A5A5CC url('copy.svg') no-repeat center;
+    background-size: 50%;
+}
+
+.popup-header .close-btn:hover {
+    background: #A5A5CC url('x.svg') no-repeat center;
     background-size: 50%;
 }
 
@@ -297,22 +324,6 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.popup-header .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #FFFFFF;
-    font-size: 24px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.popup-header .close-btn:hover {
-    color: #A5A5CC;
 }
 
 .popup-scrollbox {
