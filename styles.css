@@ -216,14 +216,22 @@ main {
     padding: 10px 20px;
     box-sizing: border-box;
     display: flex;
-    justify-content: flex-end; /* Changed to right-align */
     align-items: center;
     border-radius: 4px;
 }
 
-.popup-header .button-group {
+.popup-header .left-button-group {
+    width: 90%;
     display: flex;
+    justify-content: flex-start; /* Left-align */
     gap: 10px;
+    align-items: center;
+}
+
+.popup-header .right-button-group {
+    width: 10%;
+    display: flex;
+    justify-content: center; /* Center-align x */
     align-items: center;
 }
 

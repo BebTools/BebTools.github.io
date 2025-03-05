@@ -98,8 +98,8 @@ async function showPopup(event) {
     // Header (7.5%)
     const header = document.querySelector('.popup-header');
     header.innerHTML = '';
-    const buttonGroup = document.createElement('div');
-    buttonGroup.className = 'button-group';
+    const leftGroup = document.createElement('div');
+    leftGroup.className = 'left-button-group';
     const authorBtn = document.createElement('button');
     authorBtn.className = 'author-btn';
     const authorImg = document.createElement('img');
@@ -111,13 +111,17 @@ async function showPopup(event) {
     downloadBtn.className = 'download-btn';
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
+    leftGroup.appendChild(authorBtn);
+    leftGroup.appendChild(downloadBtn);
+    leftGroup.appendChild(copyBtn);
+    header.appendChild(leftGroup);
+
+    const rightGroup = document.createElement('div');
+    rightGroup.className = 'right-button-group';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-btn';
-    buttonGroup.appendChild(authorBtn);
-    buttonGroup.appendChild(downloadBtn);
-    buttonGroup.appendChild(copyBtn);
-    buttonGroup.appendChild(closeBtn); // Moved into button-group
-    header.appendChild(buttonGroup);
+    rightGroup.appendChild(closeBtn);
+    header.appendChild(rightGroup);
 
     // Grid Box Replica (40%)
     let gridReplica = document.querySelector('.popup-grid-replica');
