@@ -44,6 +44,7 @@ async function loadScripts() {
                     const scriptData = {
                         name: baseName,
                         author: repo.owner.login,
+                        authorUrl: repo.owner.html_url,
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
@@ -81,6 +82,7 @@ function renderGrid() {
         box.dataset.jpgUrl = script.jpgUrl;
         box.dataset.name = script.name;
         box.dataset.author = script.author;
+        box.dataset.authorUrl = script.authorUrl;
         box.dataset.stars = script.stars;
         box.addEventListener('click', showPopup);
         grid.appendChild(box);
@@ -90,48 +92,45 @@ function renderGrid() {
 async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
-    
+
     // Header (10%)
     const header = document.querySelector('.popup-header');
     header.innerHTML = '';
-    const titleSection = document.createElement('div');
-    titleSection.className = 'title-section';
-    const scriptNameEl = document.createElement('h2');
-    scriptNameEl.className = 'script-name';
-    scriptNameEl.textContent = box.dataset.name;
-    const authorEl = document.createElement('p');
-    authorEl.className = 'author';
-    authorEl.textContent = box.dataset.author;
-    titleSection.appendChild(scriptNameEl);
-    titleSection.appendChild(authorEl);
-    header.appendChild(titleSection);
-
-    const infoBar = document.createElement('div');
-    infoBar.className = 'info-bar';
+    const buttonGroup = document.createElement('div');
+    buttonGroup.className = 'button-group';
+    const authorBtn = document.createElement('button');
+    authorBtn.className = 'author-btn';
+    authorBtn.textContent = box.dataset.author;
+    authorBtn.onclick = () => window.open(box.dataset.authorUrl, '_blank');
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn';
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
+    buttonGroup.appendChild(authorBtn);
+    buttonGroup.appendChild(downloadBtn);
+    buttonGroup.appendChild(copyBtn);
+    header.appendChild(buttonGroup);
+
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-btn';
-    infoBar.appendChild(downloadBtn);
-    infoBar.appendChild(copyBtn);
-    infoBar.appendChild(closeBtn);
-    header.appendChild(infoBar);
+    header.appendChild(closeBtn);
 
-    // Image (30%)
-    let imageSection = document.querySelector('.popup-image');
-    if (!imageSection) {
-        imageSection = document.createElement('div');
-        imageSection.className = 'popup-image';
-        popup.querySelector('.popup-right').insertBefore(imageSection, document.querySelector('.popup-scrollbox'));
+    // Grid Box Replica (30%)
+    let gridReplica = document.querySelector('.popup-grid-replica');
+    if (!gridReplica) {
+        gridReplica = document.createElement('div');
+        gridReplica.className = 'popup-grid-replica';
+        popup.querySelector('.popup-right').insertBefore(gridReplica, document.querySelector('.popup-scrollbox'));
     }
-    imageSection.innerHTML = '';
-    const img = document.createElement('img');
-    img.src = box.dataset.jpgUrl;
-    imageSection.appendChild(img);
+    gridReplica.innerHTML = `
+        <img src="${box.dataset.jpgUrl}" alt="${box.dataset.name}">
+        <div class="text-row">
+            <div class="name">${box.dataset.name}</div>
+            <div class="stars">⭐ ${box.dataset.stars}</div>
+        </div>
+    `;
 
-    // Scrollbox (60%)
+    // Scrollbox (50%)
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
     code.innerHTML = pyText;
     Prism.highlightElement(code);
