@@ -46,7 +46,7 @@ async function loadScripts() {
                         author: repo.owner.login,
                         authorUrl: repo.owner.html_url,
                         authorAvatar: repo.owner.avatar_url,
-                        repoName: repo.name, // Added for starring
+                        repoName: repo.name,
                         stars: repo.stargazers_count,
                         pyUrl: pyFile.download_url,
                         txtUrl: txtFile ? txtFile.download_url : '',
@@ -86,7 +86,7 @@ function renderGrid() {
         box.dataset.author = script.author;
         box.dataset.authorUrl = script.authorUrl;
         box.dataset.authorAvatar = script.authorAvatar;
-        box.dataset.repoName = script.repoName; // Added
+        box.dataset.repoName = script.repoName;
         box.dataset.stars = script.stars;
         box.addEventListener('click', showPopup);
         grid.appendChild(box);
@@ -113,12 +113,61 @@ async function showPopup(event) {
     downloadBtn.className = 'download-btn';
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
-    const starBtn = document.createElement('button');
-    starBtn.className = 'star-btn';
     leftGroup.appendChild(authorBtn);
     leftGroup.appendChild(downloadBtn);
     leftGroup.appendChild(copyBtn);
-    leftGroup.appendChild(starBtn);
+
+    const token = auth.getToken();
+    if (token) {
+        const starBtn = document.createElement('button');
+        starBtn.className = 'star-btn';
+        leftGroup.appendChild(starBtn);
+
+        let isStarred = false;
+        try {
+            const starCheck = await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            if (starCheck.status === 401) throw new Error('Token invalid or expired');
+            isStarred = starCheck.status === 204;
+        } catch (error) {
+            console.error('Error checking star status:', error);
+            leftGroup.removeChild(starBtn); // Remove star button if token fails
+        }
+
+        if (leftGroup.contains(starBtn)) {
+            starBtn.classList.toggle('starred', isStarred);
+            starBtn.style.backgroundImage = isStarred ? "url('star-filled.svg')" : "url('star.svg')";
+            starBtn.onclick = async () => {
+                try {
+                    if (isStarred) {
+                        await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `token ${token}` }
+                        });
+                        isStarred = false;
+                        starBtn.classList.remove('starred');
+                        starBtn.style.backgroundImage = "url('star.svg')";
+                        box.dataset.stars = parseInt(box.dataset.stars) - 1;
+                    } else {
+                        await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `token ${token}` }
+                        });
+                        isStarred = true;
+                        starBtn.classList.add('starred');
+                        starBtn.style.backgroundImage = "url('star-filled.svg')";
+                        box.dataset.stars = parseInt(box.dataset.stars) + 1;
+                    }
+                    starCountEl.textContent = `⭐ ${box.dataset.stars}`;
+                } catch (error) {
+                    console.error('Error toggling star:', error);
+                    alert('Failed to star/unstar the repository.');
+                }
+            };
+        }
+    }
+
     header.appendChild(leftGroup);
 
     const rightGroup = document.createElement('div');
@@ -127,19 +176,6 @@ async function showPopup(event) {
     closeBtn.className = 'close-btn';
     rightGroup.appendChild(closeBtn);
     header.appendChild(rightGroup);
-
-    // Check if repo is starred
-    let isStarred = false;
-    try {
-        const starCheck = await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-            headers: { 'Authorization': `token ${auth.getToken()}` }
-        });
-        isStarred = starCheck.status === 204;
-    } catch (error) {
-        console.error('Error checking star status:', error);
-    }
-    starBtn.classList.toggle('starred', isStarred);
-    starBtn.style.backgroundImage = isStarred ? "url('star-filled.svg')" : "url('star.svg')";
 
     // Grid Box Replica (40%)
     let gridReplica = document.querySelector('.popup-grid-replica');
@@ -167,33 +203,6 @@ async function showPopup(event) {
     downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
     closeBtn.onclick = () => popup.style.display = 'none';
-    starBtn.onclick = async () => {
-        try {
-            if (isStarred) {
-                await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `token ${auth.getToken()}` }
-                });
-                isStarred = false;
-                starBtn.classList.remove('starred');
-                starBtn.style.backgroundImage = "url('star.svg')";
-                box.dataset.stars = parseInt(box.dataset.stars) - 1;
-            } else {
-                await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${auth.getToken()}` }
-                });
-                isStarred = true;
-                starBtn.classList.add('starred');
-                starBtn.style.backgroundImage = "url('star-filled.svg')";
-                box.dataset.stars = parseInt(box.dataset.stars) + 1;
-            }
-            starCountEl.textContent = `⭐ ${box.dataset.stars}`;
-        } catch (error) {
-            console.error('Error toggling star:', error);
-            alert('Failed to star/unstar the repository.');
-        }
-    };
 }
 
 async function downloadZip(pyText, txtText, name) {
@@ -252,10 +261,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    auth.checkSession((user) => {
-        if (user) {
-            auth.updateLoginDisplay(user, loginBtn);
-            profileDropdown.style.display = 'none';
+    auth.checkSession(async (user) => {
+        if (user && auth.getToken()) {
+            try {
+                const response = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${auth.getToken()}` }
+                });
+                if (!response.ok) throw new Error('Token invalid or expired');
+                auth.updateLoginDisplay(user, loginBtn);
+                profileDropdown.style.display = 'none';
+            } catch (error) {
+                console.error('Token validation failed:', error);
+                loginBtn.innerHTML = 'Login with GitHub';
+                loginBtn.classList.remove('profile');
+                loginBtn.disabled = false;
+            }
         } else {
             loginBtn.innerHTML = 'Login with GitHub';
             loginBtn.classList.remove('profile');

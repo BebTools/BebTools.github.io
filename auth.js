@@ -12,22 +12,57 @@ async function checkSession(callback) {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) {
         console.error('Session check error:', error);
+        callback(null);
         return null;
     }
-    if (session) {
+    if (session && session.provider_token) {
         token = session.provider_token;
         console.log('Existing session found:', session);
-        callback(session.user);
-        return session.user;
+        try {
+            const response = await fetch('https://api.github.com/user', {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            if (!response.ok) throw new Error(`GitHub token validation failed: ${response.status}`);
+            const user = session.user;
+            sessionStorage.setItem('github_user', JSON.stringify(user)); // Cache user
+            callback(user);
+            return user;
+        } catch (error) {
+            console.error('Token validation failed:', error);
+            token = null; // Clear invalid token
+            await supabase.auth.signOut(); // Clear Supabase session
+            sessionStorage.removeItem('github_user');
+            callback(null);
+            return null;
+        }
     } else {
         console.log('No existing session, waiting for OAuth redirect...');
         supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
+            if (event === 'SIGNED_IN' && session && session.provider_token) {
                 token = session.provider_token;
                 console.log('Signed in with token:', token);
-                callback(session.user);
+                try {
+                    fetch('https://api.github.com/user', {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(response => {
+                        if (!response.ok) throw new Error('GitHub token validation failed after sign-in');
+                        const user = session.user;
+                        sessionStorage.setItem('github_user', JSON.stringify(user));
+                        callback(user);
+                    }).catch(error => {
+                        console.error('Post-login token validation failed:', error);
+                        token = null;
+                        supabase.auth.signOut();
+                        callback(null);
+                    });
+                } catch (error) {
+                    console.error('Error during post-login validation:', error);
+                    token = null;
+                    callback(null);
+                }
             }
         });
+        callback(null);
         return null;
     }
 }
@@ -56,6 +91,7 @@ async function signOut() {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
         token = null;
+        sessionStorage.removeItem('github_user');
         console.log('Signed out successfully');
     } catch (error) {
         console.error('Logout error:', error);

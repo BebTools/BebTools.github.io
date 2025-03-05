@@ -231,7 +231,7 @@ main {
 .popup-header .right-button-group {
     width: 10%;
     display: flex;
-    justify-content: flex-end; /* Right-align x */
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -281,7 +281,7 @@ main {
 }
 
 .popup-header .star-btn {
-    background-image: url('star.svg'); /* Default unstarred */
+    background-image: url('star.svg');
 }
 
 .popup-header .star-btn.starred {
@@ -316,7 +316,7 @@ main {
 }
 
 .popup-header .close-btn:hover {
-    background-color: #FF9999; /* Light red/pink hover */
+    background-color: #FF9999;
     background-image: url('x.svg');
 }
 
