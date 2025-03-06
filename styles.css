@@ -294,7 +294,7 @@ main {
 }
 
 .popup-header .donation-btn {
-    width: auto;
+    width: 130px; /* 3x wider */
     background: #424250 url('donation.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
@@ -395,7 +395,7 @@ main {
 }
 
 .popup-grid-replica .star-btn {
-    min-width: auto;
+    min-width: 52px;
     padding: 8px 12px 8px 28px;
     background: #424250 url('star.svg') no-repeat 8px center;
     background-size: 16px;
