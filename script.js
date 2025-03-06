@@ -97,7 +97,6 @@ async function showPopup(event) {
     const box = event.currentTarget;
     popup.style.display = 'flex';
 
-    // Header (7.5%)
     const header = document.querySelector('.popup-header');
     header.innerHTML = '';
     const leftGroup = document.createElement('div');
@@ -132,7 +131,7 @@ async function showPopup(event) {
             isStarred = starCheck.status === 204;
         } catch (error) {
             console.error('Error checking star status:', error);
-            leftGroup.removeChild(starBtn); // Remove star button if token fails
+            leftGroup.removeChild(starBtn);
         }
 
         if (leftGroup.contains(starBtn)) {
@@ -159,13 +158,44 @@ async function showPopup(event) {
                         starBtn.style.backgroundImage = "url('star-filled.svg')";
                         box.dataset.stars = parseInt(box.dataset.stars) + 1;
                     }
-                    starCountEl.textContent = `⭐ ${box.dataset.stars}`;
+                    starCountEl.textContent = `<span class="star-icon"></span> ${box.dataset.stars}`;
                 } catch (error) {
                     console.error('Error toggling star:', error);
                     alert('Failed to star/unstar the repository.');
                 }
             };
         }
+    }
+
+    let creatorLinks = {};
+    try {
+        const linksResponse = await fetch(`https://api.github.com/repos/${box.dataset.author}/bebtools/contents/links.json`, {
+            headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+        });
+        if (linksResponse.ok) {
+            const linksData = await linksResponse.json();
+            creatorLinks = JSON.parse(atob(linksData.content));
+            if (creatorLinks.website) {
+                const websiteBtn = document.createElement('button');
+                websiteBtn.className = 'website-btn';
+                websiteBtn.onclick = () => window.open(creatorLinks.website, '_blank');
+                leftGroup.appendChild(websiteBtn);
+            }
+            if (creatorLinks.x) {
+                const xBtn = document.createElement('button');
+                xBtn.className = 'x-btn';
+                xBtn.onclick = () => window.open(creatorLinks.x, '_blank');
+                leftGroup.appendChild(xBtn);
+            }
+            if (creatorLinks.donation) {
+                const donationBtn = document.createElement('button');
+                donationBtn.className = 'donation-btn';
+                donationBtn.onclick = () => window.open(creatorLinks.donation, '_blank');
+                leftGroup.appendChild(donationBtn);
+            }
+        }
+    } catch (error) {
+        console.log('No creator links found or error fetching:', error);
     }
 
     header.appendChild(leftGroup);
@@ -177,7 +207,6 @@ async function showPopup(event) {
     rightGroup.appendChild(closeBtn);
     header.appendChild(rightGroup);
 
-    // Grid Box Replica (40%)
     let gridReplica = document.querySelector('.popup-grid-replica');
     if (!gridReplica) {
         gridReplica = document.createElement('div');
@@ -193,7 +222,6 @@ async function showPopup(event) {
     `;
     const starCountEl = gridReplica.querySelector('.stars');
 
-    // Scrollbox (47.5%)
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
     code.innerHTML = pyText;
     Prism.highlightElement(code);
