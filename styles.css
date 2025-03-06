@@ -249,9 +249,6 @@ main {
 }
 
 .popup-header .author-btn,
-.popup-header .download-btn,
-.popup-header .copy-btn,
-.popup-header .star-btn,
 .popup-header .website-btn,
 .popup-header .x-btn,
 .popup-header .donation-btn,
@@ -397,18 +394,73 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 80%;
+    width: 50%; /* Adjusted to fit buttons */
 }
 
-.popup-grid-replica .stars {
-    font-size: 12px;
+.popup-grid-replica .action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.popup-grid-replica .download-btn,
+.popup-grid-replica .copy-btn,
+.popup-grid-replica .star-btn {
+    background: #424250;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 32px;
+    height: 32px;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: transparent;
+    overflow: hidden;
+}
+
+.popup-grid-replica .star-btn {
+    width: auto;
+    padding: 8px 12px;
+    background: #424250 url('star.svg') no-repeat 8px center;
+    background-size: 16px;
     color: #FFFFFF;
-    width: 20%;
+    font-size: 12px;
     text-align: right;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 4px;
+}
+
+.popup-grid-replica .star-btn.starred {
+    background: #424250 url('star-filled.svg') no-repeat 8px center;
+    background-size: 16px;
+}
+
+.popup-grid-replica .download-btn:hover,
+.popup-grid-replica .copy-btn:hover,
+.popup-grid-replica .star-btn:hover {
+    background-color: #A5A5CC;
+}
+
+.popup-grid-replica .download-btn:hover {
+    background-image: url('download.svg');
+}
+
+.popup-grid-replica .copy-btn:hover {
+    background-image: url('copy.svg');
+}
+
+.popup-grid-replica .star-btn:hover {
+    background: #A5A5CC url('star.svg') no-repeat 8px center;
+    background-size: 16px;
+}
+
+.popup-grid-replica .star-btn.starred:hover {
+    background: #A5A5CC url('star-filled.svg') no-repeat 8px center;
+    background-size: 16px;
 }
 
 .popup-grid-replica .star-icon {

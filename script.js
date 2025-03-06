@@ -108,64 +108,7 @@ async function showPopup(event) {
     authorBtn.appendChild(authorImg);
     authorBtn.appendChild(document.createTextNode(box.dataset.author));
     authorBtn.onclick = () => window.open(box.dataset.authorUrl, '_blank');
-    const downloadBtn = document.createElement('button');
-    downloadBtn.className = 'download-btn';
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'copy-btn';
     leftGroup.appendChild(authorBtn);
-    leftGroup.appendChild(downloadBtn);
-    leftGroup.appendChild(copyBtn);
-
-    const token = auth.getToken();
-    if (token) {
-        const starBtn = document.createElement('button');
-        starBtn.className = 'star-btn';
-        leftGroup.appendChild(starBtn);
-
-        let isStarred = false;
-        try {
-            const starCheck = await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            if (starCheck.status === 401) throw new Error('Token invalid or expired');
-            isStarred = starCheck.status === 204;
-        } catch (error) {
-            console.error('Error checking star status:', error);
-            leftGroup.removeChild(starBtn);
-        }
-
-        if (leftGroup.contains(starBtn)) {
-            starBtn.classList.toggle('starred', isStarred);
-            starBtn.style.backgroundImage = isStarred ? "url('star-filled.svg')" : "url('star.svg')";
-            starBtn.onclick = async () => {
-                try {
-                    if (isStarred) {
-                        await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-                            method: 'DELETE',
-                            headers: { 'Authorization': `token ${token}` }
-                        });
-                        isStarred = false;
-                        starBtn.classList.remove('starred');
-                        starBtn.style.backgroundImage = "url('star.svg')";
-                        box.dataset.stars = parseInt(box.dataset.stars) - 1;
-                    } else {
-                        await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
-                            method: 'PUT',
-                            headers: { 'Authorization': `token ${token}` }
-                        });
-                        isStarred = true;
-                        starBtn.classList.add('starred');
-                        starBtn.style.backgroundImage = "url('star-filled.svg')";
-                        box.dataset.stars = parseInt(box.dataset.stars) + 1;
-                    }
-                    starCountEl.textContent = `<span class="star-icon"></span> ${box.dataset.stars}`;
-                } catch (error) {
-                    console.error('Error toggling star:', error);
-                    alert('Failed to star/unstar the repository.');
-                }
-            };
-        }
-    }
 
     let creatorLinks = {};
     try {
@@ -217,20 +160,71 @@ async function showPopup(event) {
         <img src="${box.dataset.jpgUrl}" alt="${box.dataset.name}">
         <div class="text-row">
             <div class="name">${box.dataset.name}</div>
-            <div class="stars"><span class="star-icon"></span> ${box.dataset.stars}</div>
+            <div class="action-buttons">
+                <button class="download-btn"></button>
+                <button class="copy-btn"></button>
+                <button class="star-btn">${box.dataset.stars}</button>
+            </div>
         </div>
     `;
-    const starCountEl = gridReplica.querySelector('.stars');
 
+    const downloadBtn = gridReplica.querySelector('.download-btn');
+    const copyBtn = gridReplica.querySelector('.copy-btn');
+    const starBtn = gridReplica.querySelector('.star-btn');
     const pyText = await (await fetch(box.dataset.pyUrl)).text();
-    code.innerHTML = pyText;
-    Prism.highlightElement(code);
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
-    popupText.textContent = txtText;
 
     downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
     copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
     closeBtn.onclick = () => popup.style.display = 'none';
+
+    const token = auth.getToken();
+    if (token) {
+        let isStarred = false;
+        try {
+            const starCheck = await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            if (starCheck.status === 401) throw new Error('Token invalid or expired');
+            isStarred = starCheck.status === 204;
+        } catch (error) {
+            console.error('Error checking star status:', error);
+            starBtn.disabled = true;
+        }
+
+        starBtn.classList.toggle('starred', isStarred);
+        starBtn.onclick = async () => {
+            try {
+                if (isStarred) {
+                    await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    isStarred = false;
+                    starBtn.classList.remove('starred');
+                    box.dataset.stars = parseInt(box.dataset.stars) - 1;
+                } else {
+                    await fetch(`https://api.github.com/user/starred/${box.dataset.author}/${box.dataset.repoName}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    isStarred = true;
+                    starBtn.classList.add('starred');
+                    box.dataset.stars = parseInt(box.dataset.stars) + 1;
+                }
+                starBtn.textContent = box.dataset.stars;
+            } catch (error) {
+                console.error('Error toggling star:', error);
+                alert('Failed to star/unstar the repository.');
+            }
+        };
+    } else {
+        starBtn.disabled = true;
+    }
+
+    code.innerHTML = pyText;
+    Prism.highlightElement(code);
+    popupText.textContent = txtText;
 }
 
 async function downloadZip(pyText, txtText, name) {
