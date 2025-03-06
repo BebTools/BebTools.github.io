@@ -294,7 +294,7 @@ main {
 }
 
 .popup-header .donation-btn {
-    width: 96px; /* 3x wider */
+    width: 110px; /* 3x wider */
     background: #424250 url('donation.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
