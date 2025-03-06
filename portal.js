@@ -30,12 +30,12 @@ const websiteLinkInput = document.getElementById('website-link');
 const xLinkInput = document.getElementById('x-link');
 const donationLinkInput = document.getElementById('donation-link');
 const saveLinksBtn = document.getElementById('save-links');
+const profileDropdown = document.getElementById('profile-dropdown');
+const logoutBtn = document.getElementById('logout-btn');
 let username;
 
 async function checkSession() {
     const loginBtn = document.getElementById('login-btn');
-    const profileDropdown = document.getElementById('profile-dropdown');
-    const logoutBtn = document.getElementById('logout-btn');
     let dropdownVisible = false;
 
     auth.checkSession(async (user) => {
@@ -54,7 +54,7 @@ async function checkSession() {
                 username = userData.login;
                 fetchRepos();
                 fetchScriptRepos();
-                await setupCreatorLinks(); // Load or setup links
+                await setupCreatorLinks();
             } catch (error) {
                 uploadStatus.textContent = `Error: ${error.message}`;
                 uploadStatus.classList.add('error');
@@ -70,6 +70,7 @@ async function checkSession() {
             linksForm.style.display = 'none';
             enableCreatorLinksBtn.style.display = 'none';
             creatorLinksDisclaimer.style.display = 'none';
+            profileDropdown.style.display = 'none';
             loginMessage.style.display = 'block';
         }
     });
@@ -113,27 +114,34 @@ async function checkSession() {
 
 async function setupCreatorLinks() {
     try {
-        const response = await fetch(`https://api.github.com/repos/${username}/bebtools/contents/links.json`, {
+        const repoResponse = await fetch(`https://api.github.com/repos/${username}/bebtools`, {
             headers: { 'Authorization': `token ${auth.getToken()}` }
         });
-        if (response.ok) {
-            const data = await response.json();
-            const links = JSON.parse(atob(data.content));
-            websiteLinkInput.value = links.website || '';
-            xLinkInput.value = links.x || '';
-            donationLinkInput.value = links.donation || '';
+        if (repoResponse.ok) {
+            const linksResponse = await fetch(`https://api.github.com/repos/${username}/bebtools/contents/links.json`, {
+                headers: { 'Authorization': `token ${auth.getToken()}` }
+            });
+            if (linksResponse.ok) {
+                const data = await linksResponse.json();
+                const links = JSON.parse(atob(data.content));
+                websiteLinkInput.value = links.website || '';
+                xLinkInput.value = links.x || '';
+                donationLinkInput.value = links.donation || '';
+            } else if (linksResponse.status !== 404) {
+                throw new Error('Failed to fetch links.json');
+            }
             linksForm.style.display = 'block';
             enableCreatorLinksBtn.style.display = 'none';
             creatorLinksDisclaimer.style.display = 'none';
-        } else if (response.status === 404) {
+        } else if (repoResponse.status === 404) {
             enableCreatorLinksBtn.style.display = 'block';
             creatorLinksDisclaimer.style.display = 'block';
             linksForm.style.display = 'none';
         } else {
-            throw new Error('Failed to check creator links repo');
+            throw new Error('Failed to check bebtools repo');
         }
     } catch (error) {
-        console.error('Error checking creator links:', error);
+        console.error('Error setting up creator links:', error);
         enableCreatorLinksBtn.style.display = 'block';
         creatorLinksDisclaimer.style.display = 'block';
         linksForm.style.display = 'none';
@@ -142,12 +150,19 @@ async function setupCreatorLinks() {
 
 enableCreatorLinksBtn.addEventListener('click', async () => {
     try {
-        await createRepo('bebtools');
+        const repoCheck = await fetch(`https://api.github.com/repos/${username}/bebtools`, {
+            headers: { 'Authorization': `token ${auth.getToken()}` }
+        });
+        if (!repoCheck.ok && repoCheck.status !== 404) throw new Error('Failed to check bebtools repo');
+        if (repoCheck.status === 404) {
+            await createRepo('bebtools');
+        }
         linksForm.style.display = 'block';
         enableCreatorLinksBtn.style.display = 'none';
         creatorLinksDisclaimer.style.display = 'none';
+        await setupCreatorLinks();
     } catch (error) {
-        uploadStatus.textContent = `Error creating bebtools repo: ${error.message}`;
+        uploadStatus.textContent = `Error setting up bebtools repo: ${error.message}`;
         uploadStatus.classList.add('error');
     }
 });
@@ -404,7 +419,6 @@ async function createRepo(repoName) {
         if (repoName === 'bebtools') {
             uploadStatus.textContent = 'bebtools repo created successfully!';
             uploadStatus.classList.remove('error');
-            await setupCreatorLinks(); // Refresh links UI
         } else {
             newRepoNameInput.value = '';
         }

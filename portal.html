@@ -14,7 +14,13 @@
         <a href="index.html" class="logo">BEB.TOOLS</a>
         <input type="text" placeholder="Search scripts..." class="search-bar" id="search-input" disabled>
         <div class="nav">
-            <button id="login-btn">Login with GitHub</button>
+            <div class="profile-container">
+                <button id="login-btn">Login with GitHub</button>
+                <div id="profile-dropdown" class="dropdown" style="display: none;">
+                    <button id="my-scripts-btn" class="dropdown-item">My Scripts</button>
+                    <button id="logout-btn" class="dropdown-item">Logout</button>
+                </div>
+            </div>
             <a href="index.html">Back to Scripts</a>
         </div>
     </header>
