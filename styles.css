@@ -298,6 +298,7 @@ main {
     background: #424250 url('donation.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
+    font-family: 'Bungee', cursive; /* Explicitly set font */
     font-size: 12px;
     text-align: right;
     padding-right: 12px;
