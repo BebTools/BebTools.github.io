@@ -302,25 +302,10 @@ main {
 }
 
 .popup-header .author-btn:hover,
-.popup-header .download-btn:hover,
-.popup-header .copy-btn:hover,
-.popup-header .star-btn:hover,
 .popup-header .website-btn:hover,
 .popup-header .x-btn:hover,
 .popup-header .donation-btn:hover {
     background-color: #A5A5CC;
-}
-
-.popup-header .website-btn:hover {
-    background-image: url('website.svg');
-}
-
-.popup-header .x-btn:hover {
-    background-image: url('x-social.svg');
-}
-
-.popup-header .donation-btn:hover {
-    background-image: url('donation.svg');
 }
 
 .popup-header .close-btn:hover {
@@ -362,7 +347,7 @@ main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 50%; /* Adjusted to fit buttons */
+    width: 50%;
 }
 
 .popup-grid-replica .action-buttons {
@@ -374,21 +359,31 @@ main {
 .popup-grid-replica .download-btn,
 .popup-grid-replica .copy-btn,
 .popup-grid-replica .star-btn {
-    min-width: 64px; /* Double width for spacing */
-    padding: 8px 12px 8px 28px; /* Extra left padding for SVG */
-    background: #424250 url('star.svg') no-repeat 8px center;
-    background-size: 16px;
-    color: #FFFFFF;
-    font-size: 12px;
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    background: #424250;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 32px;
+    height: 32px;
+    background-size: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
 }
+
+.popup-grid-replica .download-btn {
+    background-image: url('download.svg');
+}
+
+.popup-grid-replica .copy-btn {
+    background-image: url('copy.svg');
+}
+
 .popup-grid-replica .star-btn {
-    width: auto;
-    padding: 8px 12px;
+    min-width: 64px;
+    padding: 8px 12px 8px 28px;
     background: #424250 url('star.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
@@ -405,28 +400,12 @@ main {
 }
 
 .popup-grid-replica .star-btn[disabled] {
-    display: none; /* Hide when not logged in or token expired */
+    display: none;
 }
 
 .popup-grid-replica .download-btn:hover,
 .popup-grid-replica .copy-btn:hover,
 .popup-grid-replica .star-btn:hover {
-    background-color: #A5A5CC;
-}
-
-.popup-grid-replica .download-btn:hover {
-    background-image: url('download.svg');
-}
-
-.popup-grid-replica .copy-btn:hover {
-    background-image: url('copy.svg');
-}
-
-.popup-grid-replica .star-btn:hover {
-    background-color: #A5A5CC;
-}
-
-.popup-grid-replica .star-btn.starred:hover {
     background-color: #A5A5CC;
 }
 
