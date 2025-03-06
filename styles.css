@@ -285,22 +285,6 @@ main {
     border-radius: 50%;
 }
 
-.popup-header .download-btn {
-    background-image: url('download.svg');
-}
-
-.popup-header .copy-btn {
-    background-image: url('copy.svg');
-}
-
-.popup-header .star-btn {
-    background-image: url('star.svg');
-}
-
-.popup-header .star-btn.starred {
-    background-image: url('star-filled.svg');
-}
-
 .popup-header .website-btn {
     background-image: url('website.svg');
 }
@@ -325,22 +309,6 @@ main {
 .popup-header .x-btn:hover,
 .popup-header .donation-btn:hover {
     background-color: #A5A5CC;
-}
-
-.popup-header .download-btn:hover {
-    background-image: url('download.svg');
-}
-
-.popup-header .copy-btn:hover {
-    background-image: url('copy.svg');
-}
-
-.popup-header .star-btn:hover {
-    background-image: url('star.svg');
-}
-
-.popup-header .star-btn.starred:hover {
-    background-image: url('star-filled.svg');
 }
 
 .popup-header .website-btn:hover {
@@ -406,21 +374,18 @@ main {
 .popup-grid-replica .download-btn,
 .popup-grid-replica .copy-btn,
 .popup-grid-replica .star-btn {
-    background: #424250;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    width: 32px;
-    height: 32px;
-    background-size: 50%;
-    background-repeat: no-repeat;
-    background-position: center;
-    color: transparent;
-    overflow: hidden;
+    min-width: 64px; /* Double width for spacing */
+    padding: 8px 12px 8px 28px; /* Extra left padding for SVG */
+    background: #424250 url('star.svg') no-repeat 8px center;
+    background-size: 16px;
+    color: #FFFFFF;
+    font-size: 12px;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    transition: background-color 0.3s ease;
 }
-
 .popup-grid-replica .star-btn {
     width: auto;
     padding: 8px 12px;
@@ -439,6 +404,10 @@ main {
     background-size: 16px;
 }
 
+.popup-grid-replica .star-btn[disabled] {
+    display: none; /* Hide when not logged in or token expired */
+}
+
 .popup-grid-replica .download-btn:hover,
 .popup-grid-replica .copy-btn:hover,
 .popup-grid-replica .star-btn:hover {
@@ -454,22 +423,11 @@ main {
 }
 
 .popup-grid-replica .star-btn:hover {
-    background: #A5A5CC url('star.svg') no-repeat 8px center;
-    background-size: 16px;
+    background-color: #A5A5CC;
 }
 
 .popup-grid-replica .star-btn.starred:hover {
-    background: #A5A5CC url('star-filled.svg') no-repeat 8px center;
-    background-size: 16px;
-}
-
-.popup-grid-replica .star-icon {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    background-image: url('star-filled.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
+    background-color: #A5A5CC;
 }
 
 .popup-scrollbox {
