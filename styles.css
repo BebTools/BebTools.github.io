@@ -554,6 +554,7 @@ main {
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
     font-size: 14px;
+    align-self: center; /* Center horizontally within #links-form */
 }
 
 #save-links:hover {
