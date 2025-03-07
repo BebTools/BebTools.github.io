@@ -489,21 +489,6 @@ main {
     text-align: center;
 }
 
-.creator-links {
-    width: 100%;
-    max-width: 1600px;
-    background: #252831;
-    padding: 15px;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    margin-bottom: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
 #enable-creator-links {
     background: #424250;
     border: none;
@@ -527,16 +512,17 @@ main {
 }
 
 #links-form {
-    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%; /* Keep full width within centered container */
 }
 
 .link-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: center; /* Center horizontally */
 }
 
 .link-row label {
@@ -555,6 +541,7 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     flex-grow: 1;
+    max-width: 200px; /* Limit input width for better centering */
 }
 
 #save-links {
@@ -567,7 +554,6 @@ main {
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
     font-size: 14px;
-    align-self: center;
 }
 
 #save-links:hover {
@@ -612,9 +598,12 @@ main {
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid #424250;
-    width: 23%; /* Adjusted from 30% to fit 4 panels */
-    max-width: 400px; /* Slightly reduced from 500px */
+    width: 23%;
+    max-width: 400px;
     min-height: 400px;
+    display: flex; /* Added for centering */
+    flex-direction: column;
+    align-items: center; /* Horizontal centering */
 }
 
 .section-box h2 {
