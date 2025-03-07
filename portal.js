@@ -13,13 +13,14 @@ const uploadStatus = document.getElementById('upload-status');
 const loginMessage = document.getElementById('login-message');
 const uploadSection = document.getElementById('upload-section');
 const repoSection = document.getElementById('repo-section');
+const scriptSection = document.getElementById('script-section');
+const profileSection = document.getElementById('profile-section');
 const repoList = document.getElementById('repo-list');
 const repoStatus = document.getElementById('repo-status');
 const refreshReposBtn = document.getElementById('refresh-repos');
 const newRepoNameInput = document.getElementById('new-repo-name');
 const createRepoBtn = document.getElementById('create-repo-btn');
 const namingRule = document.querySelector('.naming-rule');
-const scriptSection = document.getElementById('script-section');
 const scriptRepoSelect = document.getElementById('script-repo-select');
 const scriptList = document.getElementById('script-list');
 const scriptStatus = document.getElementById('script-status');
@@ -30,12 +31,12 @@ const websiteLinkInput = document.getElementById('website-link');
 const xLinkInput = document.getElementById('x-link');
 const donationLinkInput = document.getElementById('donation-link');
 const saveLinksBtn = document.getElementById('save-links');
+const profileStatus = document.getElementById('profile-status');
 const profileDropdown = document.getElementById('profile-dropdown');
 const logoutBtn = document.getElementById('logout-btn');
 let username;
 
 async function checkSession() {
-    const loginBtn = document.getElementById('login-btn');
     let dropdownVisible = false;
 
     auth.checkSession(async (user) => {
@@ -44,6 +45,7 @@ async function checkSession() {
             uploadSection.style.display = 'block';
             repoSection.style.display = 'block';
             scriptSection.style.display = 'block';
+            profileSection.style.display = 'block'; // Show new panel
             loginMessage.style.display = 'none';
             try {
                 const response = await fetch('https://api.github.com/user', {
@@ -67,6 +69,7 @@ async function checkSession() {
             uploadSection.style.display = 'none';
             repoSection.style.display = 'none';
             scriptSection.style.display = 'none';
+            profileSection.style.display = 'none'; // Hide new panel
             linksForm.style.display = 'none';
             enableCreatorLinksBtn.style.display = 'none';
             creatorLinksDisclaimer.style.display = 'none';
@@ -98,6 +101,7 @@ async function checkSession() {
         uploadSection.style.display = 'none';
         repoSection.style.display = 'none';
         scriptSection.style.display = 'none';
+        profileSection.style.display = 'none'; // Hide new panel
         linksForm.style.display = 'none';
         enableCreatorLinksBtn.style.display = 'none';
         creatorLinksDisclaimer.style.display = 'none';
@@ -141,6 +145,8 @@ async function setupCreatorLinks() {
             throw new Error('Failed to check bebtools repo');
         }
     } catch (error) {
+        profileStatus.textContent = `Error setting up creator links: ${error.message}`; // Panel-specific
+        profileStatus.classList.add('error');
         console.error('Error setting up creator links:', error);
         enableCreatorLinksBtn.style.display = 'block';
         creatorLinksDisclaimer.style.display = 'block';
@@ -156,14 +162,16 @@ enableCreatorLinksBtn.addEventListener('click', async () => {
         if (!repoCheck.ok && repoCheck.status !== 404) throw new Error('Failed to check bebtools repo');
         if (repoCheck.status === 404) {
             await createRepo('bebtools');
+            profileStatus.textContent = 'bebtools repo created successfully!'; // Panel-specific
+            profileStatus.classList.remove('error');
         }
         linksForm.style.display = 'block';
         enableCreatorLinksBtn.style.display = 'none';
         creatorLinksDisclaimer.style.display = 'none';
         await setupCreatorLinks();
     } catch (error) {
-        uploadStatus.textContent = `Error setting up bebtools repo: ${error.message}`;
-        uploadStatus.classList.add('error');
+        profileStatus.textContent = `Error setting up bebtools repo: ${error.message}`; // Panel-specific
+        profileStatus.classList.add('error');
     }
 });
 
@@ -181,11 +189,11 @@ saveLinksBtn.addEventListener('click', async () => {
             body: JSON.stringify({ message: 'Update creator links', content: content })
         });
         if (!response.ok) throw new Error('Failed to save links');
-        uploadStatus.textContent = 'Creator links saved successfully!';
-        uploadStatus.classList.remove('error');
+        profileStatus.textContent = 'Creator links saved successfully!'; // Panel-specific
+        profileStatus.classList.remove('error');
     } catch (error) {
-        uploadStatus.textContent = `Error saving links: ${error.message}`;
-        uploadStatus.classList.add('error');
+        profileStatus.textContent = `Error saving links: ${error.message}`; // Panel-specific
+        profileStatus.classList.add('error');
         console.error('Save links error:', error);
     }
 });
@@ -229,8 +237,8 @@ function validateFilenames() {
 
 async function fetchRepos() {
     if (!auth.getToken()) {
-        uploadStatus.textContent = 'Error: No GitHub token available.';
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = 'Error: No GitHub token available.'; // Panel-specific
+        repoStatus.classList.add('error');
         return;
     }
     try {
@@ -270,15 +278,15 @@ async function fetchRepos() {
             }
         });
     } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
-        uploadStatus.classList.add('error');
+        repoStatus.textContent = `Error: ${error.message}`; // Panel-specific
+        repoStatus.classList.add('error');
         console.error('Fetch repos error:', error);
     }
 }
 
 async function fetchScriptRepos() {
     if (!auth.getToken()) {
-        scriptStatus.textContent = 'Error: No GitHub token available.';
+        scriptStatus.textContent = 'Error: No GitHub token available.'; // Panel-specific
         scriptStatus.classList.add('error');
         return;
     }
@@ -298,7 +306,7 @@ async function fetchScriptRepos() {
             }
         });
     } catch (error) {
-        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.textContent = `Error: ${error.message}`; // Panel-specific
         scriptStatus.classList.add('error');
         console.error('Fetch script repos error:', error);
     }
@@ -340,7 +348,7 @@ async function fetchScripts(repoName) {
             scriptList.appendChild(li);
         });
     } catch (error) {
-        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.textContent = `Error: ${error.message}`; // Panel-specific
         scriptStatus.classList.add('error');
         console.error('Fetch scripts error:', error);
     }
@@ -400,7 +408,7 @@ uploadForm.addEventListener('submit', async (e) => {
         txtDropZone.style.backgroundImage = "url('dragdrop.svg')";
         jpgDropZone.style.backgroundImage = "url('dragdrop.svg')";
     } catch (error) {
-        uploadStatus.textContent = `Error: ${error.message}`;
+        uploadStatus.textContent = `Error: ${error.message}`; // Panel-specific
         uploadStatus.classList.add('error');
         console.error('Upload error:', error);
     }
@@ -415,16 +423,18 @@ async function createRepo(repoName) {
         });
         if (!response.ok) throw new Error('Failed to create repo');
         await updateRepoTopics(username, repoName);
-        repoStatus.textContent = `Repository ${repoName} created! Refresh to select it.`;
         if (repoName === 'bebtools') {
-            uploadStatus.textContent = 'bebtools repo created successfully!';
-            uploadStatus.classList.remove('error');
+            profileStatus.textContent = 'bebtools repo created successfully!'; // Panel-specific
+            profileStatus.classList.remove('error');
         } else {
+            repoStatus.textContent = `Repository ${repoName} created! Refresh to select it.`; // Panel-specific
+            repoStatus.classList.remove('error');
             newRepoNameInput.value = '';
         }
     } catch (error) {
-        repoStatus.textContent = `Error: ${error.message}`;
-        repoStatus.classList.add('error');
+        const status = repoName === 'bebtools' ? profileStatus : repoStatus; // Choose correct status
+        status.textContent = `Error: ${error.message}`;
+        status.classList.add('error');
         console.error('Create repo error:', error);
     }
 }
@@ -466,11 +476,11 @@ async function renameRepo(oldName) {
             body: JSON.stringify({ name: newName })
         });
         if (!response.ok) throw new Error('Failed to rename repo');
-        repoStatus.textContent = `Repository renamed to ${newName}.`;
+        repoStatus.textContent = `Repository renamed to ${newName}.`; // Panel-specific
         fetchRepos();
         fetchScriptRepos();
     } catch (error) {
-        repoStatus.textContent = `Error: ${error.message}`;
+        repoStatus.textContent = `Error: ${error.message}`; // Panel-specific
         repoStatus.classList.add('error');
         console.error('Rename repo error:', error);
     }
@@ -498,10 +508,10 @@ async function deleteScriptFolder(repoName, baseName) {
                 body: JSON.stringify({ message: `Delete ${item.name}`, sha: item.sha })
             });
         }
-        scriptStatus.textContent = `Script ${baseName} deleted.`;
+        scriptStatus.textContent = `Script ${baseName} deleted.`; // Panel-specific
         fetchScripts(repoName);
     } catch (error) {
-        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.textContent = `Error: ${error.message}`; // Panel-specific
         scriptStatus.classList.add('error');
         console.error('Delete script error:', error);
     }
@@ -546,10 +556,10 @@ async function renameScriptFolder(repoName, oldBaseName) {
                 body: JSON.stringify({ message: `Delete ${oldPath}`, sha: item.sha })
             });
         }
-        scriptStatus.textContent = `Script renamed to ${newBaseName}.`;
+        scriptStatus.textContent = `Script renamed to ${newBaseName}.`; // Panel-specific
         fetchScripts(repoName);
     } catch (error) {
-        scriptStatus.textContent = `Error: ${error.message}`;
+        scriptStatus.textContent = `Error: ${error.message}`; // Panel-specific
         scriptStatus.classList.add('error');
         console.error('Rename script error:', error);
     }
@@ -563,7 +573,7 @@ refreshReposBtn.addEventListener('click', () => {
 createRepoBtn.addEventListener('click', () => {
     const repoName = newRepoNameInput.value.trim();
     if (!repoName) {
-        repoStatus.textContent = 'Please enter a repository name.';
+        repoStatus.textContent = 'Please enter a repository name.'; // Panel-specific
         repoStatus.classList.add('error');
         return;
     }

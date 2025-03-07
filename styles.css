@@ -612,8 +612,8 @@ main {
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     border: 1px solid #424250;
-    width: 30%;
-    max-width: 500px;
+    width: 23%; /* Adjusted from 30% to fit 4 panels */
+    max-width: 400px; /* Slightly reduced from 500px */
     min-height: 400px;
 }
 

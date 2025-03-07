@@ -27,25 +27,6 @@
     <main>
         <div class="portal-container">
             <h1>Creator Portal</h1>
-            <div class="creator-links">
-                <button id="enable-creator-links" style="display: none;">Enable Creator Links</button>
-                <p id="creator-links-disclaimer" style="display: none;">This will create a "bebtools" Repo</p>
-                <div id="links-form" style="display: none;">
-                    <div class="link-row">
-                        <label for="website-link">Website:</label>
-                        <input type="text" id="website-link" placeholder="https://yourwebsite.com">
-                    </div>
-                    <div class="link-row">
-                        <label for="x-link">X:</label>
-                        <input type="text" id="x-link" placeholder="https://x.com/username">
-                    </div>
-                    <div class="link-row">
-                        <label for="donation-link">Donation:</label>
-                        <input type="text" id="donation-link" placeholder="https://paypal.me/username">
-                    </div>
-                    <button id="save-links">Save Links</button>
-                </div>
-            </div>
             <button id="refresh-repos">Refresh Repos</button>
             <div id="login-message">Please log in with GitHub to upload and manage scripts.</div>
 
@@ -107,6 +88,30 @@
                         <ul id="script-list"></ul>
                     </div>
                     <div id="script-status"></div>
+                </div>
+
+                <div id="profile-section" class="section-box" style="display: none;">
+                    <h2>Manage Profile</h2>
+                    <div class="creator-links">
+                        <button id="enable-creator-links" style="display: none;">Enable Creator Links</button>
+                        <p id="creator-links-disclaimer" style="display: none;">This will create a "bebtools" Repo</p>
+                        <div id="links-form" style="display: none;">
+                            <div class="link-row">
+                                <label for="website-link">Website:</label>
+                                <input type="text" id="website-link" placeholder="https://yourwebsite.com">
+                            </div>
+                            <div class="link-row">
+                                <label for="x-link">X:</label>
+                                <input type="text" id="x-link" placeholder="https://x.com/username">
+                            </div>
+                            <div class="link-row">
+                                <label for="donation-link">Donation:</label>
+                                <input type="text" id="donation-link" placeholder="https://paypal.me/username">
+                            </div>
+                            <button id="save-links">Save Links</button>
+                        </div>
+                    </div>
+                    <div id="profile-status"></div>
                 </div>
             </div>
         </div>
