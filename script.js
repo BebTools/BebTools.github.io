@@ -241,13 +241,15 @@ async function downloadZip(pyText, txtText, name) {
     URL.revokeObjectURL(url);
 }
 
-async function copyZip(pyText, txtText, name) {
+async function copyZip(pyText, txtText, scriptName) {
     const zip = new JSZip();
-    zip.file(`${name}.py`, pyText);
-    zip.file(`${name}.txt`, txtText);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    navigator.clipboard.writeText(url).then(() => alert('Copied to clipboard! Paste into Beb Tools.'));
+    zip.file(`${scriptName}.py`, pyText);
+    if (txtText) zip.file(`${scriptName}.txt`, txtText);
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    await navigator.clipboard.writeText(url);
+    alert('Copied to Clipboard! Paste into Beb.Tools Plugin (expires when page closes).');
+    // Optional: URL.revokeObjectURL(url) on page unload
 }
 
 document.addEventListener('DOMContentLoaded', () => {
