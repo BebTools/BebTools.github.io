@@ -242,14 +242,11 @@ async function downloadZip(pyText, txtText, name) {
 }
 
 async function copyZip(pyText, txtText, scriptName) {
-    const zip = new JSZip();
-    zip.file(`${scriptName}.py`, pyText);
-    if (txtText) zip.file(`${scriptName}.txt`, txtText);
-    const content = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(content);
-    await navigator.clipboard.writeText(url);
-    alert('Copied to Clipboard! Paste into Beb.Tools Plugin (expires when page closes).');
-    // Optional: URL.revokeObjectURL(url) on page unload
+    const urls = [box.dataset.pyUrl];
+    if (box.dataset.txtUrl) urls.push(box.dataset.txtUrl);
+    const urlText = urls.join('\n');
+    await navigator.clipboard.writeText(urlText);
+    alert('Script file URLs copied! Paste to download or share.');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
