@@ -71,13 +71,10 @@ function showNotification(message) {
     notification.textContent = message;
     document.body.appendChild(notification);
 
-    // Fade in
     setTimeout(() => notification.classList.add('show'), 10);
-
-    // Fade out after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
-        setTimeout(() => document.body.removeChild(notification), 300); // Match fade-out duration
+        setTimeout(() => document.body.removeChild(notification), 300);
     }, 5000);
 }
 
@@ -149,7 +146,7 @@ async function showPopup(event) {
             if (creatorLinks.donation) {
                 const donationBtn = document.createElement('button');
                 donationBtn.className = 'donation-btn';
-                donationBtn.textContent = 'Tip Creator'; // Add "Tip" text
+                donationBtn.textContent = 'Tip'; // Restored "Tip" text
                 donationBtn.onclick = () => window.open(creatorLinks.donation, '_blank');
                 leftGroup.appendChild(donationBtn);
             }
@@ -232,7 +229,7 @@ async function showPopup(event) {
                 starBtn.textContent = box.dataset.stars;
             } catch (error) {
                 console.error('Error toggling star:', error);
-                alert('Failed to star/unstar the repository.');
+                showNotification('Failed to star/unstar the repository.');
             }
         };
     } else {
@@ -265,7 +262,7 @@ async function copyZip(box) {
     if (box.dataset.txtUrl) urls.push(box.dataset.txtUrl);
     const urlText = urls.join('\n');
     await navigator.clipboard.writeText(urlText);
-    alert('Copied to Clipboard! Paste to download or share.');
+    showNotification('Copied to Clipboard! Paste to download or share.');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -277,19 +274,19 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', renderGrid);
 
     loginBtn.addEventListener('click', async (e) => {
-        if (loginBtn.classList.contains('profile')) {
+        if (loginBtn.className.includes('profile')) {
             dropdownVisible = !dropdownVisible;
             profileDropdown.style.display = dropdownVisible ? 'block' : 'none';
         } else {
             const error = await auth.loginWithGitHub();
-            if (error) alert(`Login failed: ${error}`);
+            if (error) showNotification(`Login failed: ${error}`);
         }
     });
 
     logoutBtn.addEventListener('click', async () => {
         await auth.signOut();
         loginBtn.innerHTML = 'Login with GitHub';
-        loginBtn.classList.remove('profile');
+        loginBtn.className = loginBtn.className.replace('profile', '');
         loginBtn.disabled = false;
         profileDropdown.style.display = 'none';
         dropdownVisible = false;
@@ -314,12 +311,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Token validation failed:', error);
                 loginBtn.innerHTML = 'Login with GitHub';
-                loginBtn.classList.remove('profile');
+                loginBtn.className = loginBtn.className.replace('profile', '');
                 loginBtn.disabled = false;
             }
         } else {
             loginBtn.innerHTML = 'Login with GitHub';
-            loginBtn.classList.remove('profile');
+            loginBtn.className = loginBtn.className.replace('profile', '');
             loginBtn.disabled = false;
         }
     });
