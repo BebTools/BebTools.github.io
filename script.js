@@ -176,7 +176,7 @@ async function showPopup(event) {
     const txtText = box.dataset.txtUrl ? await (await fetch(box.dataset.txtUrl)).text() : 'No description available.';
 
     downloadBtn.onclick = () => downloadZip(pyText, txtText, box.dataset.name);
-    copyBtn.onclick = () => copyZip(pyText, txtText, box.dataset.name);
+    copyBtn.onclick = () => copyZip(box);
     closeBtn.onclick = () => popup.style.display = 'none';
 
     const token = auth.getToken();
@@ -241,7 +241,7 @@ async function downloadZip(pyText, txtText, name) {
     URL.revokeObjectURL(url);
 }
 
-async function copyZip(pyText, txtText, scriptName) {
+async function copyZip(box) {
     const urls = [box.dataset.pyUrl];
     if (box.dataset.txtUrl) urls.push(box.dataset.txtUrl);
     const urlText = urls.join('\n');
