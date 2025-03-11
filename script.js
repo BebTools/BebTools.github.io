@@ -65,6 +65,22 @@ async function loadScripts() {
     }
 }
 
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Fade in
+    setTimeout(() => notification.classList.add('show'), 10);
+
+    // Fade out after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => document.body.removeChild(notification), 300); // Match fade-out duration
+    }, 5000);
+}
+
 function renderGrid() {
     grid.innerHTML = '';
     const searchTerm = searchInput.value.toLowerCase();
@@ -228,17 +244,20 @@ async function showPopup(event) {
     popupText.textContent = txtText;
 }
 
-async function downloadZip(pyText, txtText, name) {
+async function downloadZip(pyText, txtText, scriptName) {
     const zip = new JSZip();
-    zip.file(`${name}.py`, pyText);
-    zip.file(`${name}.txt`, txtText);
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${name}-script.zip`;
-    a.click();
+    zip.file(`${scriptName}.py`, pyText);
+    if (txtText) zip.file(`${scriptName}.txt`, txtText);
+    const content = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(content);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${scriptName}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showNotification('Script downloaded!');
 }
 
 async function copyZip(box) {
@@ -246,7 +265,7 @@ async function copyZip(box) {
     if (box.dataset.txtUrl) urls.push(box.dataset.txtUrl);
     const urlText = urls.join('\n');
     await navigator.clipboard.writeText(urlText);
-    alert('Script file URLs copied! Paste to download or share.');
+    alert('Copied to Clipboard! Paste to download or share.');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -950,3 +950,25 @@ main {
 .example-btn:hover {
     background: #A5A5CC;
 }
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #252831;
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
