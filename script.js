@@ -146,7 +146,7 @@ async function showPopup(event) {
             if (creatorLinks.donation) {
                 const donationBtn = document.createElement('button');
                 donationBtn.className = 'donation-btn';
-                donationBtn.textContent = 'Tip'; // Restored "Tip" text
+                donationBtn.textContent = 'Tip Creator';
                 donationBtn.onclick = () => window.open(creatorLinks.donation, '_blank');
                 leftGroup.appendChild(donationBtn);
             }
