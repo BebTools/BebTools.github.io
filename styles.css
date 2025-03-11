@@ -294,11 +294,11 @@ main {
 }
 
 .popup-header .donation-btn {
-    width: 130px; /* 3x wider */
+    width: 96px; /* 3x wider, corrected from 130px */
     background: #424250 url('donation.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
-    font-family: 'Bungee', cursive; /* Explicitly set font */
+    font-family: 'Bungee', cursive;
     font-size: 12px;
     text-align: right;
     padding-right: 12px;
@@ -323,7 +323,6 @@ main {
 
 .popup-header .close-btn:hover {
     background-color: #FF9999;
-    background-image: url('x.svg');
 }
 
 .popup-grid-replica {
@@ -395,7 +394,7 @@ main {
 }
 
 .popup-grid-replica .star-btn {
-    min-width: 52px;
+    min-width: 64px; /* Double width for spacing */
     padding: 8px 12px 8px 28px;
     background: #424250 url('star.svg') no-repeat 8px center;
     background-size: 16px;
@@ -416,10 +415,25 @@ main {
     display: none;
 }
 
-.popup-grid-replica .download-btn:hover,
-.popup-grid-replica .copy-btn:hover,
+.popup-grid-replica .download-btn:hover {
+    background-color: #A5A5CC;
+    background-image: url('download.svg');
+}
+
+.popup-grid-replica .copy-btn:hover {
+    background-color: #A5A5CC;
+    background-image: url('copy.svg');
+}
+
 .popup-grid-replica .star-btn:hover {
     background-color: #A5A5CC;
+    background: #A5A5CC url('star.svg') no-repeat 8px center;
+    background-size: 16px;
+}
+
+.popup-grid-replica .star-btn.starred:hover {
+    background: #A5A5CC url('star-filled.svg') no-repeat 8px center;
+    background-size: 16px;
 }
 
 .popup-scrollbox {
@@ -515,14 +529,14 @@ main {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 100%; /* Keep full width within centered container */
+    width: 100%;
 }
 
 .link-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    justify-content: center; /* Center horizontally */
+    justify-content: center;
 }
 
 .link-row label {
@@ -541,7 +555,7 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     flex-grow: 1;
-    max-width: 200px; /* Limit input width for better centering */
+    max-width: 200px;
 }
 
 #save-links {
@@ -554,7 +568,7 @@ main {
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
     font-size: 14px;
-    align-self: center; /* Center horizontally within #links-form */
+    align-self: center;
 }
 
 #save-links:hover {
@@ -602,9 +616,9 @@ main {
     width: 23%;
     max-width: 400px;
     min-height: 400px;
-    display: flex; /* Added for centering */
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Horizontal centering */
+    align-items: center;
 }
 
 .section-box h2 {
