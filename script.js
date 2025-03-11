@@ -262,7 +262,7 @@ async function copyZip(box) {
     if (box.dataset.txtUrl) urls.push(box.dataset.txtUrl);
     const urlText = urls.join('\n');
     await navigator.clipboard.writeText(urlText);
-    showNotification('Copied to Clipboard! Paste to download or share.');
+    showNotification('Copied to Clipboard! Paste into Beb.Tools Blender Plugin.');
 }
 
 document.addEventListener('DOMContentLoaded', () => {

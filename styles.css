@@ -294,7 +294,7 @@ main {
 }
 
 .popup-header .donation-btn {
-    width: 96px; /* 3x wider, corrected from 130px */
+    width: auto;
     background: #424250 url('donation.svg') no-repeat 8px center;
     background-size: 16px;
     color: #FFFFFF;
@@ -530,6 +530,7 @@ main {
     flex-direction: column;
     gap: 10px;
     width: 100%;
+    align-items: center; /* Add this to center children horizontally */
 }
 
 .link-row {
@@ -537,13 +538,18 @@ main {
     align-items: center;
     gap: 10px;
     justify-content: center;
+    width: 100%; /* Ensure it fills the container */
+    flex-wrap: wrap; /* Allow wrapping if needed on small screens/zoom */
 }
 
 .link-row label {
     font-size: 16px;
     color: #FFFFFF;
-    width: 100px;
+    width: 30%; /* Relative width instead of 100px */
+    min-width: 80px; /* Minimum to prevent collapse */
+    max-width: 100px; /* Cap to maintain layout */
     text-align: right;
+    flex-shrink: 0; /* Prevent shrinking too much */
 }
 
 .link-row input {
@@ -555,7 +561,10 @@ main {
     font-family: 'Bungee', cursive;
     font-size: 14px;
     flex-grow: 1;
-    max-width: 200px;
+    width: 60%; /* Base width relative to parent */
+    min-width: 150px; /* Minimum to stay usable */
+    max-width: 200px; /* Keep the cap */
+    box-sizing: border-box; /* Include padding/border in width */
 }
 
 #save-links {
@@ -619,6 +628,8 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 20px; /* Already present */
+    box-sizing: border-box; /* Add this to include padding in width */
 }
 
 .section-box h2 {
