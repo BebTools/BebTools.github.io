@@ -533,6 +533,13 @@ main {
     align-items: center; /* Add this to center children horizontally */
 }
 
+#links-form .button-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    width: 100%; /* Match the form’s width */
+    margin-top: 10px; /* Space above the button */
+}
+
 .link-row {
     display: flex;
     align-items: center;
