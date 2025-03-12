@@ -75,6 +75,23 @@ header {
 main {
     margin-top: 60px;
     padding: 20px;
+    max-height: calc(100vh - 60px); /* Full height minus header */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #424250 #252831;
+}
+
+main::-webkit-scrollbar {
+    width: 8px;
+}
+
+main::-webkit-scrollbar-thumb {
+    background: #424250;
+    border-radius: 4px;
+}
+
+main::-webkit-scrollbar-track {
+    background: #252831;
 }
 
 .grid {
@@ -83,6 +100,37 @@ main {
     gap: 40px;
     justify-content: center;
     padding: 20px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #424250 #252831;
+}
+
+.grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+    background: #424250;
+    border-radius: 4px;
+}
+
+.grid::-webkit-scrollbar-track {
+    background: #252831;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+.grid::-webkit-scrollbar {
+    width: 8px; /* Thin scrollbar */
+}
+
+.grid::-webkit-scrollbar-thumb {
+    background: #424250; /* Scrollbar thumb color */
+    border-radius: 4px;
+}
+
+.grid::-webkit-scrollbar-track {
+    background: #252831; /* Scrollbar track color */
 }
 
 .grid-box {
@@ -162,6 +210,7 @@ main {
     cursor: pointer;
     transition: background 0.3s ease;
     font-family: 'Bungee', cursive;
+    position: relative; /* Ensure it’s not trapped in grid’s overflow */
 }
 
 .load-more:hover {
