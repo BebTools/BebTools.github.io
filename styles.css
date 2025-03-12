@@ -3,6 +3,7 @@ body {
     background: #17141F;
     color: #FFFFFF;
     font-family: 'Bungee', cursive;
+    overflow-y: hidden; /* Prevent browser scrollbar */
 }
 
 header {
@@ -80,16 +81,13 @@ main {
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
 }
-
 main::-webkit-scrollbar {
     width: 8px;
 }
-
 main::-webkit-scrollbar-thumb {
     background: #424250;
     border-radius: 4px;
 }
-
 main::-webkit-scrollbar-track {
     background: #252831;
 }
@@ -100,10 +98,7 @@ main::-webkit-scrollbar-track {
     gap: 40px;
     justify-content: center;
     padding: 20px;
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #424250 #252831;
+    /* Remove: max-height, overflow-y, scrollbar styles */
 }
 
 .grid::-webkit-scrollbar {
@@ -117,20 +112,6 @@ main::-webkit-scrollbar-track {
 
 .grid::-webkit-scrollbar-track {
     background: #252831;
-}
-
-/* Webkit browsers (Chrome, Safari) */
-.grid::-webkit-scrollbar {
-    width: 8px; /* Thin scrollbar */
-}
-
-.grid::-webkit-scrollbar-thumb {
-    background: #424250; /* Scrollbar thumb color */
-    border-radius: 4px;
-}
-
-.grid::-webkit-scrollbar-track {
-    background: #252831; /* Scrollbar track color */
 }
 
 .grid-box {
