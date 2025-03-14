@@ -31,29 +31,43 @@ async function loadScripts() {
         }
 
         for (const repo of repos) {
-            const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`, {
-                headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
-            });
-            const files = await contents.json();
-            const pyFiles = files.filter(f => f.name.endsWith('.py'));
-            for (const pyFile of pyFiles) {
-                const baseName = pyFile.name.replace('.py', '');
-                const txtFile = files.find(f => f.name === `${baseName}.txt`);
-                const jpgFile = files.find(f => f.name === `${baseName}.jpg`);
-                if (pyFile && jpgFile) {
-                    const scriptData = {
-                        name: baseName,
-                        author: repo.owner.login,
-                        authorUrl: repo.owner.html_url,
-                        authorAvatar: repo.owner.avatar_url,
-                        repoName: repo.name,
-                        stars: repo.stargazers_count,
-                        pyUrl: pyFile.download_url,
-                        txtUrl: txtFile ? txtFile.download_url : '',
-                        jpgUrl: jpgFile.download_url
-                    };
-                    allScripts.push(scriptData);
+            try {
+                const contents = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`, {
+                    headers: auth.getToken() ? { 'Authorization': `token ${auth.getToken()}` } : {}
+                });
+                if (!contents.ok) {
+                    console.warn(`Skipping ${repo.full_name}: Contents not found (status ${contents.status})`);
+                    continue; // Skip this repo
                 }
+                const files = await contents.json();
+                // Check if files is an array before filtering
+                if (!Array.isArray(files)) {
+                    console.warn(`Skipping ${repo.full_name}: Invalid contents format`);
+                    continue;
+                }
+                const pyFiles = files.filter(f => f.name.endsWith('.py'));
+                for (const pyFile of pyFiles) {
+                    const baseName = pyFile.name.replace('.py', '');
+                    const txtFile = files.find(f => f.name === `${baseName}.txt`);
+                    const jpgFile = files.find(f => f.name === `${baseName}.jpg`);
+                    if (pyFile && jpgFile) {
+                        const scriptData = {
+                            name: baseName,
+                            author: repo.owner.login,
+                            authorUrl: repo.owner.html_url,
+                            authorAvatar: repo.owner.avatar_url,
+                            repoName: repo.name,
+                            stars: repo.stargazers_count,
+                            pyUrl: pyFile.download_url,
+                            txtUrl: txtFile ? txtFile.download_url : '',
+                            jpgUrl: jpgFile.download_url
+                        };
+                        allScripts.push(scriptData);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Error processing ${repo.full_name}: ${error.message}`);
+                continue; // Move to next repo
             }
         }
         page++;
