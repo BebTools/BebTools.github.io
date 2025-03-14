@@ -495,13 +495,15 @@ main::-webkit-scrollbar-track {
 }
 
 .scrollbox {
-    max-height: 200px;
-    overflow-y: auto;
+    flex-grow: 1; /* Take up available space */
+    width: 100%; /* Match section-box width */
+    overflow-y: auto; /* Scroll if needed */
     padding: 5px;
     background: #252831;
     border-radius: 4px;
     scrollbar-width: thin;
     scrollbar-color: #424250 #252831;
+    min-height: 100px; /* Ensure it’s not too small */
 }
 
 .scrollbox::-webkit-scrollbar {
